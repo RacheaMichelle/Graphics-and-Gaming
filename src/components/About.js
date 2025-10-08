@@ -15,18 +15,41 @@ const About = () => {
 
   const backendService = useBackendService();
 
-  // Load projects on component mount
+  // Load projects on component mount with update check
   useEffect(() => {
-    loadProjectsFromStorage();
-    
-    // Check owner status
-    const savedOwnerStatus = localStorage.getItem('isOwner');
-    if (savedOwnerStatus === 'true') {
-      setIsOwner(true);
-    }
+    const initializeApp = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Check for updates first
+        await backendService.checkForUpdates();
+        
+        // Load projects
+        await loadProjectsFromStorage();
+        
+        // Check owner status
+        const savedOwnerStatus = localStorage.getItem('isOwner');
+        if (savedOwnerStatus === 'true') {
+          setIsOwner(true);
+        }
 
-    // Load debug info
-    updateDebugInfo();
+        // Load debug info
+        updateDebugInfo();
+      } catch (error) {
+        console.error('Initialization error:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeApp();
+
+    // Set up periodic update check (every 5 minutes)
+    const updateInterval = setInterval(() => {
+      backendService.checkForUpdates();
+    }, 5 * 60 * 1000);
+
+    return () => clearInterval(updateInterval);
   }, []);
 
   const loadProjectsFromStorage = async (forceRefresh = false) => {
@@ -55,6 +78,10 @@ const About = () => {
       setIsLoading(true);
       console.log('🔄 Force refreshing projects from Supabase...');
       
+      // Clear cache first
+      await backendService.clearAllCache();
+      
+      // Then load fresh data
       await loadProjectsFromStorage(true);
       alert('Projects refreshed from Supabase!');
       
@@ -128,7 +155,7 @@ const About = () => {
     }
   };
 
-  // Delete project - FIXED VERSION
+  // Delete project
   const deleteProject = async (projectId, event) => {
     if (!isOwner) return;
     event.stopPropagation();
@@ -167,7 +194,7 @@ const About = () => {
 
   // Improved image error handling
   const handleImageError = (e, project) => {
-    console.error('🖼️ Image failed to load:', project.src);
+    console.error('🖼 Image failed to load:', project.src);
     
     // Hide the broken image
     e.target.style.display = 'none';
@@ -277,14 +304,20 @@ const About = () => {
         {isOwner && (
           <div className="debug-panel">
             <details>
-              <summary>🔧 Debug Info (Local: {debugInfo?.localStorageCount} projects)</summary>
+              <summary>🔧 Debug Info (Cache: {debugInfo?.cacheVersion}, Age: {debugInfo?.cacheAge})</summary>
               <div className="debug-content">
-                <p><strong>Local Storage Projects:</strong> {debugInfo?.localStorageCount}</p>
+                <p><strong>Cache Version:</strong> {debugInfo?.cacheVersion}</p>
+                <p><strong>Last Updated:</strong> {debugInfo?.cacheTimestamp}</p>
+                <p><strong>Cache Age:</strong> {debugInfo?.cacheAge}</p>
+                <p><strong>Local Projects:</strong> {debugInfo?.localStorageCount}</p>
                 <p><strong>Project IDs:</strong> {debugInfo?.localStorageProjects?.map(p => p.id).join(', ') || 'None'}</p>
-                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                <div style={{ display: 'flex', gap: '10px', marginTop: '10px', flexWrap: 'wrap' }}>
                   <button onClick={updateDebugInfo} className="debug-refresh">Update Debug Info</button>
                   <button onClick={() => loadProjectsFromStorage(true)} className="debug-refresh">
                     🔄 Force Reload
+                  </button>
+                  <button onClick={clearCacheAndReload} className="debug-refresh">
+                    🧹 Clear Cache
                   </button>
                 </div>
               </div>
@@ -577,7 +610,7 @@ const About = () => {
                 {myProjects.length > 0 && (
                   <div className="management-info">
                     <p>💡 <strong>Tip:</strong> Select the category above before uploading</p>
-                    <p>🗑️ Click the × button on any project to remove it</p>
+                    <p>🗑 Click the × button on any project to remove it</p>
                     <p>🔄 Use the Refresh button above to sync with Supabase</p>
                   </div>
                 )}
@@ -756,17 +789,17 @@ const About = () => {
           </div>
         </div>
 
-        {/* Image Modal */}
+        {/* Image Modal - FIXED Z-INDEX ISSUE */}
         {selectedImage && (
-          <div className="modal" onClick={() => setSelectedImage(null)}>
-            <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <div className="modal-overlay" onClick={() => setSelectedImage(null)}>
+            <div className="modal-container" onClick={e => e.stopPropagation()}>
               <button 
-                className="close-btn"
+                className="modal-close-btn"
                 onClick={() => setSelectedImage(null)}
               >
                 ×
               </button>
-              <div className="modal-image-container">
+              <div className="modal-image-wrapper">
                 <img 
                   src={selectedImage.src} 
                   alt={selectedImage.title}
@@ -795,7 +828,7 @@ const About = () => {
                   }}
                 />
               </div>
-              <div className="modal-info">
+              <div className="modal-content">
                 <h3>{selectedImage.title}</h3>
                 <p>{selectedImage.description}</p>
                 <div className="modal-meta">
@@ -816,7 +849,7 @@ const About = () => {
                       setSelectedImage(null);
                     }}
                   >
-                    🗑️ Delete This Project
+                    🗑 Delete This Project
                   </button>
                 )}
               </div>
@@ -1960,34 +1993,37 @@ const About = () => {
           transform: translateY(-3px);
         }
 
-        /* Modal */
-        .modal {
+        /* FIXED Modal Styles - High z-index and scrollable */
+        .modal-overlay {
           position: fixed;
           top: 0;
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0, 0, 0, 0.8);
+          background: rgba(0, 0, 0, 0.9);
           display: flex;
           align-items: center;
           justify-content: center;
-          z-index: 1000;
+          z-index: 9999; /* Higher than navbar */
           padding: 20px;
-          backdrop-filter: blur(5px);
+          backdrop-filter: blur(10px);
+          overflow-y: auto;
         }
 
-        .modal-content {
+        .modal-container {
           background: white;
           border-radius: 20px;
-          max-width: 800px;
+          max-width: 900px;
           width: 100%;
           max-height: 90vh;
           overflow: hidden;
           position: relative;
           animation: modalSlideIn 0.3s ease-out;
+          display: flex;
+          flex-direction: column;
         }
 
-        .close-btn {
+        .modal-close-btn {
           position: absolute;
           top: 20px;
           right: 20px;
@@ -2006,37 +2042,43 @@ const About = () => {
           transition: all 0.3s ease;
         }
 
-        .close-btn:hover {
+        .modal-close-btn:hover {
           background: rgba(0, 0, 0, 0.9);
           transform: scale(1.1);
         }
 
-        .modal-image-container {
+        .modal-image-wrapper {
           width: 100%;
-          height: 400px;
+          max-height: 60vh;
           overflow: hidden;
           position: relative;
           background: #f8fafc;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
-        .modal-image-container img {
+        .modal-image-wrapper img {
           width: 100%;
-          height: 100%;
-          object-fit: cover;
+          height: auto;
+          max-height: 60vh;
+          object-fit: contain;
         }
 
-        .modal-info {
+        .modal-content {
           padding: 30px;
+          overflow-y: auto;
+          flex: 1;
         }
 
-        .modal-info h3 {
+        .modal-content h3 {
           font-size: 1.5rem;
           color: #1e293b;
           margin-bottom: 10px;
           font-weight: 700;
         }
 
-        .modal-info p {
+        .modal-content p {
           color: #64748b;
           margin-bottom: 20px;
           line-height: 1.6;
@@ -2073,6 +2115,8 @@ const About = () => {
           cursor: pointer;
           font-weight: 600;
           transition: all 0.3s ease;
+          width: 100%;
+          margin-top: 15px;
         }
 
         .delete-btn-modal:hover {
@@ -2147,26 +2191,25 @@ const About = () => {
 
           .cta-buttons {
             flex-direction: column;
-            align-items: center;
           }
 
-          .cta-btn {
-            width: 100%;
-            max-width: 300px;
+          .modal-container {
+            margin: 10px;
+            max-height: 95vh;
+          }
+
+          .modal-image-wrapper {
+            max-height: 50vh;
+          }
+
+          .modal-image-wrapper img {
+            max-height: 50vh;
           }
         }
 
         @media (max-width: 480px) {
-          .container {
-            padding: 0 15px;
-          }
-
           .main-title {
             font-size: 2rem;
-          }
-
-          .subtitle {
-            font-size: 1.1rem;
           }
 
           .about-text h2 {
@@ -2177,27 +2220,17 @@ const About = () => {
             font-size: 2rem;
           }
 
-          .section-header h2 {
-            font-size: 2rem;
-          }
-
-          .project-stats {
-            grid-template-columns: repeat(2, 1fr);
-          }
-
           .projects-grid {
             grid-template-columns: 1fr;
           }
 
-          .category-filter {
-            flex-direction: column;
-            align-items: center;
+          .modal-content {
+            padding: 20px;
           }
 
-          .filter-btn {
-            width: 100%;
-            max-width: 250px;
-            justify-content: center;
+          .modal-meta {
+            flex-direction: column;
+            align-items: flex-start;
           }
         }
       `}</style>
