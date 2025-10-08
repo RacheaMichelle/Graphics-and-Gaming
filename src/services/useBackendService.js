@@ -66,7 +66,7 @@ const useBackendService = () => {
 
       console.log('🔗 Public URL:', publicUrl);
 
-      // Save to projects table WITHOUT storage_path
+      // Save to projects table
       const projectData = {
         title: file.name.replace(/\.[^/.]+$/, ""),
         description: `Uploaded ${new Date().toLocaleDateString()}`,
@@ -188,10 +188,10 @@ const useBackendService = () => {
     }
   };
 
-  // Delete project from Supabase and local storage - FIXED VERSION
+  // Delete project from Supabase and local storage - UPDATED WITH DELETE POLICY FIX
   const deleteProject = async (projectId) => {
     try {
-      console.log('🗑️ Deleting project:', projectId);
+      console.log('🗑️ STARTING DELETE PROCESS FOR:', projectId);
       
       // Get current projects to find the one to delete
       const currentProjects = await loadProjects();
@@ -201,62 +201,104 @@ const useBackendService = () => {
         throw new Error('Project not found in local storage');
       }
 
-      console.log('📋 Project to delete:', projectToDelete);
+      console.log('📋 PROJECT TO DELETE:', projectToDelete);
 
-      // Delete from Supabase projects table if it has supabase_id
-      if (projectToDelete.supabase_id) {
-        console.log('🗂️ Deleting from Supabase database...');
-        const { error } = await supabase
-          .from('projects')
-          .delete()
-          .eq('id', projectToDelete.supabase_id);
+      // STEP 1: Verify project exists in database
+      console.log('🔍 STEP 1: Verifying project exists in Supabase...');
+      const { data: existingProject, error: fetchError } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('id', projectToDelete.supabase_id)
+        .single();
 
-        if (error) {
-          console.error('❌ Supabase delete error:', error);
-          throw new Error('Failed to delete from database: ' + error.message);
+      if (fetchError) {
+        console.error('❌ Project not found in Supabase:', fetchError);
+        throw new Error('Project not found in database');
+      }
+      
+      console.log('✅ Project exists in Supabase:', existingProject.id);
+
+      // STEP 2: Delete from Supabase projects table WITH DELETE POLICY
+      console.log('🗂️ STEP 2: Deleting from Supabase database...');
+      const { data: deleteResult, error: deleteError } = await supabase
+        .from('projects')
+        .delete()
+        .eq('id', projectToDelete.supabase_id)
+        .select();
+
+      if (deleteError) {
+        console.error('❌ Supabase delete error:', deleteError);
+        console.error('❌ Error details:', deleteError.details, deleteError.hint, deleteError.message);
+        
+        // Check if it's a policy error
+        if (deleteError.message.includes('policy') || deleteError.code === '42501') {
+          throw new Error('DELETE policy missing! Run: CREATE POLICY "Anyone can delete projects" ON projects FOR DELETE USING (true);');
         }
-        console.log('✅ Deleted from Supabase database');
+        
+        throw new Error('Failed to delete from database: ' + deleteError.message);
+      }
+      
+      console.log('✅ Database deletion result:', deleteResult);
+
+      // STEP 3: Verify deletion was successful
+      console.log('🔍 STEP 3: Verifying deletion...');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const { data: verifyData, error: verifyError } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('id', projectToDelete.supabase_id)
+        .single();
+
+      if (verifyError && verifyError.code === 'PGRST116') {
+        console.log('✅ VERIFICATION: Project successfully deleted from database');
+      } else if (verifyData) {
+        console.error('❌ VERIFICATION FAILED: Project still exists after deletion!', verifyData);
+        throw new Error('Project was not deleted from database - check RLS policies');
       }
 
-      // Try to delete from storage if we can determine the path
+      // STEP 4: Delete from storage
       if (projectToDelete.src) {
         try {
-          // Extract filename from URL and try to delete
           const urlParts = projectToDelete.src.split('/');
           const fileName = urlParts[urlParts.length - 1];
           const category = projectToDelete.category || 'graphic-design';
           const storagePath = `${category}/${fileName}`;
           
-          console.log('🖼️ Attempting to delete from storage:', storagePath);
+          console.log('🖼️ STEP 4: Deleting from storage:', storagePath);
           
-          const { error: storageError } = await supabase.storage
+          const { data: storageData, error: storageError } = await supabase.storage
             .from('project-images')
             .remove([storagePath]);
 
           if (storageError) {
-            console.warn('⚠️ Storage delete warning (may not exist):', storageError.message);
+            console.warn('⚠️ Storage delete warning:', storageError.message);
           } else {
-            console.log('✅ Deleted from storage');
+            console.log('✅ Storage deletion result:', storageData);
           }
         } catch (storageError) {
           console.warn('⚠️ Storage deletion attempt failed:', storageError.message);
         }
       }
 
-      // FORCE CLEAR LOCALSTORAGE AND RELOAD FRESH DATA
-      console.log('🧹 Force clearing cache and reloading...');
+      // STEP 5: Force clear cache and reload fresh data
+      console.log('🧹 STEP 5: Force clearing cache and reloading...');
       localStorage.removeItem('portfolio_permanent_storage');
       
       // Fetch fresh data from Supabase
-      const { data: freshProjects, error } = await supabase
+      console.log('🔄 Fetching fresh data from Supabase...');
+      const { data: freshProjects, error: freshError } = await supabase
         .from('projects')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('❌ Error fetching fresh data:', error);
-        throw error;
+      if (freshError) {
+        console.error('❌ Error fetching fresh data:', freshError);
+        throw freshError;
       }
+
+      console.log('📥 Fresh data from Supabase:', freshProjects?.length, 'projects');
+      console.log('📋 Fresh project IDs:', freshProjects?.map(p => p.id));
 
       // Transform and save fresh data
       const projects = (freshProjects || []).map(project => ({
@@ -272,13 +314,13 @@ const useBackendService = () => {
 
       localStorage.setItem('portfolio_permanent_storage', JSON.stringify(projects));
       
-      console.log('✅ Project deleted successfully. Fresh data loaded:', projects.length);
+      console.log('✅ BACKEND DELETE COMPLETED. Fresh data loaded:', projects.length);
       return { success: true, message: 'Project deleted successfully' };
       
     } catch (error) {
-      console.error('💥 Delete project error:', error);
+      console.error('💥 BACKEND DELETE ERROR:', error);
       
-      // Clear cache on error too
+      // Clear cache on error
       localStorage.removeItem('portfolio_permanent_storage');
       
       throw new Error('Failed to delete project: ' + error.message);
@@ -309,6 +351,65 @@ const useBackendService = () => {
     }
   };
 
+  // Test Supabase policies
+  const testPolicies = async () => {
+    try {
+      console.log('🧪 Testing Supabase policies...');
+      
+      // Test SELECT policy
+      const { data: selectData, error: selectError } = await supabase
+        .from('projects')
+        .select('count')
+        .limit(1);
+      
+      if (selectError) {
+        console.error('❌ SELECT policy test failed:', selectError);
+      } else {
+        console.log('✅ SELECT policy test passed');
+      }
+
+      // Test INSERT policy (create a test record then delete it)
+      const testProject = {
+        title: 'Test Policy Project',
+        description: 'Testing policies',
+        category: 'graphic-design',
+        image_url: 'https://example.com/test.jpg'
+      };
+
+      const { data: insertData, error: insertError } = await supabase
+        .from('projects')
+        .insert([testProject])
+        .select();
+
+      if (insertError) {
+        console.error('❌ INSERT policy test failed:', insertError);
+      } else {
+        console.log('✅ INSERT policy test passed');
+        // Clean up test record
+        await supabase.from('projects').delete().eq('id', insertData[0].id);
+      }
+
+      // Test DELETE policy
+      const { error: deleteError } = await supabase
+        .from('projects')
+        .delete()
+        .eq('id', 999999); // Non-existent ID to test policy without affecting data
+
+      if (deleteError && deleteError.message.includes('policy')) {
+        console.error('❌ DELETE policy test failed - Policy missing:', deleteError);
+        return { success: false, message: 'DELETE policy missing' };
+      } else {
+        console.log('✅ DELETE policy test passed');
+      }
+
+      return { success: true, message: 'All policy tests completed' };
+
+    } catch (error) {
+      console.error('💥 Policy test error:', error);
+      return { success: false, message: error.message };
+    }
+  };
+
   // Get debug information
   const getDebugInfo = () => {
     const cached = localStorage.getItem('portfolio_permanent_storage');
@@ -327,6 +428,7 @@ const useBackendService = () => {
     uploadFile, 
     deleteProject,
     testStorageConnection,
+    testPolicies,
     clearAllCache,
     getDebugInfo
   };
