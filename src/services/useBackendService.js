@@ -31,119 +31,90 @@ const useBackendService = () => {
     }
   };
 
-  // Upload file to Supabase Storage
-  const uploadFile = async (file, category) => {
-    try {
-      console.log('🚀 Starting file upload:', file.name, 'Category:', category);
-      console.log('File type:', file.type, 'File size:', file.size);
-      
-      // Validate file
-      if (!file || file.size === 0) {
-        throw new Error('File is empty or invalid');
-      }
-
-      // Test storage first
-      console.log('🧪 Testing storage before upload...');
-      await testStorageConnection();
-
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `${category}/${fileName}`;
-
-      console.log('📁 Uploading to path:', filePath);
-
-      // Upload to Supabase Storage with error handling
-      const { data, error } = await supabase.storage
-        .from('project-images')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (error) {
-        console.error('❌ Storage upload error:', error);
-        
-        // More specific error messages
-        if (error.message.includes('bucket')) {
-          throw new Error('Storage bucket not found. Please check bucket configuration.');
-        } else if (error.message.includes('row-level security')) {
-          throw new Error('Storage permissions issue. Please check RLS policies.');
-        } else if (error.message.includes('JWT')) {
-          throw new Error('Authentication issue. Please check Supabase configuration.');
-        } else {
-          throw new Error('Upload failed: ' + error.message);
-        }
-      }
-
-      console.log('✅ File uploaded successfully:', data);
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('project-images')
-        .getPublicUrl(filePath);
-
-      console.log('🔗 Public URL:', publicUrl);
-
-      // Save to projects table
-      const projectData = {
-        title: file.name.replace(/\.[^/.]+$/, ""),
-        description: `Uploaded ${new Date().toLocaleDateString()}`,
-        category: category,
-        image_url: publicUrl,
-        storage_path: filePath
-      };
-
-      console.log('💾 Saving to projects table:', projectData);
-
-      const { data: project, error: projectError } = await supabase
-        .from('projects')
-        .insert([projectData])
-        .select();
-
-      if (projectError) {
-        console.error('❌ Project save error:', projectError);
-        
-        // Try to delete the uploaded file if project save fails
-        try {
-          await supabase.storage
-            .from('project-images')
-            .remove([filePath]);
-          console.log('🗑️ Cleaned up uploaded file after project save failure');
-        } catch (deleteError) {
-          console.error('❌ Failed to cleanup uploaded file:', deleteError);
-        }
-        
-        throw projectError;
-      }
-
-      console.log('✅ Project saved to database:', project);
-
-      const result = {
-        id: project[0].id,
-        supabase_id: project[0].id,
-        src: publicUrl,
-        category,
-        title: projectData.title,
-        description: projectData.description,
-        uploadDate: new Date().toLocaleDateString(),
-        fileName: file.name,
-        storage_path: filePath
-      };
-
-      console.log('🎉 Upload completed successfully:', result);
-      
-      // Update localStorage immediately
-      const currentProjects = await loadProjects();
-      const updatedProjects = [result, ...currentProjects];
-      localStorage.setItem('portfolio_permanent_storage', JSON.stringify(updatedProjects));
-      
-      return result;
-
-    } catch (error) {
-      console.error('💥 Upload failed completely:', error);
-      throw new Error('File upload failed: ' + error.message);
+// Upload file to Supabase Storage
+const uploadFile = async (file, category) => {
+  try {
+    console.log('🚀 Starting file upload:', file.name, 'Category:', category);
+    
+    // Validate file
+    if (!file || file.size === 0) {
+      throw new Error('File is empty or invalid');
     }
-  };
+
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `${category}/${fileName}`;
+
+    console.log('📁 Uploading to path:', filePath);
+
+    // Upload to Supabase Storage
+    const { data, error } = await supabase.storage
+      .from('project-images')
+      .upload(filePath, file);
+
+    if (error) {
+      console.error('❌ Storage upload error:', error);
+      throw new Error('Storage upload failed: ' + error.message);
+    }
+
+    console.log('✅ File uploaded successfully:', data);
+
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from('project-images')
+      .getPublicUrl(filePath);
+
+    console.log('🔗 Public URL:', publicUrl);
+
+    // Save to projects table WITHOUT storage_path
+    const projectData = {
+      title: file.name.replace(/\.[^/.]+$/, ""),
+      description: `Uploaded ${new Date().toLocaleDateString()}`,
+      category: category,
+      image_url: publicUrl
+      // Removed storage_path to avoid the error
+    };
+
+    console.log('💾 Saving to projects table:', projectData);
+
+    const { data: project, error: projectError } = await supabase
+      .from('projects')
+      .insert([projectData])
+      .select();
+
+    if (projectError) {
+      console.error('❌ Project save error:', projectError);
+      throw projectError;
+    }
+
+    console.log('✅ Project saved to database:', project);
+
+    const result = {
+      id: project[0].id,
+      supabase_id: project[0].id,
+      src: publicUrl,
+      category,
+      title: projectData.title,
+      description: projectData.description,
+      uploadDate: new Date().toLocaleDateString(),
+      fileName: file.name
+      // Removed storage_path from result too
+    };
+
+    console.log('🎉 Upload completed successfully:', result);
+    
+    // Update localStorage immediately
+    const currentProjects = await loadProjects();
+    const updatedProjects = [result, ...currentProjects];
+    localStorage.setItem('portfolio_permanent_storage', JSON.stringify(updatedProjects));
+    
+    return result;
+
+  } catch (error) {
+    console.error('💥 Upload failed:', error);
+    throw new Error('File upload failed: ' + error.message);
+  }
+};
 
   // Save projects (for bulk operations)
   const saveProjects = async (projects) => {
