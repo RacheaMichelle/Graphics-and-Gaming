@@ -5,13 +5,26 @@ const Portfolio = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedProject, setSelectedProject] = useState(null);
 
-  // Load projects from localStorage (same as About page)
+  // Load projects from localStorage (same storage as About page)
   useEffect(() => {
     const loadProjects = () => {
       try {
         const savedProjects = localStorage.getItem('portfolio_permanent_storage');
+        console.log('Loaded from localStorage:', savedProjects);
+        
         if (savedProjects) {
-          setProjects(JSON.parse(savedProjects));
+          const parsedProjects = JSON.parse(savedProjects);
+          console.log('Parsed projects:', parsedProjects);
+          
+          // Ensure all projects have valid data
+          const validProjects = parsedProjects.filter(project => 
+            project && 
+            project.src && 
+            (project.src.startsWith('http') || project.src.startsWith('data:image'))
+          );
+          
+          setProjects(validProjects);
+          console.log('Valid projects:', validProjects);
         }
       } catch (error) {
         console.error('Error loading projects:', error);
@@ -20,16 +33,29 @@ const Portfolio = () => {
 
     loadProjects();
     
-    // Listen for storage changes (if projects are updated in About page)
-    const handleStorageChange = () => {
-      loadProjects();
+    // Listen for storage changes (when About page uploads new images)
+    const handleStorageChange = (e) => {
+      if (e.key === 'portfolio_permanent_storage') {
+        loadProjects();
+      }
     };
     
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    
+    // Also check periodically for changes
+    const interval = setInterval(loadProjects, 2000);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
   }, []);
 
-  // Categories - FIXED: using 'projects' instead of 'myProjects'
+  // Debug: Log current projects
+  useEffect(() => {
+    console.log('Current projects in Portfolio:', projects);
+  }, [projects]);
+
   const categories = [
     { id: 'all', name: 'All Projects', icon: '📁', count: projects.length },
     { id: 'graphic-design', name: 'Graphic Design', icon: '🎨', count: projects.filter(p => p.category === 'graphic-design').length },
@@ -78,6 +104,11 @@ const Portfolio = () => {
         <div className="section-header">
           <h2>Creative Portfolio</h2>
           <p>Explore our latest projects and creative work across different domains</p>
+          
+          {/* Debug info - remove in production */}
+          <div style={{fontSize: '12px', color: '#666', marginTop: '10px'}}>
+            Loaded {projects.length} projects • {filteredProjects.length} filtered
+          </div>
         </div>
 
         {/* Portfolio Stats */}
@@ -124,7 +155,19 @@ const Portfolio = () => {
                 onClick={() => setSelectedProject(project)}
               >
                 <div className="portfolio-image">
-                  <img src={project.src} alt={project.title} />
+                  <img 
+                    src={project.src} 
+                    alt={project.title}
+                    onError={(e) => {
+                      console.error('Image failed to load:', project.src);
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                  <div className="image-fallback" style={{display: 'none'}}>
+                    <span>📷</span>
+                    <p>Image not available</p>
+                  </div>
                   <div className="portfolio-overlay">
                     <div className="portfolio-info">
                       <h4>{project.title}</h4>
@@ -140,14 +183,27 @@ const Portfolio = () => {
           ) : (
             <div className="empty-portfolio">
               <div className="empty-icon">🎨</div>
-              <h3>No Projects Yet</h3>
-              <p>Our portfolio is being updated with amazing work. Check back soon!</p>
-              <button 
-                className="cta-btn"
-                onClick={() => scrollToSection('about')}
-              >
-                View Our Services
-              </button>
+              <h3>No Projects Displayed</h3>
+              <p>
+                {projects.length > 0 
+                  ? `No projects found in "${categories.find(cat => cat.id === selectedCategory)?.name}" category` 
+                  : "Upload projects in the About page to see them here"
+                }
+              </p>
+              <div className="empty-actions">
+                <button 
+                  className="cta-btn"
+                  onClick={() => scrollToSection('about')}
+                >
+                  Go to About Page to Upload
+                </button>
+                <button 
+                  className="cta-btn secondary"
+                  onClick={() => window.location.reload()}
+                >
+                  Refresh Page
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -167,7 +223,7 @@ const Portfolio = () => {
               className="btn-secondary"
               onClick={() => scrollToSection('about')}
             >
-              Learn More
+              Upload More Work
             </button>
           </div>
         </div>
@@ -183,7 +239,23 @@ const Portfolio = () => {
                 ×
               </button>
               <div className="modal-image">
-                <img src={selectedProject.src} alt={selectedProject.title} />
+                <img 
+                  src={selectedProject.src} 
+                  alt={selectedProject.title}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    const fallback = document.createElement('div');
+                    fallback.className = 'modal-image-fallback';
+                    fallback.innerHTML = `
+                      <div style="padding: 40px; text-align: center; color: #666;">
+                        <span style="font-size: 3rem;">📷</span>
+                        <p>Image not available</p>
+                        <p><small>${selectedProject.title}</small></p>
+                      </div>
+                    `;
+                    e.target.parentNode.appendChild(fallback);
+                  }}
+                />
               </div>
               <div className="modal-info">
                 <h3>{selectedProject.title}</h3>
@@ -192,7 +264,7 @@ const Portfolio = () => {
                   <span className="category-tag-large">
                     {getCategoryIcon(selectedProject.category)} {getCategoryName(selectedProject.category)}
                   </span>
-                  <span className="modal-date">Created: {selectedProject.uploadDate}</span>
+                  <span className="modal-date">Created: {selectedProject.uploadDate || 'Recently'}</span>
                 </div>
                 <button 
                   className="btn-primary"
@@ -213,6 +285,7 @@ const Portfolio = () => {
         .portfolio {
           padding: 80px 0;
           background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+          min-height: 80vh;
         }
 
         .container {
@@ -366,6 +439,27 @@ const Portfolio = () => {
           transform: scale(1.05);
         }
 
+        .image-fallback {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 2rem;
+        }
+
+        .image-fallback p {
+          font-size: 1rem;
+          margin-top: 10px;
+          opacity: 0.8;
+        }
+
         .portfolio-overlay {
           position: absolute;
           top: 0;
@@ -411,6 +505,9 @@ const Portfolio = () => {
           grid-column: 1 / -1;
           text-align: center;
           padding: 80px 20px;
+          background: white;
+          border-radius: 20px;
+          border: 2px dashed #e2e8f0;
         }
 
         .empty-icon {
@@ -429,6 +526,13 @@ const Portfolio = () => {
           color: #64748b;
           margin-bottom: 30px;
           font-size: 1.1rem;
+        }
+
+        .empty-actions {
+          display: flex;
+          gap: 15px;
+          justify-content: center;
+          flex-wrap: wrap;
         }
 
         /* CTA Section */
@@ -499,6 +603,15 @@ const Portfolio = () => {
           transform: translateY(-2px);
         }
 
+        .cta-btn.secondary {
+          background: #64748b;
+          color: white;
+        }
+
+        .cta-btn.secondary:hover {
+          background: #475569;
+        }
+
         /* Project Modal */
         .project-modal {
           position: fixed;
@@ -547,6 +660,7 @@ const Portfolio = () => {
           width: 100%;
           height: 400px;
           overflow: hidden;
+          position: relative;
         }
 
         .modal-image img {
@@ -580,13 +694,12 @@ const Portfolio = () => {
           gap: 10px;
         }
 
-        .modal-category {
+        .category-tag-large {
           background: #667eea;
           color: white;
-          padding: 6px 12px;
+          padding: 8px 16px;
           border-radius: 20px;
-          font-size: 0.9rem;
-          font-weight: 500;
+          font-weight: 600;
         }
 
         .modal-date {
@@ -614,7 +727,7 @@ const Portfolio = () => {
             justify-content: center;
           }
 
-          .cta-buttons {
+          .cta-buttons, .empty-actions {
             flex-direction: column;
           }
 
