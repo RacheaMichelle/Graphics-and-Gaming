@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import useBackendService from '../services/useBackendService';
 
-const Portfolio = () => {
+const Services = () => {
   const [projects, setProjects] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedProject, setSelectedProject] = useState(null);
@@ -9,12 +9,12 @@ const Portfolio = () => {
 
   const backendService = useBackendService();
 
-  // Load projects from backend service
+  // Load projects from backend service - FIXED: removed backendService dependency
   useEffect(() => {
     const loadProjects = async () => {
       try {
         setIsLoading(true);
-        console.log('🔄 Loading projects for Portfolio...');
+        console.log('🔄 Loading projects for Services...');
         
         const loadedProjects = await backendService.loadProjects();
         console.log('✅ Projects loaded:', loadedProjects);
@@ -51,7 +51,7 @@ const Portfolio = () => {
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [backendService]);
+  }, []); // REMOVED backendService dependency to prevent infinite loops
 
   const categories = [
     { id: 'all', name: 'All Projects', icon: '📁', count: projects.length },
@@ -124,11 +124,11 @@ const Portfolio = () => {
   };
 
   return (
-    <section className="portfolio" id="portfolio">
+    <section className="services" id="services">
       <div className="container">
         <div className="section-header">
-          <h2>Creative Portfolio</h2>
-          <p>Explore our latest projects and creative work across different domains</p>
+          <h2>Our Services</h2>
+          <p>Professional creative services to bring your ideas to life</p>
           
           {/* Debug info - remove in production */}
           <div style={{fontSize: '12px', color: '#666', marginTop: '10px'}}>
@@ -140,112 +140,174 @@ const Portfolio = () => {
         {isLoading && (
           <div className="loading-state">
             <div className="loading-spinner"></div>
-            <p>Loading portfolio...</p>
+            <p>Loading services...</p>
           </div>
         )}
 
-        {/* Portfolio Stats */}
+        {/* Services Grid */}
+        {!isLoading && (
+          <div className="services-grid">
+            <div className="service-card">
+              <div className="service-icon">🎨</div>
+              <h3>Graphic Design</h3>
+              <ul className="service-features">
+                <li>Logo & Brand Identity</li>
+                <li>Business Cards & Flyers</li>
+                <li>Social Media Graphics</li>
+                <li>Posters & Banners</li>
+                <li>Book Covers & Magazines</li>
+                <li>Receipts & Stickers</li>
+              </ul>
+              <div className="service-footer">
+                <span className="price">Starting at $50</span>
+              </div>
+            </div>
+
+            <div className="service-card featured">
+              <div className="service-icon">📸</div>
+              <h3>Photography</h3>
+              <ul className="service-features">
+                <li>Wedding & Events</li>
+                <li>Photo shoot Sessions</li>
+                <li>Product Photography</li>
+                <li>Commercial Shoots</li>
+              </ul>
+              <div className="service-footer">
+                <span className="price">Starting at $100</span>
+              </div>
+            </div>
+
+            <div className="service-card">
+              <div className="service-icon">🎬</div>
+              <h3>Motion Picture</h3>
+              <ul className="service-features">
+                <li>Business Advertisements</li>
+                <li>Short Films</li>
+                <li>Event Coverage</li>
+                <li>Social Media Videos</li>
+              </ul>
+              <div className="service-footer">
+                <span className="price">Starting at $200</span>
+              </div>
+            </div>
+
+            <div className="service-card featured">
+              <div className="service-icon">🎵</div>
+              <h3>Music Artworks</h3>
+              <ul className="service-features">
+                <li>Cover Art Design</li>
+                <li>Album & Single Branding</li>
+                <li>Promotional Banners</li>
+                <li>Visual Concepts for Artists</li>
+              </ul>
+              <div className="service-footer">
+                <span className="price">Starting at $75</span>
+              </div>
+            </div>
+
+            <div className="service-card">
+              <div className="service-icon">🎮</div>
+              <h3>Gaming Zone</h3>
+              <ul className="service-features">
+                <li>FIFA Tournaments</li>
+                <li>Mortal Kombat Battles</li>
+                <li>Multiplayer Challenges</li>
+                <li>Car Racing Challenges</li>
+              </ul>
+              <div className="service-footer">
+                <span className="price">Starting at $30</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Portfolio Preview Section */}
         {!isLoading && projects.length > 0 && (
-          <div className="portfolio-stats">
-            <div className="stat-item">
-              <span className="stat-number">{projects.length}</span>
-              <span className="stat-label">Projects Completed</span>
+          <div className="portfolio-preview">
+            <div className="preview-header">
+              <h3>Recent Work</h3>
+              <p>Check out some of our latest projects</p>
             </div>
-            <div className="stat-item">
-              <span className="stat-number">{categories.filter(cat => cat.id !== 'all').filter(cat => cat.count > 0).length}</span>
-              <span className="stat-label">Creative Domains</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-number">100%</span>
-              <span className="stat-label">Client Satisfaction</span>
-            </div>
-          </div>
-        )}
 
-        {/* Category Filter */}
-        {!isLoading && (
-          <div className="portfolio-filter">
-            {categories.map(category => (
-              <button
-                key={category.id}
-                className={`filter-btn ${selectedCategory === category.id ? 'active' : ''}`}
-                onClick={() => setSelectedCategory(category.id)}
-                disabled={category.count === 0 && category.id !== 'all'}
-              >
-                <span className="filter-icon">{category.icon}</span>
-                {category.name}
-                <span className="project-count">({category.count})</span>
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Portfolio Grid */}
-        {!isLoading && (
-          <div className="portfolio-grid">
-            {filteredProjects.length > 0 ? (
-              filteredProjects.map(project => (
-                <div 
-                  key={project.id} 
-                  className="portfolio-item"
-                  onClick={() => setSelectedProject(project)}
+            {/* Category Filter */}
+            <div className="portfolio-filter">
+              {categories.map(category => (
+                <button
+                  key={category.id}
+                  className={`filter-btn ${selectedCategory === category.id ? 'active' : ''}`}
+                  onClick={() => setSelectedCategory(category.id)}
+                  disabled={category.count === 0 && category.id !== 'all'}
                 >
-                  <div className="portfolio-image">
-                    <img 
-                      src={project.src} 
-                      alt={project.title}
-                      loading="lazy"
-                      onError={(e) => handleImageError(e, project)}
-                    />
-                    <div className="image-fallback">
-                      <span>📷</span>
-                      <p>Image not available</p>
-                      <small>{project.title}</small>
-                    </div>
-                    <div className="portfolio-overlay">
-                      <div className="portfolio-info">
-                        <h4>{project.title}</h4>
-                        <p>{project.description}</p>
-                        <span className="category-tag">
-                          {getCategoryIcon(project.category)} {getCategoryName(project.category)}
-                        </span>
+                  <span className="filter-icon">{category.icon}</span>
+                  {category.name}
+                  <span className="project-count">({category.count})</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Portfolio Grid */}
+            <div className="portfolio-grid">
+              {filteredProjects.length > 0 ? (
+                filteredProjects.slice(0, 6).map(project => (
+                  <div 
+                    key={project.id} 
+                    className="portfolio-item"
+                    onClick={() => setSelectedProject(project)}
+                  >
+                    <div className="portfolio-image">
+                      <img 
+                        src={project.src} 
+                        alt={project.title}
+                        loading="lazy"
+                        onError={(e) => handleImageError(e, project)}
+                      />
+                      <div className="image-fallback">
+                        <span>📷</span>
+                        <p>Image not available</p>
+                        <small>{project.title}</small>
+                      </div>
+                      <div className="portfolio-overlay">
+                        <div className="portfolio-info">
+                          <h4>{project.title}</h4>
+                          <p>{project.description}</p>
+                          <span className="category-tag">
+                            {getCategoryIcon(project.category)} {getCategoryName(project.category)}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
+                ))
+              ) : (
+                <div className="empty-portfolio">
+                  <div className="empty-icon">
+                    {selectedCategory === 'all' ? '📁' : 
+                     categories.find(cat => cat.id === selectedCategory)?.icon}
+                  </div>
+                  <h3>
+                    {selectedCategory === 'all' 
+                      ? "No Projects to Display" 
+                      : `No ${categories.find(cat => cat.id === selectedCategory)?.name} Projects`
+                    }
+                  </h3>
+                  <p>
+                    {projects.length > 0 
+                      ? `No projects found in "${categories.find(cat => cat.id === selectedCategory)?.name}" category` 
+                      : "Check back later for new projects"
+                    }
+                  </p>
                 </div>
-              ))
-            ) : (
-              <div className="empty-portfolio">
-                <div className="empty-icon">
-                  {selectedCategory === 'all' ? '📁' : 
-                   categories.find(cat => cat.id === selectedCategory)?.icon}
-                </div>
-                <h3>
-                  {selectedCategory === 'all' 
-                    ? "No Projects in Portfolio" 
-                    : `No ${categories.find(cat => cat.id === selectedCategory)?.name} Projects`
-                  }
-                </h3>
-                <p>
-                  {projects.length > 0 
-                    ? `No projects found in "${categories.find(cat => cat.id === selectedCategory)?.name}" category` 
-                    : "Upload projects in the About page to see them here"
-                  }
-                </p>
-                <div className="empty-actions">
-                  <button 
-                    className="cta-btn"
-                    onClick={() => scrollToSection('about')}
-                  >
-                    Go to About Page to Upload
-                  </button>
-                  <button 
-                    className="cta-btn secondary"
-                    onClick={() => window.location.reload()}
-                  >
-                    Refresh Page
-                  </button>
-                </div>
+              )}
+            </div>
+
+            {filteredProjects.length > 6 && (
+              <div className="view-more">
+                <button 
+                  className="btn-primary"
+                  onClick={() => scrollToSection('portfolio')}
+                >
+                  View All Projects
+                </button>
               </div>
             )}
           </div>
@@ -253,21 +315,21 @@ const Portfolio = () => {
 
         {/* Call to Action */}
         {!isLoading && (
-          <div className="portfolio-cta">
-            <h3>Ready to Start Your Project?</h3>
-            <p>Let's create something amazing together. Get in touch to discuss your ideas.</p>
+          <div className="services-cta">
+            <h3>Ready to Get Started?</h3>
+            <p>Let's discuss your project and bring your creative vision to life with our professional services.</p>
             <div className="cta-buttons">
               <button 
                 className="btn-primary"
                 onClick={() => scrollToSection('contact')}
               >
-                Start a Project
+                Start Your Project
               </button>
               <button 
                 className="btn-secondary"
-                onClick={() => scrollToSection('about')}
+                onClick={() => scrollToSection('portfolio')}
               >
-                Upload More Work
+                View Full Portfolio
               </button>
             </div>
           </div>
@@ -315,7 +377,7 @@ const Portfolio = () => {
       </div>
 
       <style jsx>{`
-        .portfolio {
+        .services {
           padding: 80px 0;
           background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
           min-height: 80vh;
@@ -377,40 +439,104 @@ const Portfolio = () => {
           font-size: 1.1rem;
         }
 
-        /* Portfolio Stats */
-        .portfolio-stats {
+        /* Services Grid */
+        .services-grid {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
           gap: 30px;
-          margin-bottom: 50px;
+          margin-bottom: 80px;
         }
 
-        .stat-item {
+        .service-card {
           background: white;
-          padding: 30px 20px;
-          border-radius: 16px;
-          text-align: center;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+          padding: 40px 30px;
+          border-radius: 20px;
+          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
           border: 1px solid #e2e8f0;
-          transition: transform 0.3s ease;
+          transition: all 0.3s ease;
+          text-align: center;
+          position: relative;
         }
 
-        .stat-item:hover {
-          transform: translateY(-5px);
+        .service-card:hover {
+          transform: translateY(-10px);
+          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
         }
 
-        .stat-number {
-          display: block;
-          font-size: 2.5rem;
+        .service-card.featured {
+          border: 2px solid #667eea;
+          transform: scale(1.05);
+        }
+
+        .service-card.featured:hover {
+          transform: scale(1.05) translateY(-10px);
+        }
+
+        .service-icon {
+          font-size: 3rem;
+          margin-bottom: 20px;
+        }
+
+        .service-card h3 {
+          font-size: 1.5rem;
+          color: #1e293b;
+          margin-bottom: 20px;
+          font-weight: 700;
+        }
+
+        .service-features {
+          list-style: none;
+          padding: 0;
+          margin: 0 0 25px 0;
+          text-align: left;
+        }
+
+        .service-features li {
+          padding: 8px 0;
+          color: #64748b;
+          position: relative;
+          padding-left: 20px;
+        }
+
+        .service-features li:before {
+          content: '✓';
+          position: absolute;
+          left: 0;
+          color: #10b981;
+          font-weight: bold;
+        }
+
+        .service-footer {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .price {
+          font-size: 1.3rem;
           font-weight: 700;
           color: #667eea;
-          margin-bottom: 8px;
         }
 
-        .stat-label {
+        /* Portfolio Preview */
+        .portfolio-preview {
+          margin-bottom: 80px;
+        }
+
+        .preview-header {
+          text-align: center;
+          margin-bottom: 40px;
+        }
+
+        .preview-header h3 {
+          font-size: 2.2rem;
+          color: #1e293b;
+          margin-bottom: 12px;
+        }
+
+        .preview-header p {
           color: #64748b;
-          font-size: 0.95rem;
-          font-weight: 500;
+          font-size: 1.1rem;
         }
 
         /* Portfolio Filter */
@@ -418,7 +544,7 @@ const Portfolio = () => {
           display: flex;
           justify-content: center;
           gap: 12px;
-          margin-bottom: 50px;
+          margin-bottom: 40px;
           flex-wrap: wrap;
         }
 
@@ -461,9 +587,9 @@ const Portfolio = () => {
         /* Portfolio Grid */
         .portfolio-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-          gap: 30px;
-          margin-bottom: 60px;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 25px;
+          margin-bottom: 40px;
         }
 
         .portfolio-item {
@@ -483,7 +609,7 @@ const Portfolio = () => {
         .portfolio-image {
           position: relative;
           width: 100%;
-          height: 250px;
+          height: 200px;
           overflow: hidden;
         }
 
@@ -541,7 +667,7 @@ const Portfolio = () => {
           background: linear-gradient(transparent 40%, rgba(0, 0, 0, 0.8));
           display: flex;
           align-items: flex-end;
-          padding: 20px;
+          padding: 15px;
           opacity: 0;
           transition: opacity 0.3s ease;
         }
@@ -552,23 +678,23 @@ const Portfolio = () => {
 
         .portfolio-info h4 {
           color: white;
-          margin-bottom: 8px;
-          font-size: 1.2rem;
+          margin-bottom: 6px;
+          font-size: 1.1rem;
         }
 
         .portfolio-info p {
           color: #e2e8f0;
-          margin: 0 0 12px 0;
-          font-size: 0.9rem;
+          margin: 0 0 10px 0;
+          font-size: 0.85rem;
           line-height: 1.4;
         }
 
         .category-tag {
           background: rgba(255, 255, 255, 0.2);
           color: white;
-          padding: 4px 12px;
-          border-radius: 20px;
-          font-size: 0.8rem;
+          padding: 4px 10px;
+          border-radius: 15px;
+          font-size: 0.75rem;
           font-weight: 500;
         }
 
@@ -576,39 +702,37 @@ const Portfolio = () => {
         .empty-portfolio {
           grid-column: 1 / -1;
           text-align: center;
-          padding: 80px 20px;
+          padding: 60px 20px;
           background: white;
-          border-radius: 20px;
+          border-radius: 16px;
           border: 2px dashed #e2e8f0;
         }
 
         .empty-icon {
-          font-size: 4rem;
-          margin-bottom: 20px;
+          font-size: 3rem;
+          margin-bottom: 15px;
           opacity: 0.5;
         }
 
         .empty-portfolio h3 {
           color: #1e293b;
-          margin-bottom: 12px;
-          font-size: 1.5rem;
+          margin-bottom: 10px;
+          font-size: 1.3rem;
         }
 
         .empty-portfolio p {
           color: #64748b;
-          margin-bottom: 30px;
-          font-size: 1.1rem;
+          margin-bottom: 20px;
+          font-size: 1rem;
         }
 
-        .empty-actions {
-          display: flex;
-          gap: 15px;
-          justify-content: center;
-          flex-wrap: wrap;
+        /* View More */
+        .view-more {
+          text-align: center;
         }
 
         /* CTA Section */
-        .portfolio-cta {
+        .services-cta {
           background: white;
           padding: 60px 40px;
           border-radius: 20px;
@@ -617,13 +741,13 @@ const Portfolio = () => {
           border: 1px solid #e2e8f0;
         }
 
-        .portfolio-cta h3 {
+        .services-cta h3 {
           font-size: 2rem;
           color: #1e293b;
           margin-bottom: 16px;
         }
 
-        .portfolio-cta p {
+        .services-cta p {
           color: #64748b;
           font-size: 1.1rem;
           margin-bottom: 30px;
@@ -639,7 +763,7 @@ const Portfolio = () => {
           flex-wrap: wrap;
         }
 
-        .btn-primary, .btn-secondary, .cta-btn {
+        .btn-primary, .btn-secondary {
           padding: 14px 28px;
           border: none;
           border-radius: 12px;
@@ -647,18 +771,14 @@ const Portfolio = () => {
           font-size: 1rem;
           cursor: pointer;
           transition: all 0.3s ease;
-          text-decoration: none;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
         }
 
-        .btn-primary, .cta-btn {
+        .btn-primary {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
         }
 
-        .btn-primary:hover, .cta-btn:hover {
+        .btn-primary:hover {
           transform: translateY(-2px);
           box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
         }
@@ -673,15 +793,6 @@ const Portfolio = () => {
           background: #667eea;
           color: white;
           transform: translateY(-2px);
-        }
-
-        .cta-btn.secondary {
-          background: #64748b;
-          color: white;
-        }
-
-        .cta-btn.secondary:hover {
-          background: #475569;
         }
 
         /* Project Modal */
@@ -703,7 +814,7 @@ const Portfolio = () => {
         .modal-content {
           background: white;
           border-radius: 20px;
-          max-width: 800px;
+          max-width: 600px;
           width: 100%;
           max-height: 90vh;
           overflow: auto;
@@ -749,7 +860,7 @@ const Portfolio = () => {
 
         .modal-image {
           width: 100%;
-          height: 400px;
+          height: 300px;
           overflow: hidden;
           position: relative;
         }
@@ -769,11 +880,11 @@ const Portfolio = () => {
         }
 
         .modal-info {
-          padding: 30px;
+          padding: 25px;
         }
 
         .modal-info h3 {
-          font-size: 1.8rem;
+          font-size: 1.6rem;
           color: #1e293b;
           margin-bottom: 12px;
         }
@@ -788,7 +899,7 @@ const Portfolio = () => {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 25px;
+          margin-bottom: 20px;
           flex-wrap: wrap;
           gap: 10px;
         }
@@ -807,9 +918,16 @@ const Portfolio = () => {
         }
 
         @media (max-width: 768px) {
-          .portfolio-stats {
+          .services-grid {
             grid-template-columns: 1fr;
-            gap: 20px;
+          }
+
+          .service-card.featured {
+            transform: none;
+          }
+
+          .service-card.featured:hover {
+            transform: translateY(-10px);
           }
 
           .portfolio-grid {
@@ -826,7 +944,7 @@ const Portfolio = () => {
             justify-content: center;
           }
 
-          .cta-buttons, .empty-actions {
+          .cta-buttons {
             flex-direction: column;
           }
 
@@ -836,7 +954,7 @@ const Portfolio = () => {
         }
 
         @media (max-width: 480px) {
-          .portfolio {
+          .services {
             padding: 60px 0;
           }
 
@@ -858,4 +976,4 @@ const Portfolio = () => {
   );
 };
 
-export default Portfolio;
+export default Services;
