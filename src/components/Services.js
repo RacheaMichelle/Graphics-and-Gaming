@@ -1,33 +1,38 @@
 import React, { useState, useEffect } from 'react';
+import useBackendService from '../services/useBackendService';
 
 const Portfolio = () => {
   const [projects, setProjects] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedProject, setSelectedProject] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load projects from localStorage (same storage as About page)
+  const backendService = useBackendService();
+
+  // Load projects from backend service
   useEffect(() => {
-    const loadProjects = () => {
+    const loadProjects = async () => {
       try {
-        const savedProjects = localStorage.getItem('portfolio_permanent_storage');
-        console.log('Loaded from localStorage:', savedProjects);
+        setIsLoading(true);
+        console.log('🔄 Loading projects for Portfolio...');
         
-        if (savedProjects) {
-          const parsedProjects = JSON.parse(savedProjects);
-          console.log('Parsed projects:', parsedProjects);
-          
-          // Ensure all projects have valid data
-          const validProjects = parsedProjects.filter(project => 
-            project && 
-            project.src && 
-            (project.src.startsWith('http') || project.src.startsWith('data:image'))
-          );
-          
-          setProjects(validProjects);
-          console.log('Valid projects:', validProjects);
-        }
+        const loadedProjects = await backendService.loadProjects();
+        console.log('✅ Projects loaded:', loadedProjects);
+        
+        // Ensure all projects have valid data
+        const validProjects = loadedProjects.filter(project => 
+          project && 
+          project.src && 
+          (project.src.startsWith('http') || project.src.startsWith('data:image'))
+        );
+        
+        setProjects(validProjects);
+        console.log('✅ Valid projects:', validProjects.length);
       } catch (error) {
-        console.error('Error loading projects:', error);
+        console.error('❌ Error loading projects:', error);
+        setProjects([]);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -36,25 +41,17 @@ const Portfolio = () => {
     // Listen for storage changes (when About page uploads new images)
     const handleStorageChange = (e) => {
       if (e.key === 'portfolio_permanent_storage') {
+        console.log('📦 Storage changed, reloading projects...');
         loadProjects();
       }
     };
     
     window.addEventListener('storage', handleStorageChange);
     
-    // Also check periodically for changes
-    const interval = setInterval(loadProjects, 2000);
-    
     return () => {
       window.removeEventListener('storage', handleStorageChange);
-      clearInterval(interval);
     };
-  }, []);
-
-  // Debug: Log current projects
-  useEffect(() => {
-    console.log('Current projects in Portfolio:', projects);
-  }, [projects]);
+  }, [backendService]);
 
   const categories = [
     { id: 'all', name: 'All Projects', icon: '📁', count: projects.length },
@@ -98,6 +95,34 @@ const Portfolio = () => {
     }
   };
 
+  const handleImageError = (e, project) => {
+    console.error('🖼️ Image failed to load:', project.src);
+    e.target.style.display = 'none';
+    
+    // Find and show fallback
+    const fallback = e.target.nextElementSibling;
+    if (fallback && fallback.classList.contains('image-fallback')) {
+      fallback.style.display = 'flex';
+    }
+  };
+
+  const handleModalImageError = (e, project) => {
+    console.error('🖼️ Modal image failed to load:', project.src);
+    e.target.style.display = 'none';
+    
+    // Create fallback in modal
+    const fallback = document.createElement('div');
+    fallback.className = 'modal-image-fallback';
+    fallback.innerHTML = `
+      <div style="padding: 40px; text-align: center; color: #666; background: #f8fafc; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <span style="font-size: 3rem;">📷</span>
+        <p style="margin: 10px 0; font-size: 1.1rem;">Image not available</p>
+        <p style="margin: 0; font-size: 0.9rem; opacity: 0.7;">${project.title}</p>
+      </div>
+    `;
+    e.target.parentNode.appendChild(fallback);
+  };
+
   return (
     <section className="portfolio" id="portfolio">
       <div className="container">
@@ -107,12 +132,20 @@ const Portfolio = () => {
           
           {/* Debug info - remove in production */}
           <div style={{fontSize: '12px', color: '#666', marginTop: '10px'}}>
-            Loaded {projects.length} projects • {filteredProjects.length} filtered
+            {isLoading ? '🔄 Loading...' : `Loaded ${projects.length} projects • ${filteredProjects.length} filtered`}
           </div>
         </div>
 
+        {/* Loading State */}
+        {isLoading && (
+          <div className="loading-state">
+            <div className="loading-spinner"></div>
+            <p>Loading portfolio...</p>
+          </div>
+        )}
+
         {/* Portfolio Stats */}
-        {projects.length > 0 && (
+        {!isLoading && projects.length > 0 && (
           <div className="portfolio-stats">
             <div className="stat-item">
               <span className="stat-number">{projects.length}</span>
@@ -130,103 +163,115 @@ const Portfolio = () => {
         )}
 
         {/* Category Filter */}
-        <div className="portfolio-filter">
-          {categories.map(category => (
-            <button
-              key={category.id}
-              className={`filter-btn ${selectedCategory === category.id ? 'active' : ''}`}
-              onClick={() => setSelectedCategory(category.id)}
-              disabled={category.count === 0 && category.id !== 'all'}
-            >
-              <span className="filter-icon">{category.icon}</span>
-              {category.name}
-              <span className="project-count">({category.count})</span>
-            </button>
-          ))}
-        </div>
+        {!isLoading && (
+          <div className="portfolio-filter">
+            {categories.map(category => (
+              <button
+                key={category.id}
+                className={`filter-btn ${selectedCategory === category.id ? 'active' : ''}`}
+                onClick={() => setSelectedCategory(category.id)}
+                disabled={category.count === 0 && category.id !== 'all'}
+              >
+                <span className="filter-icon">{category.icon}</span>
+                {category.name}
+                <span className="project-count">({category.count})</span>
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Portfolio Grid */}
-        <div className="portfolio-grid">
-          {filteredProjects.length > 0 ? (
-            filteredProjects.map(project => (
-              <div 
-                key={project.id} 
-                className="portfolio-item"
-                onClick={() => setSelectedProject(project)}
-              >
-                <div className="portfolio-image">
-                  <img 
-                    src={project.src} 
-                    alt={project.title}
-                    onError={(e) => {
-                      console.error('Image failed to load:', project.src);
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'flex';
-                    }}
-                  />
-                  <div className="image-fallback" style={{display: 'none'}}>
-                    <span>📷</span>
-                    <p>Image not available</p>
-                  </div>
-                  <div className="portfolio-overlay">
-                    <div className="portfolio-info">
-                      <h4>{project.title}</h4>
-                      <p>{project.description}</p>
-                      <span className="category-tag">
-                        {getCategoryIcon(project.category)} {getCategoryName(project.category)}
-                      </span>
+        {!isLoading && (
+          <div className="portfolio-grid">
+            {filteredProjects.length > 0 ? (
+              filteredProjects.map(project => (
+                <div 
+                  key={project.id} 
+                  className="portfolio-item"
+                  onClick={() => setSelectedProject(project)}
+                >
+                  <div className="portfolio-image">
+                    <img 
+                      src={project.src} 
+                      alt={project.title}
+                      loading="lazy"
+                      onError={(e) => handleImageError(e, project)}
+                    />
+                    <div className="image-fallback">
+                      <span>📷</span>
+                      <p>Image not available</p>
+                      <small>{project.title}</small>
+                    </div>
+                    <div className="portfolio-overlay">
+                      <div className="portfolio-info">
+                        <h4>{project.title}</h4>
+                        <p>{project.description}</p>
+                        <span className="category-tag">
+                          {getCategoryIcon(project.category)} {getCategoryName(project.category)}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
+              ))
+            ) : (
+              <div className="empty-portfolio">
+                <div className="empty-icon">
+                  {selectedCategory === 'all' ? '📁' : 
+                   categories.find(cat => cat.id === selectedCategory)?.icon}
+                </div>
+                <h3>
+                  {selectedCategory === 'all' 
+                    ? "No Projects in Portfolio" 
+                    : `No ${categories.find(cat => cat.id === selectedCategory)?.name} Projects`
+                  }
+                </h3>
+                <p>
+                  {projects.length > 0 
+                    ? `No projects found in "${categories.find(cat => cat.id === selectedCategory)?.name}" category` 
+                    : "Upload projects in the About page to see them here"
+                  }
+                </p>
+                <div className="empty-actions">
+                  <button 
+                    className="cta-btn"
+                    onClick={() => scrollToSection('about')}
+                  >
+                    Go to About Page to Upload
+                  </button>
+                  <button 
+                    className="cta-btn secondary"
+                    onClick={() => window.location.reload()}
+                  >
+                    Refresh Page
+                  </button>
+                </div>
               </div>
-            ))
-          ) : (
-            <div className="empty-portfolio">
-              <div className="empty-icon">🎨</div>
-              <h3>No Projects Displayed</h3>
-              <p>
-                {projects.length > 0 
-                  ? `No projects found in "${categories.find(cat => cat.id === selectedCategory)?.name}" category` 
-                  : "Upload projects in the About page to see them here"
-                }
-              </p>
-              <div className="empty-actions">
-                <button 
-                  className="cta-btn"
-                  onClick={() => scrollToSection('about')}
-                >
-                  Go to About Page to Upload
-                </button>
-                <button 
-                  className="cta-btn secondary"
-                  onClick={() => window.location.reload()}
-                >
-                  Refresh Page
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
         {/* Call to Action */}
-        <div className="portfolio-cta">
-          <h3>Ready to Start Your Project?</h3>
-          <p>Let's create something amazing together. Get in touch to discuss your ideas.</p>
-          <div className="cta-buttons">
-            <button 
-              className="btn-primary"
-              onClick={() => scrollToSection('contact')}
-            >
-              Start a Project
-            </button>
-            <button 
-              className="btn-secondary"
-              onClick={() => scrollToSection('about')}
-            >
-              Upload More Work
-            </button>
+        {!isLoading && (
+          <div className="portfolio-cta">
+            <h3>Ready to Start Your Project?</h3>
+            <p>Let's create something amazing together. Get in touch to discuss your ideas.</p>
+            <div className="cta-buttons">
+              <button 
+                className="btn-primary"
+                onClick={() => scrollToSection('contact')}
+              >
+                Start a Project
+              </button>
+              <button 
+                className="btn-secondary"
+                onClick={() => scrollToSection('about')}
+              >
+                Upload More Work
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Project Modal */}
         {selectedProject && (
@@ -242,19 +287,7 @@ const Portfolio = () => {
                 <img 
                   src={selectedProject.src} 
                   alt={selectedProject.title}
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    const fallback = document.createElement('div');
-                    fallback.className = 'modal-image-fallback';
-                    fallback.innerHTML = `
-                      <div style="padding: 40px; text-align: center; color: #666;">
-                        <span style="font-size: 3rem;">📷</span>
-                        <p>Image not available</p>
-                        <p><small>${selectedProject.title}</small></p>
-                      </div>
-                    `;
-                    e.target.parentNode.appendChild(fallback);
-                  }}
+                  onError={(e) => handleModalImageError(e, selectedProject)}
                 />
               </div>
               <div className="modal-info">
@@ -316,6 +349,32 @@ const Portfolio = () => {
           max-width: 600px;
           margin: 0 auto;
           line-height: 1.6;
+        }
+
+        /* Loading State */
+        .loading-state {
+          text-align: center;
+          padding: 60px 20px;
+        }
+
+        .loading-spinner {
+          width: 50px;
+          height: 50px;
+          border: 4px solid #f3f3f3;
+          border-top: 4px solid #667eea;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+        .loading-state p {
+          color: #64748b;
+          font-size: 1.1rem;
         }
 
         /* Portfolio Stats */
@@ -446,18 +505,31 @@ const Portfolio = () => {
           right: 0;
           bottom: 0;
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          display: flex;
+          display: none;
           flex-direction: column;
           align-items: center;
           justify-content: center;
           color: white;
           font-size: 2rem;
+          text-align: center;
+          padding: 20px;
+        }
+
+        .image-fallback span {
+          font-size: 3rem;
+          margin-bottom: 10px;
         }
 
         .image-fallback p {
           font-size: 1rem;
-          margin-top: 10px;
-          opacity: 0.8;
+          margin: 5px 0;
+          opacity: 0.9;
+        }
+
+        .image-fallback small {
+          font-size: 0.8rem;
+          opacity: 0.7;
+          margin-top: 5px;
         }
 
         .portfolio-overlay {
@@ -625,6 +697,7 @@ const Portfolio = () => {
           justify-content: center;
           z-index: 1000;
           padding: 20px;
+          backdrop-filter: blur(5px);
         }
 
         .modal-content {
@@ -636,6 +709,18 @@ const Portfolio = () => {
           overflow: auto;
           position: relative;
           box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+          animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+          from {
+            opacity: 0;
+            transform: translateY(-30px) scale(0.9);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
         }
 
         .close-btn {
@@ -654,6 +739,12 @@ const Portfolio = () => {
           display: flex;
           align-items: center;
           justify-content: center;
+          transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+          background: rgba(0, 0, 0, 0.9);
+          transform: scale(1.1);
         }
 
         .modal-image {
@@ -667,6 +758,14 @@ const Portfolio = () => {
           width: 100%;
           height: 100%;
           object-fit: cover;
+        }
+
+        .modal-image-fallback {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
         }
 
         .modal-info {
