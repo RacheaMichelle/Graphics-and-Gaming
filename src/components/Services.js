@@ -54,7 +54,7 @@ const Services = () => {
   }, []);
 
   const categories = [
-    { id: 'all', name: 'All Services', icon: '📁', count: projects.length },
+    { id: 'all', name: 'All Projects', icon: '📁', count: projects.length },
     { id: 'graphic-design', name: 'Graphic Design', icon: '🎨', count: projects.filter(p => p.category === 'graphic-design').length },
     { id: 'photography', name: 'Photography', icon: '📸', count: projects.filter(p => p.category === 'photography').length },
     { id: 'motion-picture', name: 'Motion Picture', icon: '🎬', count: projects.filter(p => p.category === 'motion-picture').length },
@@ -123,12 +123,46 @@ const Services = () => {
     e.target.parentNode.appendChild(fallback);
   };
 
+   // Services data with big icons only
+  const services = [
+    { 
+      id: 'graphic-design', 
+      name: 'Graphic Design', 
+      icon: '🎨', 
+      color: '#667eea'
+    },
+    { 
+      id: 'photography', 
+      name: 'Photography', 
+      icon: '📸', 
+      color: '#764ba2'
+    },
+    { 
+      id: 'motion-picture', 
+      name: 'Motion Picture', 
+      icon: '🎬', 
+      color: '#667eea'
+    },
+    { 
+      id: 'music', 
+      name: 'Music Artworks', 
+      icon: '🎵', 
+      color: '#764ba2'
+    },
+    { 
+      id: 'games', 
+      name: 'Gaming Zone', 
+      icon: '🎮', 
+      color: '#667eea'
+    }
+  ];
+
   return (
     <section className="services" id="services">
       <div className="container">
         <div className="section-header">
           <h2>Our Services</h2>
-          <p>Explore our creative work across different service categories</p>
+          <p>Professional creative services to bring your ideas to life</p>
           
           {/* Debug info - remove in production */}
           <div style={{fontSize: '12px', color: '#666', marginTop: '10px'}}>
@@ -144,16 +178,43 @@ const Services = () => {
           </div>
         )}
 
-        {/* Services Gallery - Images Only */}
+        {/* Services Icons Grid */}
         {!isLoading && (
-          <div className="services-gallery">
-            <div className="gallery-header">
-              <h3>Our Work Gallery</h3>
-              <p>Browse through our completed projects</p>
+          <div className="services-icons-grid">
+            {services.map(service => (
+              <div 
+                key={service.id} 
+                className="service-icon-card"
+                onClick={() => scrollToSection('contact')}
+              >
+                <div className="service-icon-large" style={{ backgroundColor: service.color }}>
+                  {service.icon}
+                </div>
+                <h3>{service.name}</h3>
+                <p className="service-description">{service.description}</p>
+                <div className="service-features-mini">
+                  {service.features.slice(0, 3).map((feature, index) => (
+                    <span key={index} className="feature-tag">{feature}</span>
+                  ))}
+                </div>
+                <div className="service-footer">
+                  <span className="price">{service.price}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Portfolio Preview Section */}
+        {!isLoading && projects.length > 0 && (
+          <div className="portfolio-preview">
+            <div className="preview-header">
+              <h3>Recent Work</h3>
+              <p>Check out some of our latest projects</p>
             </div>
 
             {/* Category Filter */}
-            <div className="services-filter">
+            <div className="portfolio-filter">
               {categories.map(category => (
                 <button
                   key={category.id}
@@ -168,16 +229,16 @@ const Services = () => {
               ))}
             </div>
 
-            {/* Services Grid - Images Only */}
-            <div className="services-grid">
+            {/* Portfolio Grid */}
+            <div className="portfolio-grid">
               {filteredProjects.length > 0 ? (
-                filteredProjects.map(project => (
+                filteredProjects.slice(0, 6).map(project => (
                   <div 
                     key={project.id} 
-                    className="service-item"
+                    className="portfolio-item"
                     onClick={() => setSelectedProject(project)}
                   >
-                    <div className="service-image">
+                    <div className="portfolio-image">
                       <img 
                         src={project.src} 
                         alt={project.title}
@@ -189,11 +250,11 @@ const Services = () => {
                         <p>Image not available</p>
                         <small>{project.title}</small>
                       </div>
-                      <div className="service-overlay">
-                        <div className="service-info">
+                      <div className="portfolio-overlay">
+                        <div className="portfolio-info">
                           <h4>{project.title}</h4>
                           <p>{project.description}</p>
-                          <span className="service-category">
+                          <span className="category-tag">
                             {getCategoryIcon(project.category)} {getCategoryName(project.category)}
                           </span>
                         </div>
@@ -202,48 +263,45 @@ const Services = () => {
                   </div>
                 ))
               ) : (
-                <div className="empty-services">
+                <div className="empty-portfolio">
                   <div className="empty-icon">
                     {selectedCategory === 'all' ? '📁' : 
                      categories.find(cat => cat.id === selectedCategory)?.icon}
                   </div>
                   <h3>
                     {selectedCategory === 'all' 
-                      ? "No Projects Available" 
+                      ? "No Projects to Display" 
                       : `No ${categories.find(cat => cat.id === selectedCategory)?.name} Projects`
                     }
                   </h3>
                   <p>
                     {projects.length > 0 
                       ? `No projects found in "${categories.find(cat => cat.id === selectedCategory)?.name}" category` 
-                      : "Upload projects in the About page to see them here"
+                      : "Check back later for new projects"
                     }
                   </p>
-                  <div className="empty-actions">
-                    <button 
-                      className="cta-btn"
-                      onClick={() => scrollToSection('about')}
-                    >
-                      Upload Projects
-                    </button>
-                    <button 
-                      className="cta-btn secondary"
-                      onClick={() => window.location.reload()}
-                    >
-                      Refresh Page
-                    </button>
-                  </div>
                 </div>
               )}
             </div>
+
+            {filteredProjects.length > 6 && (
+              <div className="view-more">
+                <button 
+                  className="btn-primary"
+                  onClick={() => scrollToSection('portfolio')}
+                >
+                  View All Projects
+                </button>
+              </div>
+            )}
           </div>
         )}
 
         {/* Call to Action */}
         {!isLoading && (
           <div className="services-cta">
-            <h3>Ready to Start Your Project?</h3>
-            <p>Let's create something amazing together. Get in touch to discuss your ideas.</p>
+            <h3>Ready to Get Started?</h3>
+            <p>Let's discuss your project and bring your creative vision to life with our professional services.</p>
             <div className="cta-buttons">
               <button 
                 className="btn-primary"
@@ -365,29 +423,113 @@ const Services = () => {
           font-size: 1.1rem;
         }
 
-        /* Services Gallery */
-        .services-gallery {
+        /* Services Icons Grid */
+        .services-icons-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 30px;
           margin-bottom: 80px;
         }
 
-        .gallery-header {
+        .service-icon-card {
+          background: white;
+          padding: 40px 30px;
+          border-radius: 20px;
+          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+          border: 1px solid #e2e8f0;
+          transition: all 0.3s ease;
+          text-align: center;
+          cursor: pointer;
+          position: relative;
+        }
+
+        .service-icon-card:hover {
+          transform: translateY(-10px);
+          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .service-icon-large {
+          width: 100px;
+          height: 100px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 3rem;
+          margin: 0 auto 20px auto;
+          color: white;
+          transition: transform 0.3s ease;
+        }
+
+        .service-icon-card:hover .service-icon-large {
+          transform: scale(1.1);
+        }
+
+        .service-icon-card h3 {
+          font-size: 1.5rem;
+          color: #1e293b;
+          margin-bottom: 12px;
+          font-weight: 700;
+        }
+
+        .service-description {
+          color: #64748b;
+          margin-bottom: 20px;
+          line-height: 1.5;
+          font-size: 1rem;
+        }
+
+        .service-features-mini {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          margin-bottom: 25px;
+        }
+
+        .feature-tag {
+          background: #f8fafc;
+          color: #475569;
+          padding: 6px 12px;
+          border-radius: 15px;
+          font-size: 0.85rem;
+          border: 1px solid #e2e8f0;
+        }
+
+        .service-footer {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .price {
+          font-size: 1.2rem;
+          font-weight: 700;
+          color: #667eea;
+        }
+
+        /* Portfolio Preview */
+        .portfolio-preview {
+          margin-bottom: 80px;
+        }
+
+        .preview-header {
           text-align: center;
           margin-bottom: 40px;
         }
 
-        .gallery-header h3 {
+        .preview-header h3 {
           font-size: 2.2rem;
           color: #1e293b;
           margin-bottom: 12px;
         }
 
-        .gallery-header p {
+        .preview-header p {
           color: #64748b;
           font-size: 1.1rem;
         }
 
-        /* Services Filter */
-        .services-filter {
+        /* Portfolio Filter */
+        .portfolio-filter {
           display: flex;
           justify-content: center;
           gap: 12px;
@@ -431,15 +573,15 @@ const Services = () => {
           font-size: 0.8rem;
         }
 
-        /* Services Grid - Images Only */
-        .services-grid {
+        /* Portfolio Grid */
+        .portfolio-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          gap: 30px;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 25px;
           margin-bottom: 40px;
         }
 
-        .service-item {
+        .portfolio-item {
           background: white;
           border-radius: 16px;
           overflow: hidden;
@@ -448,26 +590,26 @@ const Services = () => {
           transition: all 0.3s ease;
         }
 
-        .service-item:hover {
+        .portfolio-item:hover {
           transform: translateY(-8px);
           box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
-        .service-image {
+        .portfolio-image {
           position: relative;
           width: 100%;
-          height: 250px;
+          height: 200px;
           overflow: hidden;
         }
 
-        .service-image img {
+        .portfolio-image img {
           width: 100%;
           height: 100%;
           object-fit: cover;
           transition: transform 0.3s ease;
         }
 
-        .service-item:hover .service-image img {
+        .portfolio-item:hover .portfolio-image img {
           transform: scale(1.05);
         }
 
@@ -505,7 +647,7 @@ const Services = () => {
           margin-top: 5px;
         }
 
-        .service-overlay {
+        .portfolio-overlay {
           position: absolute;
           top: 0;
           left: 0;
@@ -514,70 +656,68 @@ const Services = () => {
           background: linear-gradient(transparent 40%, rgba(0, 0, 0, 0.8));
           display: flex;
           align-items: flex-end;
-          padding: 20px;
+          padding: 15px;
           opacity: 0;
           transition: opacity 0.3s ease;
         }
 
-        .service-item:hover .service-overlay {
+        .portfolio-item:hover .portfolio-overlay {
           opacity: 1;
         }
 
-        .service-info h4 {
+        .portfolio-info h4 {
           color: white;
-          margin-bottom: 8px;
-          font-size: 1.2rem;
+          margin-bottom: 6px;
+          font-size: 1.1rem;
         }
 
-        .service-info p {
+        .portfolio-info p {
           color: #e2e8f0;
-          margin: 0 0 12px 0;
-          font-size: 0.9rem;
+          margin: 0 0 10px 0;
+          font-size: 0.85rem;
           line-height: 1.4;
         }
 
-        .service-category {
+        .category-tag {
           background: rgba(255, 255, 255, 0.2);
           color: white;
-          padding: 4px 12px;
-          border-radius: 20px;
-          font-size: 0.8rem;
+          padding: 4px 10px;
+          border-radius: 15px;
+          font-size: 0.75rem;
           font-weight: 500;
         }
 
         /* Empty State */
-        .empty-services {
+        .empty-portfolio {
           grid-column: 1 / -1;
           text-align: center;
-          padding: 80px 20px;
+          padding: 60px 20px;
           background: white;
-          border-radius: 20px;
+          border-radius: 16px;
           border: 2px dashed #e2e8f0;
         }
 
         .empty-icon {
-          font-size: 4rem;
-          margin-bottom: 20px;
+          font-size: 3rem;
+          margin-bottom: 15px;
           opacity: 0.5;
         }
 
-        .empty-services h3 {
+        .empty-portfolio h3 {
           color: #1e293b;
-          margin-bottom: 12px;
-          font-size: 1.5rem;
+          margin-bottom: 10px;
+          font-size: 1.3rem;
         }
 
-        .empty-services p {
+        .empty-portfolio p {
           color: #64748b;
-          margin-bottom: 30px;
-          font-size: 1.1rem;
+          margin-bottom: 20px;
+          font-size: 1rem;
         }
 
-        .empty-actions {
-          display: flex;
-          gap: 15px;
-          justify-content: center;
-          flex-wrap: wrap;
+        /* View More */
+        .view-more {
+          text-align: center;
         }
 
         /* CTA Section */
@@ -612,7 +752,7 @@ const Services = () => {
           flex-wrap: wrap;
         }
 
-        .btn-primary, .btn-secondary, .cta-btn {
+        .btn-primary, .btn-secondary {
           padding: 14px 28px;
           border: none;
           border-radius: 12px;
@@ -622,12 +762,12 @@ const Services = () => {
           transition: all 0.3s ease;
         }
 
-        .btn-primary, .cta-btn {
+        .btn-primary {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
         }
 
-        .btn-primary:hover, .cta-btn:hover {
+        .btn-primary:hover {
           transform: translateY(-2px);
           box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
         }
@@ -642,15 +782,6 @@ const Services = () => {
           background: #667eea;
           color: white;
           transform: translateY(-2px);
-        }
-
-        .cta-btn.secondary {
-          background: #64748b;
-          color: white;
-        }
-
-        .cta-btn.secondary:hover {
-          background: #475569;
         }
 
         /* Project Modal */
@@ -776,11 +907,21 @@ const Services = () => {
         }
 
         @media (max-width: 768px) {
-          .services-grid {
+          .services-icons-grid {
             grid-template-columns: 1fr;
           }
 
-          .services-filter {
+          .service-icon-large {
+            width: 80px;
+            height: 80px;
+            font-size: 2.5rem;
+          }
+
+          .portfolio-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .portfolio-filter {
             flex-direction: column;
             align-items: center;
           }
@@ -790,7 +931,7 @@ const Services = () => {
             justify-content: center;
           }
 
-          .cta-buttons, .empty-actions {
+          .cta-buttons {
             flex-direction: column;
           }
 
