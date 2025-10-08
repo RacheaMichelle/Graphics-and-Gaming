@@ -1,61 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-
-// SIMPLE Backend Service - No setup needed!
-const useBackendService = () => {
-  const saveProjects = async (projects) => {
-    try {
-      localStorage.setItem('portfolio_permanent_storage', JSON.stringify(projects));
-      return { success: true, message: 'Projects saved successfully' };
-    } catch (error) {
-      throw new Error('Failed to save projects: ' + error.message);
-    }
-  };
-  
-  const loadProjects = async () => {
-    try {
-      const data = localStorage.getItem('portfolio_permanent_storage');
-      return data ? JSON.parse(data) : [];
-    } catch (error) {
-      throw new Error('Failed to load projects: ' + error.message);
-    }
-  };
-  
-  const uploadFile = async (file, category) => {
-    try {
-      const base64String = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-      });
-      
-      return {
-        id: Date.now() + Math.random(),
-        src: base64String,
-        category,
-        title: file.name.replace(/\.[^/.]+$/, ""),
-        description: `Uploaded ${new Date().toLocaleDateString()}`,
-        uploadDate: new Date().toLocaleDateString(),
-        fileName: file.name
-      };
-    } catch (error) {
-      throw new Error('File upload failed: ' + error.message);
-    }
-  };
-  
-  const deleteProject = async (projectId) => {
-    try {
-      const projects = await loadProjects();
-      const updatedProjects = projects.filter(project => project.id !== projectId);
-      await saveProjects(updatedProjects);
-      return { success: true, message: 'Project deleted successfully' };
-    } catch (error) {
-      throw new Error('Failed to delete project: ' + error.message);
-    }
-  };
-  
-  return { saveProjects, loadProjects, uploadFile, deleteProject };
-};
+import useBackendService from '../services/useBackendService'; // Update import path
 
 const About = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -68,7 +12,7 @@ const About = () => {
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef(null);
 
-  const backendService = useBackendService();
+  const backendService = useBackendService(); // Now uses Supabase
 
   // Load projects on component mount
   useEffect(() => {
