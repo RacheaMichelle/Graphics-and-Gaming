@@ -95,14 +95,36 @@ const Services = () => {
     }
   };
 
+  // Improved image error handling
   const handleImageError = (e, project) => {
     console.error('🖼️ Image failed to load:', project.src);
+    
+    // Hide the broken image
     e.target.style.display = 'none';
     
     // Find and show fallback
     const fallback = e.target.nextElementSibling;
     if (fallback && fallback.classList.contains('image-fallback')) {
       fallback.style.display = 'flex';
+    }
+  };
+
+  // Improved image load handling
+  const handleImageLoad = (e) => {
+    console.log('✅ Image loaded successfully');
+    e.target.style.opacity = '1';
+  };
+
+  // Retry image loading
+  const retryImageLoad = (imgElement, src) => {
+    console.log('🔄 Retrying image load...');
+    imgElement.src = src + '?retry=' + Date.now();
+    imgElement.style.display = 'block';
+    imgElement.style.opacity = '0';
+    
+    const fallback = imgElement.nextElementSibling;
+    if (fallback && fallback.classList.contains('image-fallback')) {
+      fallback.style.display = 'none';
     }
   };
 
@@ -234,12 +256,29 @@ const Services = () => {
                         src={project.src} 
                         alt={project.title}
                         loading="lazy"
+                        decoding="async"
+                        onLoad={handleImageLoad}
                         onError={(e) => handleImageError(e, project)}
+                        style={{ 
+                          opacity: 0, 
+                          transition: 'opacity 0.3s ease',
+                          background: '#f8fafc'
+                        }}
                       />
                       <div className="image-fallback">
                         <span>📷</span>
                         <p>Image not available</p>
                         <small>{project.title}</small>
+                        <button 
+                          className="retry-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const img = e.target.closest('.portfolio-image').querySelector('img');
+                            retryImageLoad(img, project.src);
+                          }}
+                        >
+                          🔄 Retry
+                        </button>
                       </div>
                       <div className="portfolio-overlay">
                         <div className="portfolio-info">
@@ -324,7 +363,16 @@ const Services = () => {
                 <img 
                   src={selectedProject.src} 
                   alt={selectedProject.title}
+                  onLoad={(e) => {
+                    e.target.style.opacity = '1';
+                    console.log('✅ Modal image loaded');
+                  }}
                   onError={(e) => handleModalImageError(e, selectedProject)}
+                  style={{ 
+                    opacity: 0, 
+                    transition: 'opacity 0.3s ease',
+                    background: '#f8fafc'
+                  }}
                 />
               </div>
               <div className="modal-info">
@@ -529,7 +577,7 @@ const Services = () => {
           font-size: 0.8rem;
         }
 
-        /* Portfolio Grid */
+        /* Portfolio Grid - UPDATED with better image handling */
         .portfolio-grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -556,6 +604,7 @@ const Services = () => {
           width: 100%;
           height: 200px;
           overflow: hidden;
+          background: #f8fafc; /* Fallback background */
         }
 
         .portfolio-image img {
@@ -563,12 +612,14 @@ const Services = () => {
           height: 100%;
           object-fit: cover;
           transition: transform 0.3s ease;
+          background: #f8fafc; /* Loading background */
         }
 
         .portfolio-item:hover .portfolio-image img {
           transform: scale(1.05);
         }
 
+        /* Image Fallback Styles */
         .image-fallback {
           position: absolute;
           top: 0;
@@ -584,23 +635,44 @@ const Services = () => {
           font-size: 2rem;
           text-align: center;
           padding: 20px;
+          border-radius: 16px;
         }
 
         .image-fallback span {
           font-size: 3rem;
           margin-bottom: 10px;
+          opacity: 0.8;
         }
 
         .image-fallback p {
           font-size: 1rem;
           margin: 5px 0;
           opacity: 0.9;
+          font-weight: 500;
         }
 
         .image-fallback small {
           font-size: 0.8rem;
           opacity: 0.7;
           margin-top: 5px;
+        }
+
+        .retry-btn {
+          background: rgba(255, 255, 255, 0.2);
+          color: white;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          padding: 8px 16px;
+          border-radius: 8px;
+          cursor: pointer;
+          margin-top: 10px;
+          font-size: 0.8rem;
+          transition: all 0.3s ease;
+          backdrop-filter: blur(10px);
+        }
+
+        .retry-btn:hover {
+          background: rgba(255, 255, 255, 0.3);
+          transform: translateY(-2px);
         }
 
         .portfolio-overlay {
@@ -808,6 +880,7 @@ const Services = () => {
           height: 300px;
           overflow: hidden;
           position: relative;
+          background: #f8fafc;
         }
 
         .modal-image img {
