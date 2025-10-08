@@ -1,6 +1,10 @@
 import { supabase } from '../supabase'
 
 const useBackendService = () => {
+  // Cache version for invalidation
+  const CACHE_VERSION = 'v2';
+  const CACHE_KEY = `portfolio_permanent_storage_${CACHE_VERSION}`;
+  
   // Test storage connection
   const testStorageConnection = async () => {
     try {
@@ -96,15 +100,14 @@ const useBackendService = () => {
         title: projectData.title,
         description: projectData.description,
         uploadDate: new Date().toLocaleDateString(),
-        fileName: file.name
+        fileName: file.name,
+        created_at: new Date().toISOString()
       };
 
       console.log('🎉 Upload completed successfully:', result);
       
-      // Update localStorage immediately
-      const currentProjects = await loadProjects();
-      const updatedProjects = [result, ...currentProjects];
-      localStorage.setItem('portfolio_permanent_storage', JSON.stringify(updatedProjects));
+      // Clear cache to force fresh data on next load
+      await clearAllCache();
       
       return result;
 
@@ -117,81 +120,120 @@ const useBackendService = () => {
   // Save projects (for bulk operations)
   const saveProjects = async (projects) => {
     try {
-      localStorage.setItem('portfolio_permanent_storage', JSON.stringify(projects));
+      localStorage.setItem(CACHE_KEY, JSON.stringify({
+        data: projects,
+        timestamp: Date.now(),
+        version: CACHE_VERSION
+      }));
       return { success: true, message: 'Projects saved locally' };
     } catch (error) {
       throw new Error('Failed to save projects: ' + error.message);
     }
   };
 
-  // Load projects from Supabase with cache control
+  // Load projects from Supabase with improved cache control
   const loadProjects = async (forceRefresh = false) => {
     try {
       console.log('📥 Loading projects from Supabase...');
       
-      // Clear cache if force refresh is requested
-      if (forceRefresh) {
-        localStorage.removeItem('portfolio_permanent_storage');
-        console.log('🧹 Cleared local cache for force refresh');
-      }
-
-      // Try to get from localStorage first (unless force refresh)
+      // Check if we should use cache (1 hour cache duration)
+      const cacheDuration = 60 * 60 * 1000; // 1 hour
+      const now = Date.now();
+      
       if (!forceRefresh) {
-        const localData = localStorage.getItem('portfolio_permanent_storage');
-        if (localData) {
-          const result = JSON.parse(localData);
-          console.log('📂 Loaded from localStorage:', result.length, 'projects');
-          return result;
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          const { data, timestamp, version } = JSON.parse(cached);
+          
+          // Check if cache is valid and not expired
+          if (version === CACHE_VERSION && (now - timestamp) < cacheDuration) {
+            console.log('📂 Loaded from cache:', data.length, 'projects');
+            return data;
+          } else {
+            console.log('🔄 Cache expired or version mismatch, fetching fresh data');
+          }
         }
       }
 
-      // Fetch from Supabase
-      const { data: supabaseProjects, error } = await supabase
-        .from('projects')
-        .select('*')
-        .order('created_at', { ascending: false });
+      // Clear old cache versions
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('portfolio_permanent_storage') && key !== CACHE_KEY) {
+          localStorage.removeItem(key);
+        }
+      });
 
-      if (error) {
-        console.error('❌ Supabase load error:', error);
-        // Fallback to localStorage if available
-        const localData = localStorage.getItem('portfolio_permanent_storage');
-        const result = localData ? JSON.parse(localData) : [];
-        console.log('📂 Fallback to localStorage:', result.length, 'projects');
-        return result;
+      // Fetch from Supabase with retry logic
+      let retries = 3;
+      let lastError = null;
+      
+      while (retries > 0) {
+        try {
+          const { data: supabaseProjects, error } = await supabase
+            .from('projects')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+          if (error) {
+            lastError = error;
+            throw error;
+          }
+
+          console.log('✅ Loaded from Supabase:', supabaseProjects?.length, 'projects');
+
+          // Transform data to match expected format
+          const projects = (supabaseProjects || []).map(project => ({
+            id: project.id,
+            supabase_id: project.id,
+            title: project.title || 'Untitled Project',
+            description: project.description || 'No description available',
+            category: project.category || 'graphic-design',
+            src: project.image_url,
+            uploadDate: project.created_at ? new Date(project.created_at).toLocaleDateString() : 'Recently',
+            fileName: project.title,
+            created_at: project.created_at
+          }));
+
+          // Update cache with fresh data
+          await saveProjects(projects);
+          console.log('💾 Updated cache with fresh data');
+          
+          return projects;
+
+        } catch (error) {
+          retries--;
+          console.warn(`⚠️ Supabase fetch failed, ${retries} retries left:`, error);
+          if (retries > 0) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        }
       }
 
-      console.log('✅ Loaded from Supabase:', supabaseProjects?.length, 'projects');
+      // If all retries failed, try to use cached data even if expired
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const { data } = JSON.parse(cached);
+        console.log('📂 Fallback to expired cache:', data.length, 'projects');
+        return data;
+      }
 
-      // Transform data to match expected format
-      const projects = (supabaseProjects || []).map(project => ({
-        id: project.id,
-        supabase_id: project.id,
-        title: project.title || 'Untitled Project',
-        description: project.description || 'No description available',
-        category: project.category || 'graphic-design',
-        src: project.image_url,
-        uploadDate: project.created_at ? new Date(project.created_at).toLocaleDateString() : 'Recently',
-        fileName: project.title
-      }));
-
-      // Update localStorage with fresh Supabase data
-      localStorage.setItem('portfolio_permanent_storage', JSON.stringify(projects));
-      console.log('💾 Updated localStorage with Supabase data');
-      
-      return projects;
+      throw lastError || new Error('Failed to load projects');
 
     } catch (error) {
       console.error('💥 Load projects error:', error);
-      // Final fallback to localStorage
-      const localData = localStorage.getItem('portfolio_permanent_storage');
-      return localData ? JSON.parse(localData) : [];
+      // Final fallback to any cached data
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const { data } = JSON.parse(cached);
+        return data || [];
+      }
+      return [];
     }
   };
 
-  // Delete project from Supabase and local storage - UPDATED WITH DELETE POLICY FIX
+  // Delete project from Supabase and local storage
   const deleteProject = async (projectId) => {
     try {
-      console.log('🗑️ STARTING DELETE PROCESS FOR:', projectId);
+      console.log('🗑 STARTING DELETE PROCESS FOR:', projectId);
       
       // Get current projects to find the one to delete
       const currentProjects = await loadProjects();
@@ -203,23 +245,8 @@ const useBackendService = () => {
 
       console.log('📋 PROJECT TO DELETE:', projectToDelete);
 
-      // STEP 1: Verify project exists in database
-      console.log('🔍 STEP 1: Verifying project exists in Supabase...');
-      const { data: existingProject, error: fetchError } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('id', projectToDelete.supabase_id)
-        .single();
-
-      if (fetchError) {
-        console.error('❌ Project not found in Supabase:', fetchError);
-        throw new Error('Project not found in database');
-      }
-      
-      console.log('✅ Project exists in Supabase:', existingProject.id);
-
-      // STEP 2: Delete from Supabase projects table WITH DELETE POLICY
-      console.log('🗂️ STEP 2: Deleting from Supabase database...');
+      // STEP 1: Delete from Supabase projects table
+      console.log('🗂 STEP 1: Deleting from Supabase database...');
       const { data: deleteResult, error: deleteError } = await supabase
         .from('projects')
         .delete()
@@ -228,7 +255,6 @@ const useBackendService = () => {
 
       if (deleteError) {
         console.error('❌ Supabase delete error:', deleteError);
-        console.error('❌ Error details:', deleteError.details, deleteError.hint, deleteError.message);
         
         // Check if it's a policy error
         if (deleteError.message.includes('policy') || deleteError.code === '42501') {
@@ -240,24 +266,7 @@ const useBackendService = () => {
       
       console.log('✅ Database deletion result:', deleteResult);
 
-      // STEP 3: Verify deletion was successful
-      console.log('🔍 STEP 3: Verifying deletion...');
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const { data: verifyData, error: verifyError } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('id', projectToDelete.supabase_id)
-        .single();
-
-      if (verifyError && verifyError.code === 'PGRST116') {
-        console.log('✅ VERIFICATION: Project successfully deleted from database');
-      } else if (verifyData) {
-        console.error('❌ VERIFICATION FAILED: Project still exists after deletion!', verifyData);
-        throw new Error('Project was not deleted from database - check RLS policies');
-      }
-
-      // STEP 4: Delete from storage
+      // STEP 2: Delete from storage
       if (projectToDelete.src) {
         try {
           const urlParts = projectToDelete.src.split('/');
@@ -265,63 +274,34 @@ const useBackendService = () => {
           const category = projectToDelete.category || 'graphic-design';
           const storagePath = `${category}/${fileName}`;
           
-          console.log('🖼️ STEP 4: Deleting from storage:', storagePath);
+          console.log('🖼 STEP 2: Deleting from storage:', storagePath);
           
           const { data: storageData, error: storageError } = await supabase.storage
             .from('project-images')
             .remove([storagePath]);
 
           if (storageError) {
-            console.warn('⚠️ Storage delete warning:', storageError.message);
+            console.warn('⚠ Storage delete warning:', storageError.message);
           } else {
             console.log('✅ Storage deletion result:', storageData);
           }
         } catch (storageError) {
-          console.warn('⚠️ Storage deletion attempt failed:', storageError.message);
+          console.warn('⚠ Storage deletion attempt failed:', storageError.message);
         }
       }
 
-      // STEP 5: Force clear cache and reload fresh data
-      console.log('🧹 STEP 5: Force clearing cache and reloading...');
-      localStorage.removeItem('portfolio_permanent_storage');
+      // STEP 3: Clear cache to force fresh data
+      console.log('🧹 STEP 3: Clearing cache...');
+      await clearAllCache();
       
-      // Fetch fresh data from Supabase
-      console.log('🔄 Fetching fresh data from Supabase...');
-      const { data: freshProjects, error: freshError } = await supabase
-        .from('projects')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (freshError) {
-        console.error('❌ Error fetching fresh data:', freshError);
-        throw freshError;
-      }
-
-      console.log('📥 Fresh data from Supabase:', freshProjects?.length, 'projects');
-      console.log('📋 Fresh project IDs:', freshProjects?.map(p => p.id));
-
-      // Transform and save fresh data
-      const projects = (freshProjects || []).map(project => ({
-        id: project.id,
-        supabase_id: project.id,
-        title: project.title || 'Untitled Project',
-        description: project.description || 'No description available',
-        category: project.category || 'graphic-design',
-        src: project.image_url,
-        uploadDate: project.created_at ? new Date(project.created_at).toLocaleDateString() : 'Recently',
-        fileName: project.title
-      }));
-
-      localStorage.setItem('portfolio_permanent_storage', JSON.stringify(projects));
-      
-      console.log('✅ BACKEND DELETE COMPLETED. Fresh data loaded:', projects.length);
+      console.log('✅ BACKEND DELETE COMPLETED');
       return { success: true, message: 'Project deleted successfully' };
       
     } catch (error) {
       console.error('💥 BACKEND DELETE ERROR:', error);
       
       // Clear cache on error
-      localStorage.removeItem('portfolio_permanent_storage');
+      await clearAllCache();
       
       throw new Error('Failed to delete project: ' + error.message);
     }
@@ -332,16 +312,15 @@ const useBackendService = () => {
     try {
       console.log('🧹 Clearing all cache...');
       
-      // Clear localStorage
-      localStorage.removeItem('portfolio_permanent_storage');
-      
-      // Clear any other related storage
-      const keys = Object.keys(localStorage);
-      keys.forEach(key => {
+      // Clear all portfolio-related cache
+      Object.keys(localStorage).forEach(key => {
         if (key.includes('portfolio') || key.includes('supabase')) {
           localStorage.removeItem(key);
         }
       });
+      
+      // Also clear the current cache key
+      localStorage.removeItem(CACHE_KEY);
       
       console.log('✅ Cache cleared');
       return { success: true, message: 'Cache cleared successfully' };
@@ -412,14 +391,55 @@ const useBackendService = () => {
 
   // Get debug information
   const getDebugInfo = () => {
-    const cached = localStorage.getItem('portfolio_permanent_storage');
-    const projects = cached ? JSON.parse(cached) : [];
+    const cached = localStorage.getItem(CACHE_KEY);
+    const cacheData = cached ? JSON.parse(cached) : null;
+    const projects = cacheData?.data || [];
     
     return {
+      cacheVersion: CACHE_VERSION,
+      cacheTimestamp: cacheData?.timestamp ? new Date(cacheData.timestamp).toLocaleString() : 'No cache',
+      cacheAge: cacheData?.timestamp ? Math.round((Date.now() - cacheData.timestamp) / 1000 / 60) + ' minutes' : 'N/A',
       localStorageCount: projects.length,
       localStorageProjects: projects.map(p => ({ id: p.id, title: p.title, supabase_id: p.supabase_id })),
-      allStorageKeys: Object.keys(localStorage)
+      allStorageKeys: Object.keys(localStorage).filter(key => key.includes('portfolio') || key.includes('supabase'))
     };
+  };
+
+  // Check for updates (called on app load)
+  const checkForUpdates = async () => {
+    try {
+      console.log('🔍 Checking for updates...');
+      
+      // Get latest data from Supabase without using cache
+      const { data: latestProjects } = await supabase
+        .from('projects')
+        .select('id, updated_at')
+        .order('updated_at', { ascending: false })
+        .limit(1);
+      
+      if (latestProjects && latestProjects.length > 0) {
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          const cacheData = JSON.parse(cached);
+          const cachedProjects = cacheData.data || [];
+          
+          // Simple check: if counts differ or latest project ID doesn't match, clear cache
+          const latestProjectId = latestProjects[0].id;
+          const hasLatestProject = cachedProjects.some(p => p.id === latestProjectId);
+          
+          if (!hasLatestProject || cachedProjects.length !== latestProjects.length) {
+            console.log('🔄 Updates detected, clearing cache');
+            await clearAllCache();
+            return true;
+          }
+        }
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('❌ Update check failed:', error);
+      return false;
+    }
   };
 
   return { 
@@ -430,7 +450,9 @@ const useBackendService = () => {
     testStorageConnection,
     testPolicies,
     clearAllCache,
-    getDebugInfo
+    getDebugInfo,
+    checkForUpdates,
+    CACHE_VERSION
   };
 };
 
