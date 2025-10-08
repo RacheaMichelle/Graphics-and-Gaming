@@ -128,19 +128,39 @@ const About = () => {
     }
   };
 
-  // Delete project
+  // Delete project - FIXED VERSION
   const deleteProject = async (projectId, event) => {
     if (!isOwner) return;
     event.stopPropagation();
     
     if (window.confirm('Are you sure you want to delete this project? This will remove it from both the database and storage.')) {
       try {
+        setIsLoading(true);
+        
+        // Call the backend service to delete
         await backendService.deleteProject(projectId);
-        // Reload projects to get fresh state
+        
+        // Update state immediately for better UX
+        setMyProjects(prevProjects => prevProjects.filter(project => project.id !== projectId));
+        
+        // Also force refresh from Supabase to ensure consistency
         await loadProjectsFromStorage(true);
-        alert('Project deleted successfully!');
+        
+        // Close modal if the deleted image was open
+        if (selectedImage && selectedImage.id === projectId) {
+          setSelectedImage(null);
+        }
+        
+        console.log('✅ Project deleted successfully from UI');
+        
       } catch (error) {
+        console.error('❌ Delete failed:', error);
         alert('Failed to delete: ' + error.message);
+        
+        // Even if there's an error, try to refresh the data
+        await loadProjectsFromStorage(true);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -254,14 +274,19 @@ const About = () => {
         </div>
 
         {/* Debug Info Panel */}
-        {isOwner && debugInfo && (
+        {isOwner && (
           <div className="debug-panel">
             <details>
-              <summary>🔧 Debug Info (Local: {debugInfo.localStorageCount} projects)</summary>
+              <summary>🔧 Debug Info (Local: {debugInfo?.localStorageCount} projects)</summary>
               <div className="debug-content">
-                <p><strong>Local Storage Projects:</strong> {debugInfo.localStorageCount}</p>
-                <p><strong>Project IDs:</strong> {debugInfo.localStorageProjects.map(p => p.id).join(', ')}</p>
-                <button onClick={updateDebugInfo} className="debug-refresh">Update Debug Info</button>
+                <p><strong>Local Storage Projects:</strong> {debugInfo?.localStorageCount}</p>
+                <p><strong>Project IDs:</strong> {debugInfo?.localStorageProjects?.map(p => p.id).join(', ') || 'None'}</p>
+                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                  <button onClick={updateDebugInfo} className="debug-refresh">Update Debug Info</button>
+                  <button onClick={() => loadProjectsFromStorage(true)} className="debug-refresh">
+                    🔄 Force Reload
+                  </button>
+                </div>
               </div>
             </details>
           </div>
@@ -968,105 +993,7 @@ const About = () => {
           background: #5a67d8;
         }
 
-         .about {
-          padding: 40px 0 80px;
-          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-          min-height: 100vh;
-        }
-
-        .container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 20px;
-        }
-
-        /* Owner Access Bar - styles remain the same */
-        .owner-access-bar {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          padding: 15px 25px;
-          border-radius: 15px;
-          margin-bottom: 40px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .viewer-mode, .owner-mode {
-          display: flex;
-          align-items: center;
-          gap: 20px;
-          width: 100%;
-          justify-content: space-between;
-        }
-
-        .viewer-badge {
-          background: rgba(255, 255, 255, 0.15);
-          padding: 8px 16px;
-          border-radius: 25px;
-          font-weight: 600;
-          font-size: 0.9rem;
-          backdrop-filter: blur(10px);
-        }
-
-        .owner-status {
-          display: flex;
-          align-items: center;
-          gap: 15px;
-        }
-
-        .owner-badge {
-          background: rgba(255, 255, 255, 0.2);
-          padding: 8px 16px;
-          border-radius: 25px;
-          font-weight: bold;
-          font-size: 0.85rem;
-          backdrop-filter: blur(10px);
-        }
-
-        .owner-info {
-          font-size: 0.9rem;
-          opacity: 0.9;
-        }
-
-        .owner-login-btn {
-          background: rgba(255, 255, 255, 0.2);
-          color: white;
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          padding: 10px 20px;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          font-weight: 600;
-          backdrop-filter: blur(10px);
-        }
-
-        .owner-login-btn:hover {
-          background: rgba(255, 255, 255, 0.3);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
-        }
-
-        .logout-btn {
-          background: rgba(239, 68, 68, 0.8);
-          color: white;
-          border: none;
-          padding: 10px 20px;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          font-weight: 600;
-        }
-
-        .logout-btn:hover {
-          background: rgba(220, 38, 38, 0.9);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-        }
-
-        /* Login Modal - styles remain the same */
+        /* Login Modal */
         .login-modal-overlay {
           position: fixed;
           top: 0;
@@ -1207,7 +1134,7 @@ const About = () => {
           transform: translateY(-2px);
         }
 
-        /* About Header - styles remain the same */
+        /* About Header */
         .about-header {
           text-align: center;
           margin-bottom: 80px;
@@ -1276,7 +1203,7 @@ const About = () => {
           letter-spacing: 0.5px;
         }
 
-        /* About Content - styles remain the same */
+        /* About Content */
         .about-content {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -1347,7 +1274,7 @@ const About = () => {
           margin: 0;
         }
 
-        /* About Visual - styles remain the same */
+        /* About Visual */
         .about-visual {
           position: relative;
         }
@@ -1422,7 +1349,7 @@ const About = () => {
           font-weight: 600;
         }
 
-        /* Services Section - styles remain the same */
+        /* Services Section */
         .services-section {
           margin-bottom: 100px;
         }
@@ -1525,7 +1452,7 @@ const About = () => {
           line-height: 1.6;
         }
 
-        /* Upload Area - styles remain the same */
+        /* Upload Area */
         .upload-area {
           margin-bottom: 40px;
         }
@@ -1668,7 +1595,7 @@ const About = () => {
           font-size: 0.9rem;
         }
 
-        /* Project Stats - styles remain the same */
+        /* Project Stats */
         .project-stats {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -1705,7 +1632,7 @@ const About = () => {
           font-weight: 600;
         }
 
-        /* Category Filter - styles remain the same */
+        /* Category Filter */
         .category-filter {
           display: flex;
           gap: 10px;
@@ -1756,7 +1683,7 @@ const About = () => {
           font-size: 0.8rem;
         }
 
-        /* Projects Grid - UPDATED with better image handling */
+        /* Projects Grid */
         .projects-grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -1784,7 +1711,7 @@ const About = () => {
           width: 100%;
           height: 250px;
           overflow: hidden;
-          background: #f8fafc; /* Fallback background */
+          background: #f8fafc;
         }
 
         .project-image img {
@@ -1792,7 +1719,7 @@ const About = () => {
           height: 100%;
           object-fit: cover;
           transition: all 0.3s ease;
-          background: #f8fafc; /* Loading background */
+          background: #f8fafc;
         }
 
         .project-card:hover .project-image img {
@@ -1941,7 +1868,7 @@ const About = () => {
           font-size: 0.7rem;
         }
 
-        /* Empty State - styles remain the same */
+        /* Empty State */
         .empty-state {
           grid-column: 1 / -1;
           text-align: center;
@@ -1969,7 +1896,7 @@ const About = () => {
           font-size: 1.1rem;
         }
 
-        /* CTA Section - styles remain the same */
+        /* CTA Section */
         .cta-section {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
@@ -2033,7 +1960,7 @@ const About = () => {
           transform: translateY(-3px);
         }
 
-        /* Modal - UPDATED with better image handling */
+        /* Modal */
         .modal {
           position: fixed;
           top: 0;
