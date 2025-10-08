@@ -72,7 +72,6 @@ const useBackendService = () => {
         description: `Uploaded ${new Date().toLocaleDateString()}`,
         category: category,
         image_url: publicUrl
-        // Removed storage_path to avoid the error
       };
 
       console.log('💾 Saving to projects table:', projectData);
@@ -98,7 +97,6 @@ const useBackendService = () => {
         description: projectData.description,
         uploadDate: new Date().toLocaleDateString(),
         fileName: file.name
-        // Removed storage_path from result too
       };
 
       console.log('🎉 Upload completed successfully:', result);
@@ -190,7 +188,7 @@ const useBackendService = () => {
     }
   };
 
-  // Delete project from Supabase and local storage
+  // Delete project from Supabase and local storage - FIXED VERSION
   const deleteProject = async (projectId) => {
     try {
       console.log('🗑️ Deleting project:', projectId);
@@ -221,7 +219,6 @@ const useBackendService = () => {
       }
 
       // Try to delete from storage if we can determine the path
-      // Note: We don't have storage_path anymore, but we can try to construct it
       if (projectToDelete.src) {
         try {
           // Extract filename from URL and try to delete
@@ -246,15 +243,44 @@ const useBackendService = () => {
         }
       }
 
-      // Update local storage - remove the deleted project
-      const updatedProjects = currentProjects.filter(project => project.id !== projectId);
-      await saveProjects(updatedProjects);
+      // FORCE CLEAR LOCALSTORAGE AND RELOAD FRESH DATA
+      console.log('🧹 Force clearing cache and reloading...');
+      localStorage.removeItem('portfolio_permanent_storage');
       
-      console.log('✅ Project deleted successfully. Remaining projects:', updatedProjects.length);
+      // Fetch fresh data from Supabase
+      const { data: freshProjects, error } = await supabase
+        .from('projects')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('❌ Error fetching fresh data:', error);
+        throw error;
+      }
+
+      // Transform and save fresh data
+      const projects = (freshProjects || []).map(project => ({
+        id: project.id,
+        supabase_id: project.id,
+        title: project.title || 'Untitled Project',
+        description: project.description || 'No description available',
+        category: project.category || 'graphic-design',
+        src: project.image_url,
+        uploadDate: project.created_at ? new Date(project.created_at).toLocaleDateString() : 'Recently',
+        fileName: project.title
+      }));
+
+      localStorage.setItem('portfolio_permanent_storage', JSON.stringify(projects));
+      
+      console.log('✅ Project deleted successfully. Fresh data loaded:', projects.length);
       return { success: true, message: 'Project deleted successfully' };
       
     } catch (error) {
       console.error('💥 Delete project error:', error);
+      
+      // Clear cache on error too
+      localStorage.removeItem('portfolio_permanent_storage');
+      
       throw new Error('Failed to delete project: ' + error.message);
     }
   };
