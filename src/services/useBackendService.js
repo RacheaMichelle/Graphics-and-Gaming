@@ -1,6 +1,36 @@
 import { supabase } from '../supabase'
 
 const useBackendService = () => {
+  // Test storage connection
+  const testStorageConnection = async () => {
+    try {
+      console.log('🧪 Testing storage connection...');
+      
+      const file = new File(['test content'], 'test.txt', { type: 'text/plain' });
+      
+      const { data, error } = await supabase.storage
+        .from('project-images')
+        .upload('test-file.txt', file);
+      
+      if (error) {
+        console.error('❌ Storage test failed:', error);
+        throw error;
+      }
+      
+      console.log('✅ Storage test passed:', data);
+      
+      // Clean up
+      await supabase.storage
+        .from('project-images')
+        .remove(['test-file.txt']);
+      
+      return { success: true, data };
+    } catch (error) {
+      console.error('💥 Storage test error:', error);
+      throw error;
+    }
+  };
+
   // Upload file to Supabase Storage
   const uploadFile = async (file, category) => {
     try {
@@ -11,6 +41,10 @@ const useBackendService = () => {
       if (!file || file.size === 0) {
         throw new Error('File is empty or invalid');
       }
+
+      // Test storage first
+      console.log('🧪 Testing storage before upload...');
+      await testStorageConnection();
 
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
@@ -34,6 +68,8 @@ const useBackendService = () => {
           throw new Error('Storage bucket not found. Please check bucket configuration.');
         } else if (error.message.includes('row-level security')) {
           throw new Error('Storage permissions issue. Please check RLS policies.');
+        } else if (error.message.includes('JWT')) {
+          throw new Error('Authentication issue. Please check Supabase configuration.');
         } else {
           throw new Error('Upload failed: ' + error.message);
         }
@@ -47,16 +83,6 @@ const useBackendService = () => {
         .getPublicUrl(filePath);
 
       console.log('🔗 Public URL:', publicUrl);
-
-      // Verify the URL is accessible
-      try {
-        const response = await fetch(publicUrl, { method: 'HEAD' });
-        if (!response.ok) {
-          console.warn('⚠️ Public URL might not be accessible yet');
-        }
-      } catch (fetchError) {
-        console.warn('⚠️ Could not verify public URL:', fetchError);
-      }
 
       // Save to projects table
       const projectData = {
@@ -82,6 +108,7 @@ const useBackendService = () => {
           await supabase.storage
             .from('project-images')
             .remove([filePath]);
+          console.log('🗑️ Cleaned up uploaded file after project save failure');
         } catch (deleteError) {
           console.error('❌ Failed to cleanup uploaded file:', deleteError);
         }
@@ -104,6 +131,12 @@ const useBackendService = () => {
       };
 
       console.log('🎉 Upload completed successfully:', result);
+      
+      // Update localStorage immediately
+      const currentProjects = await loadProjects();
+      const updatedProjects = [result, ...currentProjects];
+      localStorage.setItem('portfolio_permanent_storage', JSON.stringify(updatedProjects));
+      
       return result;
 
     } catch (error) {
@@ -219,7 +252,13 @@ const useBackendService = () => {
     }
   };
 
-  return { saveProjects, loadProjects, uploadFile, deleteProject };
+  return { 
+    saveProjects, 
+    loadProjects, 
+    uploadFile, 
+    deleteProject,
+    testStorageConnection // Export for testing
+  };
 };
 
 export default useBackendService;
