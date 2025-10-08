@@ -9,13 +9,17 @@ const Services = () => {
 
   const backendService = useBackendService();
 
-  // Load projects from backend service
+  // Load projects from backend service with improved caching
   useEffect(() => {
-    const loadProjects = async () => {
+    const initializeServices = async () => {
       try {
         setIsLoading(true);
         console.log('🔄 Loading projects for Services...');
         
+        // Check for updates first
+        await backendService.checkForUpdates();
+        
+        // Load projects
         const loadedProjects = await backendService.loadProjects();
         console.log('✅ Projects loaded:', loadedProjects);
         
@@ -36,22 +40,55 @@ const Services = () => {
       }
     };
 
-    loadProjects();
+    initializeServices();
     
-    // Listen for storage changes (when About page uploads new images)
-    const handleStorageChange = (e) => {
-      if (e.key === 'portfolio_permanent_storage') {
-        console.log('📦 Storage changed, reloading projects...');
-        loadProjects();
-      }
+    // Set up periodic update check (every 5 minutes)
+    const updateInterval = setInterval(() => {
+      backendService.checkForUpdates();
+    }, 5 * 60 * 1000);
+
+    // Listen for custom storage events (when About page uploads new images)
+    const handleCustomStorageChange = () => {
+      console.log('📦 Storage changed, reloading projects...');
+      initializeServices();
     };
     
-    window.addEventListener('storage', handleStorageChange);
+    // Listen for both storage events and custom events
+    window.addEventListener('storage', handleCustomStorageChange);
+    window.addEventListener('portfolioUpdated', handleCustomStorageChange);
     
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(updateInterval);
+      window.removeEventListener('storage', handleCustomStorageChange);
+      window.removeEventListener('portfolioUpdated', handleCustomStorageChange);
     };
   }, []);
+
+  // Force refresh function
+  const forceRefresh = async () => {
+    try {
+      setIsLoading(true);
+      console.log('🔄 Force refreshing services...');
+      
+      // Clear cache first
+      await backendService.clearAllCache();
+      
+      // Then load fresh data
+      const loadedProjects = await backendService.loadProjects(true);
+      const validProjects = loadedProjects.filter(project => 
+        project && 
+        project.src && 
+        (project.src.startsWith('http') || project.src.startsWith('data:image'))
+      );
+      
+      setProjects(validProjects);
+      console.log('✅ Services force refreshed:', validProjects.length);
+    } catch (error) {
+      console.error('❌ Force refresh failed:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const categories = [
     { id: 'all', name: 'All Projects', icon: '📁', count: projects.length },
@@ -186,9 +223,17 @@ const Services = () => {
           <h2>Our Services</h2>
           <p>Professional creative services to bring your ideas to life</p>
           
-          {/* Debug info - remove in production */}
-          <div style={{fontSize: '12px', color: '#666', marginTop: '10px'}}>
+          {/* Debug info */}
+          <div className="debug-info">
             {isLoading ? '🔄 Loading...' : `Loaded ${projects.length} projects • ${filteredProjects.length} filtered`}
+            <button 
+              onClick={forceRefresh} 
+              className="refresh-small-btn"
+              disabled={isLoading}
+              title="Force refresh from server"
+            >
+              {isLoading ? '⏳' : '🔄'}
+            </button>
           </div>
         </div>
 
@@ -213,6 +258,9 @@ const Services = () => {
                   {service.icon}
                 </div>
                 <h3>{service.name}</h3>
+                <div className="service-count">
+                  {projects.filter(p => p.category === service.id).length} projects
+                </div>
               </div>
             ))}
           </div>
@@ -318,7 +366,7 @@ const Services = () => {
               <div className="view-more">
                 <button 
                   className="btn-primary"
-                  onClick={() => scrollToSection('portfolio')}
+                  onClick={() => scrollToSection('about')}
                 >
                   View All Projects
                 </button>
@@ -341,7 +389,7 @@ const Services = () => {
               </button>
               <button 
                 className="btn-secondary"
-                onClick={() => scrollToSection('portfolio')}
+                onClick={() => scrollToSection('about')}
               >
                 View Full Portfolio
               </button>
@@ -349,17 +397,17 @@ const Services = () => {
           </div>
         )}
 
-        {/* Project Modal */}
+        {/* FIXED Project Modal */}
         {selectedProject && (
-          <div className="project-modal" onClick={() => setSelectedProject(null)}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-overlay" onClick={() => setSelectedProject(null)}>
+            <div className="modal-container" onClick={(e) => e.stopPropagation()}>
               <button 
-                className="close-btn"
+                className="modal-close-btn"
                 onClick={() => setSelectedProject(null)}
               >
                 ×
               </button>
-              <div className="modal-image">
+              <div className="modal-image-wrapper">
                 <img 
                   src={selectedProject.src} 
                   alt={selectedProject.title}
@@ -375,7 +423,7 @@ const Services = () => {
                   }}
                 />
               </div>
-              <div className="modal-info">
+              <div className="modal-content">
                 <h3>{selectedProject.title}</h3>
                 <p>{selectedProject.description}</p>
                 <div className="modal-meta">
@@ -434,6 +482,38 @@ const Services = () => {
           max-width: 600px;
           margin: 0 auto;
           line-height: 1.6;
+        }
+
+        /* Debug Info */
+        .debug-info {
+          font-size: 12px;
+          color: #666;
+          margin-top: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+        }
+
+        .refresh-small-btn {
+          background: #667eea;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          padding: 4px 8px;
+          cursor: pointer;
+          font-size: 10px;
+          transition: all 0.3s ease;
+        }
+
+        .refresh-small-btn:hover:not(:disabled) {
+          background: #5a67d8;
+          transform: scale(1.1);
+        }
+
+        .refresh-small-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
         }
 
         /* Loading State */
@@ -507,8 +587,14 @@ const Services = () => {
         .service-icon-card h3 {
           font-size: 1.3rem;
           color: #1e293b;
-          margin: 0;
+          margin: 0 0 8px 0;
           font-weight: 700;
+        }
+
+        .service-count {
+          font-size: 0.9rem;
+          color: #64748b;
+          font-weight: 500;
         }
 
         /* Portfolio Preview */
@@ -577,7 +663,7 @@ const Services = () => {
           font-size: 0.8rem;
         }
 
-        /* Portfolio Grid - UPDATED with better image handling */
+        /* Portfolio Grid */
         .portfolio-grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -604,7 +690,7 @@ const Services = () => {
           width: 100%;
           height: 200px;
           overflow: hidden;
-          background: #f8fafc; /* Fallback background */
+          background: #f8fafc;
         }
 
         .portfolio-image img {
@@ -612,7 +698,7 @@ const Services = () => {
           height: 100%;
           object-fit: cover;
           transition: transform 0.3s ease;
-          background: #f8fafc; /* Loading background */
+          background: #f8fafc;
         }
 
         .portfolio-item:hover .portfolio-image img {
@@ -812,32 +898,34 @@ const Services = () => {
           transform: translateY(-2px);
         }
 
-        /* Project Modal */
-        .project-modal {
+        /* FIXED Modal Styles - High z-index and scrollable */
+        .modal-overlay {
           position: fixed;
           top: 0;
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0, 0, 0, 0.8);
+          background: rgba(0, 0, 0, 0.9);
           display: flex;
           align-items: center;
           justify-content: center;
-          z-index: 1000;
+          z-index: 9999;
           padding: 20px;
-          backdrop-filter: blur(5px);
+          backdrop-filter: blur(10px);
+          overflow-y: auto;
         }
 
-        .modal-content {
+        .modal-container {
           background: white;
           border-radius: 20px;
-          max-width: 600px;
+          max-width: 700px;
           width: 100%;
           max-height: 90vh;
-          overflow: auto;
+          overflow: hidden;
           position: relative;
-          box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
           animation: modalSlideIn 0.3s ease-out;
+          display: flex;
+          flex-direction: column;
         }
 
         @keyframes modalSlideIn {
@@ -851,10 +939,10 @@ const Services = () => {
           }
         }
 
-        .close-btn {
+        .modal-close-btn {
           position: absolute;
-          top: 15px;
-          right: 15px;
+          top: 20px;
+          right: 20px;
           background: rgba(0, 0, 0, 0.7);
           color: white;
           border: none;
@@ -870,44 +958,42 @@ const Services = () => {
           transition: all 0.3s ease;
         }
 
-        .close-btn:hover {
+        .modal-close-btn:hover {
           background: rgba(0, 0, 0, 0.9);
           transform: scale(1.1);
         }
 
-        .modal-image {
+        .modal-image-wrapper {
           width: 100%;
-          height: 300px;
+          max-height: 400px;
           overflow: hidden;
           position: relative;
           background: #f8fafc;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
-        .modal-image img {
+        .modal-image-wrapper img {
           width: 100%;
-          height: 100%;
-          object-fit: cover;
+          height: auto;
+          max-height: 400px;
+          object-fit: contain;
         }
 
-        .modal-image-fallback {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
+        .modal-content {
+          padding: 30px;
+          overflow-y: auto;
+          flex: 1;
         }
 
-        .modal-info {
-          padding: 25px;
-        }
-
-        .modal-info h3 {
+        .modal-content h3 {
           font-size: 1.6rem;
           color: #1e293b;
           margin-bottom: 12px;
         }
 
-        .modal-info p {
+        .modal-content p {
           color: #64748b;
           line-height: 1.6;
           margin-bottom: 20px;
@@ -976,6 +1062,19 @@ const Services = () => {
           .section-header h2 {
             font-size: 2.5rem;
           }
+
+          .modal-container {
+            margin: 10px;
+            max-height: 95vh;
+          }
+
+          .modal-image-wrapper {
+            max-height: 300px;
+          }
+
+          .modal-image-wrapper img {
+            max-height: 300px;
+          }
         }
 
         @media (max-width: 480px) {
@@ -1006,7 +1105,7 @@ const Services = () => {
             font-size: 1rem;
           }
 
-          .modal-info {
+          .modal-content {
             padding: 20px;
           }
 
