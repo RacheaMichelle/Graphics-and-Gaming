@@ -9,7 +9,7 @@ const Services = () => {
 
   const backendService = useBackendService();
 
-  // Load projects from backend service - FIXED: removed backendService dependency
+  // Load projects from backend service
   useEffect(() => {
     const loadProjects = async () => {
       try {
@@ -51,10 +51,10 @@ const Services = () => {
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, []); // REMOVED backendService dependency to prevent infinite loops
+  }, []);
 
   const categories = [
-    { id: 'all', name: 'All Projects', icon: '📁', count: projects.length },
+    { id: 'all', name: 'All Services', icon: '📁', count: projects.length },
     { id: 'graphic-design', name: 'Graphic Design', icon: '🎨', count: projects.filter(p => p.category === 'graphic-design').length },
     { id: 'photography', name: 'Photography', icon: '📸', count: projects.filter(p => p.category === 'photography').length },
     { id: 'motion-picture', name: 'Motion Picture', icon: '🎬', count: projects.filter(p => p.category === 'motion-picture').length },
@@ -128,7 +128,7 @@ const Services = () => {
       <div className="container">
         <div className="section-header">
           <h2>Our Services</h2>
-          <p>Professional creative services to bring your ideas to life</p>
+          <p>Explore our creative work across different service categories</p>
           
           {/* Debug info - remove in production */}
           <div style={{fontSize: '12px', color: '#666', marginTop: '10px'}}>
@@ -144,93 +144,16 @@ const Services = () => {
           </div>
         )}
 
-        {/* Services Grid */}
+        {/* Services Gallery - Images Only */}
         {!isLoading && (
-          <div className="services-grid">
-            <div className="service-card">
-              <div className="service-icon">🎨</div>
-              <h3>Graphic Design</h3>
-              <ul className="service-features">
-                <li>Logo & Brand Identity</li>
-                <li>Business Cards & Flyers</li>
-                <li>Social Media Graphics</li>
-                <li>Posters & Banners</li>
-                <li>Book Covers & Magazines</li>
-                <li>Receipts & Stickers</li>
-              </ul>
-              <div className="service-footer">
-                <span className="price">Starting at $50</span>
-              </div>
-            </div>
-
-            <div className="service-card featured">
-              <div className="service-icon">📸</div>
-              <h3>Photography</h3>
-              <ul className="service-features">
-                <li>Wedding & Events</li>
-                <li>Photo shoot Sessions</li>
-                <li>Product Photography</li>
-                <li>Commercial Shoots</li>
-              </ul>
-              <div className="service-footer">
-                <span className="price">Starting at $100</span>
-              </div>
-            </div>
-
-            <div className="service-card">
-              <div className="service-icon">🎬</div>
-              <h3>Motion Picture</h3>
-              <ul className="service-features">
-                <li>Business Advertisements</li>
-                <li>Short Films</li>
-                <li>Event Coverage</li>
-                <li>Social Media Videos</li>
-              </ul>
-              <div className="service-footer">
-                <span className="price">Starting at $200</span>
-              </div>
-            </div>
-
-            <div className="service-card featured">
-              <div className="service-icon">🎵</div>
-              <h3>Music Artworks</h3>
-              <ul className="service-features">
-                <li>Cover Art Design</li>
-                <li>Album & Single Branding</li>
-                <li>Promotional Banners</li>
-                <li>Visual Concepts for Artists</li>
-              </ul>
-              <div className="service-footer">
-                <span className="price">Starting at $75</span>
-              </div>
-            </div>
-
-            <div className="service-card">
-              <div className="service-icon">🎮</div>
-              <h3>Gaming Zone</h3>
-              <ul className="service-features">
-                <li>FIFA Tournaments</li>
-                <li>Mortal Kombat Battles</li>
-                <li>Multiplayer Challenges</li>
-                <li>Car Racing Challenges</li>
-              </ul>
-              <div className="service-footer">
-                <span className="price">Starting at $30</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Portfolio Preview Section */}
-        {!isLoading && projects.length > 0 && (
-          <div className="portfolio-preview">
-            <div className="preview-header">
-              <h3>Recent Work</h3>
-              <p>Check out some of our latest projects</p>
+          <div className="services-gallery">
+            <div className="gallery-header">
+              <h3>Our Work Gallery</h3>
+              <p>Browse through our completed projects</p>
             </div>
 
             {/* Category Filter */}
-            <div className="portfolio-filter">
+            <div className="services-filter">
               {categories.map(category => (
                 <button
                   key={category.id}
@@ -245,16 +168,16 @@ const Services = () => {
               ))}
             </div>
 
-            {/* Portfolio Grid */}
-            <div className="portfolio-grid">
+            {/* Services Grid - Images Only */}
+            <div className="services-grid">
               {filteredProjects.length > 0 ? (
-                filteredProjects.slice(0, 6).map(project => (
+                filteredProjects.map(project => (
                   <div 
                     key={project.id} 
-                    className="portfolio-item"
+                    className="service-item"
                     onClick={() => setSelectedProject(project)}
                   >
-                    <div className="portfolio-image">
+                    <div className="service-image">
                       <img 
                         src={project.src} 
                         alt={project.title}
@@ -266,11 +189,11 @@ const Services = () => {
                         <p>Image not available</p>
                         <small>{project.title}</small>
                       </div>
-                      <div className="portfolio-overlay">
-                        <div className="portfolio-info">
+                      <div className="service-overlay">
+                        <div className="service-info">
                           <h4>{project.title}</h4>
                           <p>{project.description}</p>
-                          <span className="category-tag">
+                          <span className="service-category">
                             {getCategoryIcon(project.category)} {getCategoryName(project.category)}
                           </span>
                         </div>
@@ -279,45 +202,48 @@ const Services = () => {
                   </div>
                 ))
               ) : (
-                <div className="empty-portfolio">
+                <div className="empty-services">
                   <div className="empty-icon">
                     {selectedCategory === 'all' ? '📁' : 
                      categories.find(cat => cat.id === selectedCategory)?.icon}
                   </div>
                   <h3>
                     {selectedCategory === 'all' 
-                      ? "No Projects to Display" 
+                      ? "No Projects Available" 
                       : `No ${categories.find(cat => cat.id === selectedCategory)?.name} Projects`
                     }
                   </h3>
                   <p>
                     {projects.length > 0 
                       ? `No projects found in "${categories.find(cat => cat.id === selectedCategory)?.name}" category` 
-                      : "Check back later for new projects"
+                      : "Upload projects in the About page to see them here"
                     }
                   </p>
+                  <div className="empty-actions">
+                    <button 
+                      className="cta-btn"
+                      onClick={() => scrollToSection('about')}
+                    >
+                      Upload Projects
+                    </button>
+                    <button 
+                      className="cta-btn secondary"
+                      onClick={() => window.location.reload()}
+                    >
+                      Refresh Page
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
-
-            {filteredProjects.length > 6 && (
-              <div className="view-more">
-                <button 
-                  className="btn-primary"
-                  onClick={() => scrollToSection('portfolio')}
-                >
-                  View All Projects
-                </button>
-              </div>
-            )}
           </div>
         )}
 
         {/* Call to Action */}
         {!isLoading && (
           <div className="services-cta">
-            <h3>Ready to Get Started?</h3>
-            <p>Let's discuss your project and bring your creative vision to life with our professional services.</p>
+            <h3>Ready to Start Your Project?</h3>
+            <p>Let's create something amazing together. Get in touch to discuss your ideas.</p>
             <div className="cta-buttons">
               <button 
                 className="btn-primary"
@@ -439,108 +365,29 @@ const Services = () => {
           font-size: 1.1rem;
         }
 
-        /* Services Grid */
-        .services-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 30px;
+        /* Services Gallery */
+        .services-gallery {
           margin-bottom: 80px;
         }
 
-        .service-card {
-          background: white;
-          padding: 40px 30px;
-          border-radius: 20px;
-          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-          border: 1px solid #e2e8f0;
-          transition: all 0.3s ease;
-          text-align: center;
-          position: relative;
-        }
-
-        .service-card:hover {
-          transform: translateY(-10px);
-          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .service-card.featured {
-          border: 2px solid #667eea;
-          transform: scale(1.05);
-        }
-
-        .service-card.featured:hover {
-          transform: scale(1.05) translateY(-10px);
-        }
-
-        .service-icon {
-          font-size: 3rem;
-          margin-bottom: 20px;
-        }
-
-        .service-card h3 {
-          font-size: 1.5rem;
-          color: #1e293b;
-          margin-bottom: 20px;
-          font-weight: 700;
-        }
-
-        .service-features {
-          list-style: none;
-          padding: 0;
-          margin: 0 0 25px 0;
-          text-align: left;
-        }
-
-        .service-features li {
-          padding: 8px 0;
-          color: #64748b;
-          position: relative;
-          padding-left: 20px;
-        }
-
-        .service-features li:before {
-          content: '✓';
-          position: absolute;
-          left: 0;
-          color: #10b981;
-          font-weight: bold;
-        }
-
-        .service-footer {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        .price {
-          font-size: 1.3rem;
-          font-weight: 700;
-          color: #667eea;
-        }
-
-        /* Portfolio Preview */
-        .portfolio-preview {
-          margin-bottom: 80px;
-        }
-
-        .preview-header {
+        .gallery-header {
           text-align: center;
           margin-bottom: 40px;
         }
 
-        .preview-header h3 {
+        .gallery-header h3 {
           font-size: 2.2rem;
           color: #1e293b;
           margin-bottom: 12px;
         }
 
-        .preview-header p {
+        .gallery-header p {
           color: #64748b;
           font-size: 1.1rem;
         }
 
-        /* Portfolio Filter */
-        .portfolio-filter {
+        /* Services Filter */
+        .services-filter {
           display: flex;
           justify-content: center;
           gap: 12px;
@@ -584,15 +431,15 @@ const Services = () => {
           font-size: 0.8rem;
         }
 
-        /* Portfolio Grid */
-        .portfolio-grid {
+        /* Services Grid - Images Only */
+        .services-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-          gap: 25px;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: 30px;
           margin-bottom: 40px;
         }
 
-        .portfolio-item {
+        .service-item {
           background: white;
           border-radius: 16px;
           overflow: hidden;
@@ -601,26 +448,26 @@ const Services = () => {
           transition: all 0.3s ease;
         }
 
-        .portfolio-item:hover {
+        .service-item:hover {
           transform: translateY(-8px);
           box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
-        .portfolio-image {
+        .service-image {
           position: relative;
           width: 100%;
-          height: 200px;
+          height: 250px;
           overflow: hidden;
         }
 
-        .portfolio-image img {
+        .service-image img {
           width: 100%;
           height: 100%;
           object-fit: cover;
           transition: transform 0.3s ease;
         }
 
-        .portfolio-item:hover .portfolio-image img {
+        .service-item:hover .service-image img {
           transform: scale(1.05);
         }
 
@@ -658,7 +505,7 @@ const Services = () => {
           margin-top: 5px;
         }
 
-        .portfolio-overlay {
+        .service-overlay {
           position: absolute;
           top: 0;
           left: 0;
@@ -667,68 +514,70 @@ const Services = () => {
           background: linear-gradient(transparent 40%, rgba(0, 0, 0, 0.8));
           display: flex;
           align-items: flex-end;
-          padding: 15px;
+          padding: 20px;
           opacity: 0;
           transition: opacity 0.3s ease;
         }
 
-        .portfolio-item:hover .portfolio-overlay {
+        .service-item:hover .service-overlay {
           opacity: 1;
         }
 
-        .portfolio-info h4 {
+        .service-info h4 {
           color: white;
-          margin-bottom: 6px;
-          font-size: 1.1rem;
+          margin-bottom: 8px;
+          font-size: 1.2rem;
         }
 
-        .portfolio-info p {
+        .service-info p {
           color: #e2e8f0;
-          margin: 0 0 10px 0;
-          font-size: 0.85rem;
+          margin: 0 0 12px 0;
+          font-size: 0.9rem;
           line-height: 1.4;
         }
 
-        .category-tag {
+        .service-category {
           background: rgba(255, 255, 255, 0.2);
           color: white;
-          padding: 4px 10px;
-          border-radius: 15px;
-          font-size: 0.75rem;
+          padding: 4px 12px;
+          border-radius: 20px;
+          font-size: 0.8rem;
           font-weight: 500;
         }
 
         /* Empty State */
-        .empty-portfolio {
+        .empty-services {
           grid-column: 1 / -1;
           text-align: center;
-          padding: 60px 20px;
+          padding: 80px 20px;
           background: white;
-          border-radius: 16px;
+          border-radius: 20px;
           border: 2px dashed #e2e8f0;
         }
 
         .empty-icon {
-          font-size: 3rem;
-          margin-bottom: 15px;
+          font-size: 4rem;
+          margin-bottom: 20px;
           opacity: 0.5;
         }
 
-        .empty-portfolio h3 {
+        .empty-services h3 {
           color: #1e293b;
-          margin-bottom: 10px;
-          font-size: 1.3rem;
+          margin-bottom: 12px;
+          font-size: 1.5rem;
         }
 
-        .empty-portfolio p {
+        .empty-services p {
           color: #64748b;
-          margin-bottom: 20px;
-          font-size: 1rem;
+          margin-bottom: 30px;
+          font-size: 1.1rem;
         }
 
-        /* View More */
-        .view-more {
-          text-align: center;
+        .empty-actions {
+          display: flex;
+          gap: 15px;
+          justify-content: center;
+          flex-wrap: wrap;
         }
 
         /* CTA Section */
@@ -763,7 +612,7 @@ const Services = () => {
           flex-wrap: wrap;
         }
 
-        .btn-primary, .btn-secondary {
+        .btn-primary, .btn-secondary, .cta-btn {
           padding: 14px 28px;
           border: none;
           border-radius: 12px;
@@ -773,12 +622,12 @@ const Services = () => {
           transition: all 0.3s ease;
         }
 
-        .btn-primary {
+        .btn-primary, .cta-btn {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover, .cta-btn:hover {
           transform: translateY(-2px);
           box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
         }
@@ -793,6 +642,15 @@ const Services = () => {
           background: #667eea;
           color: white;
           transform: translateY(-2px);
+        }
+
+        .cta-btn.secondary {
+          background: #64748b;
+          color: white;
+        }
+
+        .cta-btn.secondary:hover {
+          background: #475569;
         }
 
         /* Project Modal */
@@ -922,19 +780,7 @@ const Services = () => {
             grid-template-columns: 1fr;
           }
 
-          .service-card.featured {
-            transform: none;
-          }
-
-          .service-card.featured:hover {
-            transform: translateY(-10px);
-          }
-
-          .portfolio-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .portfolio-filter {
+          .services-filter {
             flex-direction: column;
             align-items: center;
           }
@@ -944,7 +790,7 @@ const Services = () => {
             justify-content: center;
           }
 
-          .cta-buttons {
+          .cta-buttons, .empty-actions {
             flex-direction: column;
           }
 
