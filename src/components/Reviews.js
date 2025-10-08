@@ -1,55 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
-// Simple Backend Service for Reviews - Same pattern as your images
-const useReviewsService = () => {
-  const saveReviews = async (reviews) => {
-    try {
-      localStorage.setItem('portfolio_reviews_storage', JSON.stringify(reviews));
-      return { success: true, message: 'Reviews saved successfully' };
-    } catch (error) {
-      throw new Error('Failed to save reviews: ' + error.message);
-    }
-  };
-  
-  const loadReviews = async () => {
-    try {
-      const data = localStorage.getItem('portfolio_reviews_storage');
-      return data ? JSON.parse(data) : [];
-    } catch (error) {
-      throw new Error('Failed to load reviews: ' + error.message);
-    }
-  };
-  
-  const addReview = async (reviewData) => {
-    try {
-      const reviews = await loadReviews();
-      const newReview = {
-        id: Date.now() + Math.random().toString(36).substr(2, 9),
-        ...reviewData,
-        timestamp: Date.now()
-      };
-      
-      const updatedReviews = [newReview, ...reviews];
-      await saveReviews(updatedReviews);
-      return { success: true, review: newReview };
-    } catch (error) {
-      throw new Error('Failed to add review: ' + error.message);
-    }
-  };
-  
-  const deleteReview = async (reviewId) => {
-    try {
-      const reviews = await loadReviews();
-      const updatedReviews = reviews.filter(review => review.id !== reviewId);
-      await saveReviews(updatedReviews);
-      return { success: true, message: 'Review deleted successfully' };
-    } catch (error) {
-      throw new Error('Failed to delete review: ' + error.message);
-    }
-  };
-  
-  return { saveReviews, loadReviews, addReview, deleteReview };
-};
+import useReviewsService from '../services/useReviewsService'; // Update import path
 
 const Reviews = () => {
   const [reviews, setReviews] = useState([]);
@@ -67,7 +17,7 @@ const Reviews = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [password, setPassword] = useState('');
 
-  const reviewsService = useReviewsService();
+  const reviewsService = useReviewsService(); // Now uses Supabase
 
   // Load reviews on component mount
   useEffect(() => {
