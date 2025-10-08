@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import useBackendService from '../services/useBackendService'; // Update import path
+import useBackendService from '../services/useBackendService';
 
 const About = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -12,7 +12,7 @@ const About = () => {
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef(null);
 
-  const backendService = useBackendService(); // Now uses Supabase
+  const backendService = useBackendService();
 
   // Load projects on component mount
   useEffect(() => {
@@ -39,7 +39,6 @@ const About = () => {
 
   // Owner Login
   const handleOwnerLogin = () => {
-    // CHANGE THIS PASSWORD!
     if (password === 'owner123') {
       setIsOwner(true);
       setShowLogin(false);
@@ -103,6 +102,39 @@ const About = () => {
     }
   };
 
+  // Improved image error handling
+  const handleImageError = (e, project) => {
+    console.error('🖼️ Image failed to load:', project.src);
+    
+    // Hide the broken image
+    e.target.style.display = 'none';
+    
+    // Try to find and show fallback
+    const fallback = e.target.nextElementSibling;
+    if (fallback && fallback.classList.contains('image-fallback')) {
+      fallback.style.display = 'flex';
+    }
+  };
+
+  // Improved image load handling
+  const handleImageLoad = (e) => {
+    console.log('✅ Image loaded successfully');
+    e.target.style.opacity = '1';
+  };
+
+  // Retry image loading
+  const retryImageLoad = (imgElement, src) => {
+    console.log('🔄 Retrying image load...');
+    imgElement.src = src + '?retry=' + Date.now();
+    imgElement.style.display = 'block';
+    imgElement.style.opacity = '0';
+    
+    const fallback = imgElement.nextElementSibling;
+    if (fallback && fallback.classList.contains('image-fallback')) {
+      fallback.style.display = 'none';
+    }
+  };
+
   const triggerFileInput = () => {
     if (!isOwner) return;
     fileInputRef.current?.click();
@@ -116,14 +148,14 @@ const About = () => {
   };
 
   // Categories
-const categories = [
-  { id: 'all', name: 'All Projects', icon: '📁', count: myProjects.length },
-  { id: 'graphic-design', name: 'Graphic Design', icon: '🎨', count: myProjects.filter(p => p.category === 'graphic-design').length },
-  { id: 'photography', name: 'Photography', icon: '📸', count: myProjects.filter(p => p.category === 'photography').length },
-  { id: 'motion-picture', name: 'Motion Picture', icon: '🎬', count: myProjects.filter(p => p.category === 'motion-picture').length },
-  { id: 'music', name: 'Music Artworks', icon: '🎵', count: myProjects.filter(p => p.category === 'music').length },
-  { id: 'games', name: 'Gaming Zone', icon: '🎮', count: myProjects.filter(p => p.category === 'games').length }
-];
+  const categories = [
+    { id: 'all', name: 'All Projects', icon: '📁', count: myProjects.length },
+    { id: 'graphic-design', name: 'Graphic Design', icon: '🎨', count: myProjects.filter(p => p.category === 'graphic-design').length },
+    { id: 'photography', name: 'Photography', icon: '📸', count: myProjects.filter(p => p.category === 'photography').length },
+    { id: 'motion-picture', name: 'Motion Picture', icon: '🎬', count: myProjects.filter(p => p.category === 'motion-picture').length },
+    { id: 'music', name: 'Music Artworks', icon: '🎵', count: myProjects.filter(p => p.category === 'music').length },
+    { id: 'games', name: 'Gaming Zone', icon: '🎮', count: myProjects.filter(p => p.category === 'games').length }
+  ];
 
   // Filter projects based on category
   const filteredProjects = selectedCategory === 'all' 
@@ -291,10 +323,9 @@ const categories = [
                 <li>Business Cards & Flyers</li>
                 <li>Social Media Graphics</li>
                 <li>Posters & Banners</li>
-                <li>Book Covers $ Magazines </li>
-                <li>Receipts $ Stickers,</li>
+                <li>Book Covers & Magazines</li>
+                <li>Receipts & Stickers</li>
               </ul>
-             
             </div>
 
             <div className="service-card featured">
@@ -306,7 +337,6 @@ const categories = [
                 <li>Product Photography</li>
                 <li>Commercial Shoots</li>
               </ul>
-              
             </div>
 
             <div className="service-card">
@@ -318,33 +348,29 @@ const categories = [
                 <li>Event Coverage</li>
                 <li>Social Media Videos</li>
               </ul>
-
-              
-             
             </div>
-            <div className="service-card featured">
-  <div className="service-icon">🎵</div>
-  <h3>Music Artworks</h3>
-  <ul className="service-features">
-    <li>🎨 Cover Art Design</li>
-    <li>💿 Album & Single Branding</li>
-    <li>📱 Promotional Banners</li>
-    <li>🔥 Visual Concepts for Artists</li>
-  </ul>
-</div>
 
             <div className="service-card featured">
-  <div className="service-icon">🎮</div>
-  <h3>Gaming Zone</h3>
-  <ul className="service-features">
-    <li>🔥 FIFA Tournaments</li>
-    <li>⚔️ Mortal Kombat Battles</li>
-    <li>🎧 Multiplayer Challenges</li>
-    <li>🔥 Car Racing Challenges</li>
-    
-  </ul>
-</div>
+              <div className="service-icon">🎵</div>
+              <h3>Music Artworks</h3>
+              <ul className="service-features">
+                <li>Cover Art Design</li>
+                <li>Album & Single Branding</li>
+                <li>Promotional Banners</li>
+                <li>Visual Concepts for Artists</li>
+              </ul>
+            </div>
 
+            <div className="service-card featured">
+              <div className="service-icon">🎮</div>
+              <h3>Gaming Zone</h3>
+              <ul className="service-features">
+                <li>FIFA Tournaments</li>
+                <li>Mortal Kombat Battles</li>
+                <li>Multiplayer Challenges</li>
+                <li>Car Racing Challenges</li>
+              </ul>
+            </div>
           </div>
         </div>
 
@@ -374,92 +400,79 @@ const categories = [
                 </div>
                 
                 <div className="category-selection">
-  <label>Select Category for Upload:</label>
+                  <label>Select Category for Upload:</label>
+                  <div className="category-options">
+                    <button
+                      className={`category-option ${uploadCategory === 'graphic-design' ? 'active' : ''}`}
+                      onClick={() => setUploadCategory('graphic-design')}
+                    >
+                      <span>🎨</span>
+                      Graphic Design
+                    </button>
+                    <button
+                      className={`category-option ${uploadCategory === 'photography' ? 'active' : ''}`}
+                      onClick={() => setUploadCategory('photography')}
+                    >
+                      <span>📸</span>
+                      Photography
+                    </button>
+                    <button
+                      className={`category-option ${uploadCategory === 'music' ? 'active' : ''}`}
+                      onClick={() => setUploadCategory('music')}
+                    >
+                      <span>🎵</span>
+                      Music Artworks
+                    </button>
+                    <button
+                      className={`category-option ${uploadCategory === 'games' ? 'active' : ''}`}
+                      onClick={() => setUploadCategory('games')}
+                    >
+                      <span>🎮</span>
+                      Gaming Zone
+                    </button>
+                    <button
+                      className={`category-option ${uploadCategory === 'motion-picture' ? 'active' : ''}`}
+                      onClick={() => setUploadCategory('motion-picture')}
+                    >
+                      <span>🎬</span>
+                      Motion Picture
+                    </button>
+                  </div>
+                  <div className="selected-category-info">
+                    <strong>Currently selected:</strong>
+                    <span className="category-tag">
+                      {uploadCategory === 'graphic-design' && '🎨 Graphic Design'}
+                      {uploadCategory === 'photography' && '📸 Photography'}
+                      {uploadCategory === 'music' && '🎵 Music Artworks'}
+                      {uploadCategory === 'games' && '🎮 Gaming Zone'}
+                      {uploadCategory === 'motion-picture' && '🎬 Motion Picture'}
+                    </span>
+                  </div>
+                </div>
 
-  <div className="category-options">
-    {/* Graphic Design */}
-    <button
-      className={`category-option ${uploadCategory === 'graphic-design' ? 'active' : ''}`}
-      onClick={() => setUploadCategory('graphic-design')}
-    >
-      <span>🎨</span>
-      Graphic Design
-    </button>
+                <div className="upload-actions">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                    multiple
+                    accept="image/*,video/*"
+                    style={{ display: 'none' }}
+                  />
+                  
+                  <button className="upload-btn" onClick={triggerFileInput}>
+                    📤 Upload to {
+                      uploadCategory === 'graphic-design' ? 'Graphic Design' :
+                      uploadCategory === 'photography' ? 'Photography' :
+                      uploadCategory === 'music' ? 'Music Artworks' :
+                      uploadCategory === 'games' ? 'Gaming Zone' :
+                      uploadCategory === 'motion-picture' ? 'Motion Picture' :
+                      'Select a Category'
+                    }
+                  </button>
 
-    {/* Photography */}
-    <button
-      className={`category-option ${uploadCategory === 'photography' ? 'active' : ''}`}
-      onClick={() => setUploadCategory('photography')}
-    >
-      <span>📸</span>
-      Photography
-    </button>
-
-    {/* Music Artworks */}
-    <button
-      className={`category-option ${uploadCategory === 'music' ? 'active' : ''}`}
-      onClick={() => setUploadCategory('music')}
-    >
-      <span>🎵</span>
-      Music Artworks
-    </button>
-
-    {/* Gaming Zone */}
-    <button
-      className={`category-option ${uploadCategory === 'games' ? 'active' : ''}`}
-      onClick={() => setUploadCategory('games')}
-    >
-      <span>🎮</span>
-      Gaming Zone
-    </button>
-
-    {/* Motion Picture */}
-    <button
-      className={`category-option ${uploadCategory === 'motion-picture' ? 'active' : ''}`}
-      onClick={() => setUploadCategory('motion-picture')}
-    >
-      <span>🎬</span>
-      Motion Picture
-    </button>
-  </div>
-
-  {/* Selected Category Display */}
-  <div className="selected-category-info">
-    <strong>Currently selected:</strong>
-    <span className="category-tag">
-      {uploadCategory === 'graphic-design' && '🎨 Graphic Design'}
-      {uploadCategory === 'photography' && '📸 Photography'}
-      {uploadCategory === 'music' && '🎵 Music Artworks'}
-      {uploadCategory === 'games' && '🎮 Gaming Zone'}
-      {uploadCategory === 'motion-picture' && '🎬 Motion Picture'}
-    </span>
-  </div>
-</div>
-
-{/* Upload Actions */}
-<div className="upload-actions">
-  <input
-    type="file"
-    ref={fileInputRef}
-    onChange={handleFileUpload}
-    multiple
-    accept="image/*,video/*"
-    style={{ display: 'none' }}
-  />
-  
-  <button className="upload-btn" onClick={triggerFileInput}>
-    📤 Upload to {
-      uploadCategory === 'graphic-design' ? 'Graphic Design' :
-      uploadCategory === 'photography' ? 'Photography' :
-      uploadCategory === 'music' ? 'Music Artworks' :
-      uploadCategory === 'games' ? 'Gaming Zone' :
-      uploadCategory === 'motion-picture' ? 'Motion Picture' :
-      'Select a Category'
-    }
-  </button>
-
-  <small>Supported: Images (JPG, PNG, GIF) • Videos (MP4, MOV)</small>
-</div>
+                  <small>Supported: Images (JPG, PNG, GIF) • Videos (MP4, MOV)</small>
+                </div>
 
                 {myProjects.length > 0 && (
                   <div className="management-info">
@@ -513,17 +526,45 @@ const categories = [
                   onClick={() => setSelectedImage(project)}
                 >
                   <div className="project-image">
-                    <img src={project.src} alt={project.title} />
+                    <img 
+                      src={project.src} 
+                      alt={project.title}
+                      loading="lazy"
+                      decoding="async"
+                      onLoad={handleImageLoad}
+                      onError={(e) => handleImageError(e, project)}
+                      style={{ 
+                        opacity: 0, 
+                        transition: 'opacity 0.3s ease',
+                        background: '#f8fafc'
+                      }}
+                    />
+                    
+                    {/* Image Fallback */}
+                    <div className="image-fallback">
+                      <span>📷</span>
+                      <p>Image not available</p>
+                      <small>{project.title}</small>
+                      <button 
+                        className="retry-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const img = e.target.closest('.project-image').querySelector('img');
+                          retryImageLoad(img, project.src);
+                        }}
+                      >
+                        🔄 Retry
+                      </button>
+                    </div>
                     
                     {/* Category Badge */}
                     <div className="category-badge">
-  {project.category === 'graphic-design' && '🎨 Design'}
-  {project.category === 'photography' && '📸 Photo'}
-  {project.category === 'music' && '🎵 Music'}
-  {project.category === 'games' && '🎮 Game'}
-  {project.category === 'motion-picture' && '🎬 Video'}
-</div>
-
+                      {project.category === 'graphic-design' && '🎨 Design'}
+                      {project.category === 'photography' && '📸 Photo'}
+                      {project.category === 'music' && '🎵 Music'}
+                      {project.category === 'games' && '🎮 Game'}
+                      {project.category === 'motion-picture' && '🎬 Video'}
+                    </div>
                     
                     {/* Delete Button - ONLY SHOWS FOR OWNER */}
                     {isOwner && (
@@ -624,7 +665,35 @@ const categories = [
               >
                 ×
               </button>
-              <img src={selectedImage.src} alt={selectedImage.title} />
+              <div className="modal-image-container">
+                <img 
+                  src={selectedImage.src} 
+                  alt={selectedImage.title}
+                  onLoad={(e) => {
+                    e.target.style.opacity = '1';
+                    console.log('✅ Modal image loaded');
+                  }}
+                  onError={(e) => {
+                    console.error('❌ Modal image failed to load');
+                    e.target.style.display = 'none';
+                    const fallback = document.createElement('div');
+                    fallback.className = 'modal-image-fallback';
+                    fallback.innerHTML = `
+                      <div style="padding: 40px; text-align: center; color: #666; background: #f8fafc; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <span style="font-size: 3rem;">📷</span>
+                        <p style="margin: 10px 0; font-size: 1.1rem;">Image not available</p>
+                        <p style="margin: 0; font-size: 0.9rem; opacity: 0.7;">${selectedImage.title}</p>
+                      </div>
+                    `;
+                    e.target.parentNode.appendChild(fallback);
+                  }}
+                  style={{ 
+                    opacity: 0, 
+                    transition: 'opacity 0.3s ease',
+                    background: '#f8fafc'
+                  }}
+                />
+              </div>
               <div className="modal-info">
                 <h3>{selectedImage.title}</h3>
                 <p>{selectedImage.description}</p>
@@ -668,7 +737,7 @@ const categories = [
           padding: 0 20px;
         }
 
-        /* Owner Access Bar */
+        /* Owner Access Bar - styles remain the same */
         .owner-access-bar {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
@@ -754,7 +823,7 @@ const categories = [
           box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
         }
 
-        /* Login Modal */
+        /* Login Modal - styles remain the same */
         .login-modal-overlay {
           position: fixed;
           top: 0;
@@ -895,7 +964,7 @@ const categories = [
           transform: translateY(-2px);
         }
 
-        /* About Header */
+        /* About Header - styles remain the same */
         .about-header {
           text-align: center;
           margin-bottom: 80px;
@@ -964,7 +1033,7 @@ const categories = [
           letter-spacing: 0.5px;
         }
 
-        /* About Content */
+        /* About Content - styles remain the same */
         .about-content {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -1035,7 +1104,7 @@ const categories = [
           margin: 0;
         }
 
-        /* About Visual */
+        /* About Visual - styles remain the same */
         .about-visual {
           position: relative;
         }
@@ -1110,7 +1179,7 @@ const categories = [
           font-weight: 600;
         }
 
-        /* Services Section */
+        /* Services Section - styles remain the same */
         .services-section {
           margin-bottom: 100px;
         }
@@ -1188,18 +1257,6 @@ const categories = [
           font-weight: bold;
         }
 
-        .service-footer {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        .price {
-          font-size: 1.3rem;
-          font-weight: 700;
-          color: #667eea;
-        }
-
         /* Projects Section */
         .projects-section {
           margin-bottom: 80px;
@@ -1225,7 +1282,7 @@ const categories = [
           line-height: 1.6;
         }
 
-        /* Upload Area */
+        /* Upload Area - styles remain the same */
         .upload-area {
           margin-bottom: 40px;
         }
@@ -1368,7 +1425,7 @@ const categories = [
           font-size: 0.9rem;
         }
 
-        /* Project Stats */
+        /* Project Stats - styles remain the same */
         .project-stats {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -1405,7 +1462,7 @@ const categories = [
           font-weight: 600;
         }
 
-        /* Category Filter */
+        /* Category Filter - styles remain the same */
         .category-filter {
           display: flex;
           gap: 10px;
@@ -1456,7 +1513,7 @@ const categories = [
           font-size: 0.8rem;
         }
 
-        /* Projects Grid */
+        /* Projects Grid - UPDATED with better image handling */
         .projects-grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -1484,17 +1541,75 @@ const categories = [
           width: 100%;
           height: 250px;
           overflow: hidden;
+          background: #f8fafc; /* Fallback background */
         }
 
         .project-image img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transition: transform 0.3s ease;
+          transition: all 0.3s ease;
+          background: #f8fafc; /* Loading background */
         }
 
         .project-card:hover .project-image img {
           transform: scale(1.1);
+        }
+
+        /* Image Fallback Styles */
+        .image-fallback {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          display: none;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 2rem;
+          text-align: center;
+          padding: 20px;
+          border-radius: 15px;
+        }
+
+        .image-fallback span {
+          font-size: 3rem;
+          margin-bottom: 10px;
+          opacity: 0.8;
+        }
+
+        .image-fallback p {
+          font-size: 1rem;
+          margin: 5px 0;
+          opacity: 0.9;
+          font-weight: 500;
+        }
+
+        .image-fallback small {
+          font-size: 0.8rem;
+          opacity: 0.7;
+          margin-top: 5px;
+        }
+
+        .retry-btn {
+          background: rgba(255, 255, 255, 0.2);
+          color: white;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          padding: 8px 16px;
+          border-radius: 8px;
+          cursor: pointer;
+          margin-top: 10px;
+          font-size: 0.8rem;
+          transition: all 0.3s ease;
+          backdrop-filter: blur(10px);
+        }
+
+        .retry-btn:hover {
+          background: rgba(255, 255, 255, 0.3);
+          transform: translateY(-2px);
         }
 
         .category-badge {
@@ -1583,7 +1698,7 @@ const categories = [
           font-size: 0.7rem;
         }
 
-        /* Empty State */
+        /* Empty State - styles remain the same */
         .empty-state {
           grid-column: 1 / -1;
           text-align: center;
@@ -1611,7 +1726,7 @@ const categories = [
           font-size: 1.1rem;
         }
 
-        /* CTA Section */
+        /* CTA Section - styles remain the same */
         .cta-section {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
@@ -1675,7 +1790,7 @@ const categories = [
           transform: translateY(-3px);
         }
 
-        /* Modal */
+        /* Modal - UPDATED with better image handling */
         .modal {
           position: fixed;
           top: 0;
@@ -1726,9 +1841,17 @@ const categories = [
           transform: scale(1.1);
         }
 
-        .modal-content img {
+        .modal-image-container {
           width: 100%;
           height: 400px;
+          overflow: hidden;
+          position: relative;
+          background: #f8fafc;
+        }
+
+        .modal-image-container img {
+          width: 100%;
+          height: 100%;
           object-fit: cover;
         }
 
