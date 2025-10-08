@@ -123,7 +123,7 @@ const Services = () => {
     e.target.parentNode.appendChild(fallback);
   };
 
-   // Services data with big icons only
+  // Services data with big icons only
   const services = [
     { 
       id: 'graphic-design', 
@@ -191,15 +191,6 @@ const Services = () => {
                   {service.icon}
                 </div>
                 <h3>{service.name}</h3>
-                <p className="service-description">{service.description}</p>
-                <div className="service-features-mini">
-                  {service.features.slice(0, 3).map((feature, index) => (
-                    <span key={index} className="feature-tag">{feature}</span>
-                  ))}
-                </div>
-                <div className="service-footer">
-                  <span className="price">{service.price}</span>
-                </div>
               </div>
             ))}
           </div>
@@ -426,14 +417,14 @@ const Services = () => {
         /* Services Icons Grid */
         .services-icons-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
           gap: 30px;
           margin-bottom: 80px;
         }
 
         .service-icon-card {
           background: white;
-          padding: 40px 30px;
+          padding: 40px 20px;
           border-radius: 20px;
           box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
           border: 1px solid #e2e8f0;
@@ -466,45 +457,10 @@ const Services = () => {
         }
 
         .service-icon-card h3 {
-          font-size: 1.5rem;
+          font-size: 1.3rem;
           color: #1e293b;
-          margin-bottom: 12px;
+          margin: 0;
           font-weight: 700;
-        }
-
-        .service-description {
-          color: #64748b;
-          margin-bottom: 20px;
-          line-height: 1.5;
-          font-size: 1rem;
-        }
-
-        .service-features-mini {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-          margin-bottom: 25px;
-        }
-
-        .feature-tag {
-          background: #f8fafc;
-          color: #475569;
-          padding: 6px 12px;
-          border-radius: 15px;
-          font-size: 0.85rem;
-          border: 1px solid #e2e8f0;
-        }
-
-        .service-footer {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        .price {
-          font-size: 1.2rem;
-          font-weight: 700;
-          color: #667eea;
         }
 
         /* Portfolio Preview */
@@ -908,13 +864,22 @@ const Services = () => {
 
         @media (max-width: 768px) {
           .services-icons-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
           }
 
           .service-icon-large {
             width: 80px;
             height: 80px;
             font-size: 2.5rem;
+          }
+
+          .service-icon-card {
+            padding: 30px 15px;
+          }
+
+          .service-icon-card h3 {
+            font-size: 1.1rem;
           }
 
           .portfolio-grid {
@@ -947,6 +912,25 @@ const Services = () => {
 
           .section-header h2 {
             font-size: 2rem;
+          }
+
+          .services-icons-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+          }
+
+          .service-icon-large {
+            width: 60px;
+            height: 60px;
+            font-size: 2rem;
+          }
+
+          .service-icon-card {
+            padding: 20px 10px;
+          }
+
+          .service-icon-card h3 {
+            font-size: 1rem;
           }
 
           .modal-info {
