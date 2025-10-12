@@ -1,13 +1,13 @@
 .App {
 
-  background: #1a183a;
-  color: rgb(10, 23, 31);
+  background: #d6d4f9;
+  color: rgb(203, 228, 244);
   min-height: 100vh;
 }
 
 body {
-  background: #121927;
-  color: rgb(16, 26, 29);
+  background: #c4d6f9;
+  color: rgb(149, 220, 242);
 }
 
 .App-logo {

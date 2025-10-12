@@ -63,289 +63,879 @@ const Contact = () => {
   };
 
   return (
-    <section className="contact" id="contact">
-      <div className="container">
-        <div className="section-title">
-          <h2>Get In Touch</h2>
-          <p>Ready to capture your special moments? Let's create something amazing together</p>
+    <div className="contact-container">
+      {/* Animated Background Elements with Graphic Design Images */}
+      <div className="background-elements">
+        <div className="floating-shape shape-1"></div>
+        <div className="floating-shape shape-2"></div>
+        <div className="floating-shape shape-3"></div>
+        <div className="floating-shape shape-4"></div>
+        <div className="floating-shape shape-5"></div>
+        <div className="animated-grid"></div>
+        
+        {/* Graphic Design Elements - CSS Shapes */}
+        <div className="graphic-element graphic-1">
+          <div className="paint-brush"></div>
+        </div>
+        <div className="graphic-element graphic-2">
+          <div className="color-palette"></div>
+        </div>
+        <div className="graphic-element graphic-3">
+          <div className="pencil-icon"></div>
+        </div>
+        <div className="graphic-element graphic-4">
+          <div className="ruler-icon"></div>
+        </div>
+        <div className="graphic-element graphic-5">
+          <div className="camera-icon"></div>
         </div>
         
-        <div className="contact-container">
-          {/* Contact Information */}
-          <div className="contact-info">
-            <div className="info-card">
-              <h3>Let's Start Your Project</h3>
-              <p className="info-description">
-                We're here to bring your vision to life. Reach out and let's discuss how we can make your event unforgettable.
-              </p>
-              
-              <div className="contact-items">
-                <div className="contact-item">
-                  <div className="contact-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z" fill="currentColor"/>
-                    </svg>
-                  </div>
-                  <div className="contact-details">
-                    <h4>Our Location</h4>
-                    <p>Nansana Municipality, Kampala, Uganda</p>
-                  </div>
-                </div>
-
-                <div className="contact-item">
-                  <div className="contact-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM20 8L12 13L4 8V6L12 11L20 6V8Z" fill="currentColor"/>
-                    </svg>
-                  </div>
-                  <div className="contact-details">
-                    <h4>Email Us</h4>
-                    <p>lukwagorj77@gmail.com</p>
-                  </div>
-                </div>
-
-                <div className="contact-item">
-                  <div className="contact-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M20 15.5C18.8 15.5 17.5 15.3 16.4 14.9C16.3 14.9 16.2 14.9 16.1 14.9C15.8 14.9 15.6 15 15.4 15.2L13.2 17.4C10.4 15.9 8 13.6 6.6 10.8L8.8 8.6C9.1 8.3 9.2 7.9 9 7.6C8.7 6.5 8.5 5.2 8.5 4C8.5 3.4 8.1 3 7.5 3H4C3.4 3 3 3.4 3 4C3 13.4 10.6 21 20 21C20.6 21 21 20.6 21 20V16.5C21 15.9 20.6 15.5 20 15.5Z" fill="currentColor"/>
-                    </svg>
-                  </div>
-                  <div className="contact-details">
-                    <h4>Call Us</h4>
-                    <p>0757660015 / 0763098162</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="social-section">
-                <h4>Follow Us</h4>
-                <div className="social-links">
-                  <a href="#" aria-label="Facebook" className="social-link">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                    </svg>
-                  </a>
-                  <a href="#" aria-label="Instagram" className="social-link">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987c6.62 0 11.987-5.367 11.987-11.987C24.014 5.367 18.637.001 12.017.001zM8.449 16.988c-1.297 0-2.448-.49-3.323-1.297C4.24 14.815 3.75 13.664 3.75 12.367s.49-2.448 1.376-3.323c.875-.807 2.026-1.297 3.323-1.297s2.448.49 3.323 1.297c.886.875 1.376 2.026 1.376 3.323s-.49 2.448-1.376 3.323c-.875.808-2.026 1.297-3.323 1.297z"/>
-                    </svg>
-                  </a>
-                  <a href="#" aria-label="Twitter" className="social-link">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723 10.016 10.016 0 01-3.127 1.184 4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.937 4.937 0 004.604 3.417 9.868 9.868 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.054 0 13.999-7.496 13.999-13.986 0-.209 0-.42-.015-.63a9.936 9.936 0 002.46-2.543l-.047-.02z"/>
-                    </svg>
-                  </a>
-                  <a href="#" aria-label="LinkedIn" className="social-link">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                    </svg>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Contact Form */}
-          <div className="contact-form">
-            <div className="form-card">
-              <h3>Send Us a Message</h3>
-              <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label htmlFor="name">Your Name *</label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    disabled={isSubmitting}
-                    placeholder="Enter your full name"
-                    className={submitStatus === 'error' && !formData.name ? 'error' : ''}
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="email">Your Email *</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    disabled={isSubmitting}
-                    placeholder="Enter your email address"
-                    className={submitStatus === 'error' && !formData.email ? 'error' : ''}
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="service">Service Interested In *</label>
-                  <select
-                    id="service"
-                    name="service"
-                    value={formData.service}
-                    onChange={handleChange}
-                    required
-                    disabled={isSubmitting}
-                    className={submitStatus === 'error' && !formData.service ? 'error' : ''}
-                  >
-                    <option value="">Select a service</option>
-                    <option value="wedding-photography">Wedding Photography</option>
-                    <option value="birthday-photography">Birthday Photography</option>
-                    <option value="event-photography">Event/Party Photography</option>
-                    <option value="digital-portraits">Photo Shoots</option>
-                    <option value="graphic-design">Graphic Design</option>
-                    <option value="gadgets">Gadgets & Electronics</option>
-                    <option value="gaming">Gaming Services</option>
-                    <option value="gaming">Music Services</option>
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="message">Your Message *</label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    disabled={isSubmitting}
-                    placeholder="Tell us about your project, event details, or any specific requirements..."
-                    rows="5"
-                    className={submitStatus === 'error' && !formData.message ? 'error' : ''}
-                  ></textarea>
-                </div>
-
-                {/* Status Messages */}
-                {submitStatus === 'success' && (
-                  <div className="status-message success">
-                    <div className="status-icon">✓</div>
-                    <div className="status-content">
-                      <strong>Message Sent Successfully!</strong>
-                      <p>Thank you for reaching out. We'll get back to you within 24 hours.</p>
-                    </div>
-                  </div>
-                )}
-
-                {submitStatus === 'error' && (
-                  <div className="status-message error">
-                    <div className="status-icon">!</div>
-                    <div className="status-content">
-                      <strong>Unable to Send Message</strong>
-                      <p>Please check all fields and try again, or contact us directly.</p>
-                    </div>
-                  </div>
-                )}
-
-                <button 
-                  type="submit" 
-                  className={`submit-btn ${isSubmitting ? 'submitting' : ''}`}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="spinner"></div>
-                      Sending Message...
-                    </>
-                  ) : (
-                    <>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="currentColor"/>
-                      </svg>
-                      Send Message
-                    </>
-                  )}
-                </button>
-
-                <p className="required-note">
-                  * Required fields
-                </p>
-              </form>
-            </div>
-          </div>
+        {/* Floating Design Elements */}
+        <div className="design-element design-1">
+          <div className="design-inner circle-gradient"></div>
         </div>
+        <div className="design-element design-2">
+          <div className="design-inner triangle-shape"></div>
+        </div>
+        <div className="design-element design-3">
+          <div className="design-inner square-rotating"></div>
+        </div>
+        <div className="design-element design-4">
+          <div className="design-inner hexagon-shape"></div>
+        </div>
+        <div className="design-element design-5">
+          <div className="design-inner star-shape"></div>
+        </div>
+
+        {/* Additional Graphic Elements */}
+        <div className="floating-dot dot-1"></div>
+        <div className="floating-dot dot-2"></div>
+        <div className="floating-dot dot-3"></div>
+        <div className="floating-dot dot-4"></div>
+        <div className="floating-dot dot-5"></div>
+        <div className="floating-dot dot-6"></div>
       </div>
 
+      <main className="main-content">
+        <section id="contact" className="section">
+          <div className="contact-content">
+            {/* Header Section */}
+            <div className="contact-header">
+              <div className="section-badge">Get In Touch</div>
+              <h1 className="contact-title">
+                Let's Create Something
+                <span className="gradient-text"> Amazing Together</span>
+              </h1>
+              <p className="contact-subtitle">
+                Ready to bring your vision to life? Reach out and let's discuss how we can make your project unforgettable.
+              </p>
+            </div>
+
+            <div className="contact-grid">
+              {/* Contact Information */}
+              <div className="contact-info-section">
+                <div className="info-card">
+                  <div className="card-header">
+                    <div className="card-icon">💬</div>
+                    <h3>Start Your Project</h3>
+                  </div>
+                  
+                  <p className="card-description">
+                    We're here to transform your ideas into reality. Whether it's photography, design, or creative services, let's make it happen.
+                  </p>
+
+                  <div className="contact-methods">
+                    <div className="contact-method">
+                      <div className="method-icon">
+                        <span>📍</span>
+                      </div>
+                      <div className="method-details">
+                        <h4>Our Location</h4>
+                        <p>Nansana Municipality, Kampala, Uganda</p>
+                      </div>
+                    </div>
+
+                    <div className="contact-method">
+                      <div className="method-icon">
+                        <span>📧</span>
+                      </div>
+                      <div className="method-details">
+                        <h4>Email Us</h4>
+                        <p>lukwagorj77@gmail.com</p>
+                      </div>
+                    </div>
+
+                    <div className="contact-method">
+                      <div className="method-icon">
+                        <span>📞</span>
+                      </div>
+                      <div className="method-details">
+                        <h4>Call Us</h4>
+                        <p>0757660015 / 0763098162</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quick Stats */}
+                  <div className="quick-stats">
+                    <div className="stat">
+                      <div className="stat-number">50+</div>
+                      <div className="stat-label">Projects Done</div>
+                    </div>
+                    <div className="stat">
+                      <div className="stat-number">24h</div>
+                      <div className="stat-label">Response Time</div>
+                    </div>
+                    <div className="stat">
+                      <div className="stat-number">100%</div>
+                      <div className="stat-label">Satisfaction</div>
+                    </div>
+                  </div>
+
+                  {/* Social Links */}
+                  <div className="social-section">
+                    <h4>Follow Our Journey</h4>
+                    <div className="social-links">
+                      <a href="#" className="social-link" aria-label="Facebook">
+                        <span className="social-icon">📘</span>
+                        <span>Facebook</span>
+                      </a>
+                      <a href="#" className="social-link" aria-label="Instagram">
+                        <span className="social-icon">📷</span>
+                        <span>Instagram</span>
+                      </a>
+                      <a href="#" className="social-link" aria-label="Twitter">
+                        <span className="social-icon">🐦</span>
+                        <span>Twitter</span>
+                      </a>
+                      <a href="#" className="social-link" aria-label="LinkedIn">
+                        <span className="social-icon">💼</span>
+                        <span>LinkedIn</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contact Form */}
+              <div className="contact-form-section">
+                <div className="form-card">
+                  <div className="form-header">
+                    <h3>Send Your Message</h3>
+                    <p>Fill out the form below and we'll get back to you ASAP</p>
+                  </div>
+
+                  <form onSubmit={handleSubmit} className="contact-form">
+                    <div className="form-group">
+                      <label htmlFor="name" className="form-label">
+                        Your Name *
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                        disabled={isSubmitting}
+                        placeholder="Enter your full name"
+                        className={`form-input ${submitStatus === 'error' && !formData.name ? 'error' : ''}`}
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="email" className="form-label">
+                        Your Email *
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        disabled={isSubmitting}
+                        placeholder="Enter your email address"
+                        className={`form-input ${submitStatus === 'error' && !formData.email ? 'error' : ''}`}
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="service" className="form-label">
+                        Service Interested In *
+                      </label>
+                      <select
+                        id="service"
+                        name="service"
+                        value={formData.service}
+                        onChange={handleChange}
+                        required
+                        disabled={isSubmitting}
+                        className={`form-select ${submitStatus === 'error' && !formData.service ? 'error' : ''}`}
+                      >
+                        <option value="">Select a service</option>
+                        <option value="wedding-photography">🎭 Wedding Photography</option>
+                        <option value="birthday-photography">🎂 Birthday Photography</option>
+                        <option value="event-photography">🎉 Event/Party Photography</option>
+                        <option value="digital-portraits">📸 Photo Shoots</option>
+                        <option value="graphic-design">🎨 Graphic Design</option>
+                        <option value="motion-picture">🎬 Motion Picture</option>
+                        <option value="music">🎵 Music Artworks</option>
+                        <option value="gaming">🎮 Gaming Services</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="message" className="form-label">
+                        Your Message *
+                      </label>
+                      <textarea
+                        id="message"
+                        name="message"
+                        value={formData.message}
+                        onChange={handleChange}
+                        required
+                        disabled={isSubmitting}
+                        placeholder="Tell us about your project, event details, or any specific requirements..."
+                        rows="5"
+                        className={`form-textarea ${submitStatus === 'error' && !formData.message ? 'error' : ''}`}
+                      ></textarea>
+                    </div>
+
+                    {/* Status Messages */}
+                    {submitStatus === 'success' && (
+                      <div className="status-message success">
+                        <div className="status-icon">🎉</div>
+                        <div className="status-content">
+                          <strong>Message Sent Successfully!</strong>
+                          <p>Thank you for reaching out. We'll get back to you within 24 hours.</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {submitStatus === 'error' && (
+                      <div className="status-message error">
+                        <div className="status-icon">⚠️</div>
+                        <div className="status-content">
+                          <strong>Unable to Send Message</strong>
+                          <p>Please check all fields and try again, or contact us directly.</p>
+                        </div>
+                      </div>
+                    )}
+
+                    <button 
+                      type="submit" 
+                      className={`submit-btn ${isSubmitting ? 'submitting' : ''}`}
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="spinner"></div>
+                          Sending Message...
+                        </>
+                      ) : (
+                        <>
+                          <span className="btn-icon">🚀</span>
+                          Send Message
+                        </>
+                      )}
+                    </button>
+
+                    <p className="form-note">
+                      * Required fields. We respect your privacy and won't share your information.
+                    </p>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
       <style jsx>{`
-        .contact {
-          padding: 100px 0;
-          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        .contact-container {
+          min-height: 100vh;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          position: relative;
+          overflow: hidden;
+        }
+
+        /* Animated Background */
+        .background-elements {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 0;
+          pointer-events: none;
+        }
+
+        .floating-shape {
+          position: absolute;
+          border-radius: 50%;
+          background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+          animation: float 6s ease-in-out infinite;
+        }
+
+        .shape-1 {
+          width: 200px;
+          height: 200px;
+          top: 10%;
+          left: 5%;
+          animation-delay: 0s;
+        }
+
+        .shape-2 {
+          width: 150px;
+          height: 150px;
+          top: 60%;
+          right: 10%;
+          animation-delay: 2s;
+        }
+
+        .shape-3 {
+          width: 100px;
+          height: 100px;
+          bottom: 20%;
+          left: 15%;
+          animation-delay: 4s;
+        }
+
+        .shape-4 {
+          width: 120px;
+          height: 120px;
+          top: 30%;
+          right: 20%;
+          animation-delay: 1s;
+        }
+
+        .shape-5 {
+          width: 80px;
+          height: 80px;
+          bottom: 10%;
+          right: 15%;
+          animation-delay: 3s;
+        }
+
+        .animated-grid {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: 
+            linear-gradient(90deg, transparent 79px, rgba(255,255,255,0.03) 81px, rgba(255,255,255,0.03) 81px, transparent 83px),
+            linear-gradient(rgba(255,255,255,0.03) 79px, transparent 81px, transparent 81px, rgba(255,255,255,0.03) 83px);
+          background-size: 85px 85px;
+          animation: gridMove 20s linear infinite;
+        }
+
+        /* Graphic Design Elements - CSS Shapes */
+        .graphic-element {
+          position: absolute;
+          animation: graphicFloat 8s ease-in-out infinite;
+          z-index: 1;
+        }
+
+        .graphic-1 {
+          top: 15%;
+          left: 8%;
+          animation-delay: 0s;
+        }
+
+        .graphic-2 {
+          top: 25%;
+          right: 12%;
+          animation-delay: 1s;
+        }
+
+        .graphic-3 {
+          bottom: 30%;
+          left: 10%;
+          animation-delay: 2s;
+        }
+
+        .graphic-4 {
+          bottom: 20%;
+          right: 15%;
+          animation-delay: 3s;
+        }
+
+        .graphic-5 {
+          top: 40%;
+          left: 5%;
+          animation-delay: 4s;
+        }
+
+        /* Paint Brush */
+        .paint-brush {
+          width: 40px;
+          height: 60px;
+          background: linear-gradient(45deg, #ff6b6b, #ffa726);
+          border-radius: 20px 20px 5px 5px;
+          position: relative;
+          transform: rotate(-30deg);
+        }
+
+        .paint-brush::before {
+          content: '';
+          position: absolute;
+          top: -15px;
+          left: 5px;
+          width: 30px;
+          height: 20px;
+          background: #5d4037;
+          border-radius: 10px 10px 0 0;
+        }
+
+        .paint-brush::after {
+          content: '';
+          position: absolute;
+          bottom: -10px;
+          left: 15px;
+          width: 10px;
+          height: 15px;
+          background: #ffa726;
+          border-radius: 0 0 5px 5px;
+        }
+
+        /* Color Palette */
+        .color-palette {
+          width: 50px;
+          height: 50px;
+          background: #4fc3f7;
+          border-radius: 50%;
           position: relative;
         }
 
-        .container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 20px;
+        .color-palette::before {
+          content: '';
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          width: 15px;
+          height: 15px;
+          background: #ffeb3b;
+          border-radius: 50%;
         }
 
-        .section-title {
+        .color-palette::after {
+          content: '';
+          position: absolute;
+          bottom: 10px;
+          right: 10px;
+          width: 12px;
+          height: 12px;
+          background: #e91e63;
+          border-radius: 50%;
+        }
+
+        /* Pencil Icon */
+        .pencil-icon {
+          width: 40px;
+          height: 40px;
+          background: linear-gradient(45deg, #ff9800, #ff5722);
+          clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+          transform: rotate(45deg);
+        }
+
+        /* Ruler Icon */
+        .ruler-icon {
+          width: 60px;
+          height: 20px;
+          background: #795548;
+          position: relative;
+        }
+
+        .ruler-icon::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background: repeating-linear-gradient(
+            to right,
+            white,
+            white 4px,
+            transparent 4px,
+            transparent 8px
+          );
+        }
+
+        /* Camera Icon */
+        .camera-icon {
+          width: 50px;
+          height: 40px;
+          background: #37474f;
+          border-radius: 10px;
+          position: relative;
+        }
+
+        .camera-icon::before {
+          content: '';
+          position: absolute;
+          top: -10px;
+          left: 15px;
+          width: 20px;
+          height: 15px;
+          background: #37474f;
+          border-radius: 5px 5px 0 0;
+        }
+
+        .camera-icon::after {
+          content: '';
+          position: absolute;
+          top: 10px;
+          left: 20px;
+          width: 10px;
+          height: 10px;
+          background: #ffd54f;
+          border-radius: 50%;
+          border: 2px solid #fff;
+        }
+
+        /* Design Elements with Complex Animation */
+        .design-element {
+          position: absolute;
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          border: 2px solid rgba(255, 255, 255, 0.2);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          animation: designOrbit 20s linear infinite;
+          z-index: 2;
+        }
+
+        .design-inner {
+          animation: designSpin 8s linear infinite reverse;
+        }
+
+        .design-1 {
+          top: 20%;
+          left: 15%;
+          animation-delay: 0s;
+          animation-duration: 25s;
+        }
+
+        .design-2 {
+          top: 35%;
+          right: 20%;
+          animation-delay: 2s;
+          animation-duration: 22s;
+        }
+
+        .design-3 {
+          bottom: 25%;
+          left: 25%;
+          animation-delay: 4s;
+          animation-duration: 28s;
+        }
+
+        .design-4 {
+          bottom: 40%;
+          right: 10%;
+          animation-delay: 6s;
+          animation-duration: 24s;
+        }
+
+        .design-5 {
+          top: 50%;
+          left: 35%;
+          animation-delay: 8s;
+          animation-duration: 26s;
+        }
+
+        /* Inner Design Shapes */
+        .circle-gradient {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+
+        .triangle-shape {
+          width: 0;
+          height: 0;
+          border-left: 15px solid transparent;
+          border-right: 15px solid transparent;
+          border-bottom: 25px solid #ff6b6b;
+        }
+
+        .square-rotating {
+          width: 25px;
+          height: 25px;
+          background: #4ecdc4;
+          transform: rotate(45deg);
+        }
+
+        .hexagon-shape {
+          width: 25px;
+          height: 25px;
+          background: #ffd93d;
+          clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+
+        .star-shape {
+          width: 25px;
+          height: 25px;
+          background: #ff6b6b;
+          clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+
+        /* Floating Dots */
+        .floating-dot {
+          position: absolute;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.3);
+          animation: float 4s ease-in-out infinite;
+        }
+
+        .dot-1 {
+          width: 8px;
+          height: 8px;
+          top: 70%;
+          left: 20%;
+          animation-delay: 0s;
+        }
+
+        .dot-2 {
+          width: 6px;
+          height: 6px;
+          top: 30%;
+          right: 25%;
+          animation-delay: 1s;
+        }
+
+        .dot-3 {
+          width: 10px;
+          height: 10px;
+          bottom: 40%;
+          left: 40%;
+          animation-delay: 2s;
+        }
+
+        .dot-4 {
+          width: 7px;
+          height: 7px;
+          top: 60%;
+          right: 35%;
+          animation-delay: 3s;
+        }
+
+        .dot-5 {
+          width: 5px;
+          height: 5px;
+          bottom: 20%;
+          left: 30%;
+          animation-delay: 4s;
+        }
+
+        .dot-6 {
+          width: 9px;
+          height: 9px;
+          top: 45%;
+          right: 15%;
+          animation-delay: 5s;
+        }
+
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0px) rotate(0deg);
+          }
+          50% {
+            transform: translateY(-20px) rotate(180deg);
+          }
+        }
+
+        @keyframes gridMove {
+          0% {
+            transform: translate(0, 0);
+          }
+          100% {
+            transform: translate(85px, 85px);
+          }
+        }
+
+        @keyframes graphicFloat {
+          0%, 100% {
+            transform: translateY(0px) translateX(0px) rotate(0deg) scale(1);
+          }
+          25% {
+            transform: translateY(-20px) translateX(10px) rotate(90deg) scale(1.1);
+          }
+          50% {
+            transform: translateY(0px) translateX(20px) rotate(180deg) scale(1);
+          }
+          75% {
+            transform: translateY(20px) translateX(10px) rotate(270deg) scale(0.9);
+          }
+        }
+
+        @keyframes designOrbit {
+          0% {
+            transform: rotate(0deg) translateX(100px) rotate(0deg) scale(1);
+          }
+          25% {
+            transform: rotate(90deg) translateX(120px) rotate(-90deg) scale(1.1);
+          }
+          50% {
+            transform: rotate(180deg) translateX(100px) rotate(-180deg) scale(1);
+          }
+          75% {
+            transform: rotate(270deg) translateX(80px) rotate(-270deg) scale(0.9);
+          }
+          100% {
+            transform: rotate(360deg) translateX(100px) rotate(-360deg) scale(1);
+          }
+        }
+
+        @keyframes designSpin {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+
+        /* Main Content */
+        .main-content {
+          position: relative;
+          z-index: 1;
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(10px);
+          min-height: 100vh;
+        }
+
+        .section {
+          padding: 100px 60px;
+        }
+
+        /* Contact Header */
+        .contact-header {
           text-align: center;
-          margin-bottom: 60px;
+          margin-bottom: 80px;
+          max-width: 800px;
+          margin-left: auto;
+          margin-right: auto;
         }
 
-        .section-title h2 {
-          font-size: 3rem;
-          font-weight: 700;
+        .section-badge {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          padding: 10px 24px;
+          border-radius: 25px;
+          font-size: 0.9rem;
+          font-weight: 600;
+          display: inline-block;
+          margin-bottom: 30px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .contact-title {
+          font-size: 3.5rem;
+          font-weight: 800;
           color: #1e293b;
-          margin-bottom: 16px;
+          line-height: 1.1;
+          margin-bottom: 20px;
+        }
+
+        .gradient-text {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
+          background-clip: text;
         }
 
-        .section-title p {
-          font-size: 1.2rem;
+        .contact-subtitle {
+          font-size: 1.3rem;
           color: #64748b;
+          line-height: 1.6;
           max-width: 600px;
           margin: 0 auto;
-          line-height: 1.6;
         }
 
-        .contact-container {
+        /* Contact Grid */
+        .contact-grid {
           display: grid;
-          grid-template-columns: 1fr 1.2fr;
-          gap: 60px;
-          align-items: start;
+          grid-template-columns: 1fr 1fr;
+          gap: 40px;
+          max-width: 1200px;
+          margin: 0 auto;
+          align-items: stretch;
         }
 
-        /* Contact Info Styles */
-        .contact-info .info-card {
+        /* Contact Cards - Same Size */
+        .info-card,
+        .form-card {
           background: white;
           padding: 40px;
           border-radius: 20px;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-          height: fit-content;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          backdrop-filter: blur(10px);
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          min-height: 650px;
         }
 
-        .contact-info h3 {
-          font-size: 1.8rem;
+        /* Contact Info Section */
+        .card-header {
+          display: flex;
+          align-items: center;
+          gap: 15px;
+          margin-bottom: 20px;
+        }
+
+        .card-icon {
+          font-size: 2.5rem;
+        }
+
+        .card-header h3 {
+          font-size: 1.5rem;
           color: #1e293b;
-          margin-bottom: 16px;
-          font-weight: 600;
+          margin: 0;
+          font-weight: 700;
         }
 
-        .info-description {
+        .card-description {
           color: #64748b;
           line-height: 1.6;
-          margin-bottom: 40px;
+          margin-bottom: 30px;
           font-size: 1.1rem;
         }
 
-        .contact-items {
-          space-y: 24px;
+        /* Contact Methods */
+        .contact-methods {
+          margin-bottom: 30px;
+          flex: 1;
         }
 
-        .contact-item {
+        .contact-method {
           display: flex;
           align-items: flex-start;
-          gap: 16px;
-          margin-bottom: 32px;
+          gap: 15px;
+          margin-bottom: 25px;
+          padding: 20px;
+          background: #f8fafc;
+          border-radius: 15px;
+          transition: all 0.3s ease;
         }
 
-        .contact-icon {
+        .contact-method:hover {
+          background: #f1f5f9;
+          transform: translateX(5px);
+        }
+
+        .method-icon {
           width: 50px;
           height: 50px;
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -353,51 +943,82 @@ const Contact = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          color: white;
+          font-size: 1.3rem;
           flex-shrink: 0;
         }
 
-        .contact-details h4 {
+        .method-details h4 {
           color: #1e293b;
           font-weight: 600;
-          margin-bottom: 4px;
+          margin-bottom: 5px;
           font-size: 1.1rem;
         }
 
-        .contact-details p {
+        .method-details p {
           color: #64748b;
           margin: 0;
           line-height: 1.5;
         }
 
-        .social-section {
-          margin-top: 40px;
-          padding-top: 32px;
+        /* Quick Stats */
+        .quick-stats {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 15px;
+          margin-bottom: 30px;
+          padding: 25px 0;
           border-top: 1px solid #e2e8f0;
+          border-bottom: 1px solid #e2e8f0;
+        }
+
+        .stat {
+          text-align: center;
+          padding: 10px;
+        }
+
+        .stat-number {
+          font-size: 1.5rem;
+          font-weight: 800;
+          color: #667eea;
+          margin-bottom: 5px;
+        }
+
+        .stat-label {
+          font-size: 0.85rem;
+          color: #64748b;
+          font-weight: 500;
+        }
+
+        /* Social Section */
+        .social-section {
+          margin-top: auto;
         }
 
         .social-section h4 {
           color: #1e293b;
-          margin-bottom: 16px;
+          margin-bottom: 15px;
           font-weight: 600;
+          font-size: 1.1rem;
         }
 
         .social-links {
-          display: flex;
-          gap: 12px;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
         }
 
         .social-link {
-          width: 44px;
-          height: 44px;
-          background: #f8fafc;
-          border-radius: 12px;
           display: flex;
           align-items: center;
-          justify-content: center;
+          gap: 8px;
+          padding: 10px 12px;
+          background: #f8fafc;
+          border-radius: 8px;
           color: #64748b;
-          transition: all 0.3s ease;
           text-decoration: none;
+          transition: all 0.3s ease;
+          font-weight: 500;
+          font-size: 0.9rem;
         }
 
         .social-link:hover {
@@ -406,36 +1027,51 @@ const Contact = () => {
           transform: translateY(-2px);
         }
 
-        /* Contact Form Styles */
-        .contact-form .form-card {
-          background: white;
-          padding: 40px;
-          border-radius: 20px;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        .social-icon {
+          font-size: 1.1rem;
         }
 
-        .contact-form h3 {
-          font-size: 1.8rem;
+        /* Contact Form Section */
+        .form-header {
+          margin-bottom: 30px;
+        }
+
+        .form-header h3 {
+          font-size: 1.5rem;
           color: #1e293b;
-          margin-bottom: 32px;
-          font-weight: 600;
+          margin-bottom: 8px;
+          font-weight: 700;
+        }
+
+        .form-header p {
+          color: #64748b;
+          margin: 0;
+          line-height: 1.5;
+          font-size: 1rem;
+        }
+
+        /* Form Elements */
+        .contact-form {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
         }
 
         .form-group {
-          margin-bottom: 24px;
+          margin-bottom: 20px;
         }
 
-        .form-group label {
+        .form-label {
           display: block;
           margin-bottom: 8px;
           color: #374151;
-          font-weight: 500;
+          font-weight: 600;
           font-size: 0.95rem;
         }
 
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
+        .form-input,
+        .form-select,
+        .form-textarea {
           width: 100%;
           padding: 14px 16px;
           border: 2px solid #e2e8f0;
@@ -444,28 +1080,40 @@ const Contact = () => {
           transition: all 0.3s ease;
           background: white;
           box-sizing: border-box;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-          outline: none;
-          border-color: #667eea;
-          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-group input.error,
-        .form-group select.error,
-        .form-group textarea.error {
-          border-color: #ef4444;
-        }
-
-        .form-group textarea {
-          resize: vertical;
-          min-height: 120px;
           font-family: inherit;
         }
 
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+          outline: none;
+          border-color: #667eea;
+          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+          transform: translateY(-1px);
+        }
+
+        .form-input.error,
+        .form-select.error,
+        .form-textarea.error {
+          border-color: #ef4444;
+          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .form-textarea {
+          resize: vertical;
+          min-height: 100px;
+          line-height: 1.5;
+        }
+
+        .form-select {
+          appearance: none;
+          background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'><path fill='%23666' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>");
+          background-repeat: no-repeat;
+          background-position: right 15px center;
+          background-size: 12px;
+        }
+
+        /* Submit Button */
         .submit-btn {
           width: 100%;
           padding: 16px 24px;
@@ -473,19 +1121,21 @@ const Contact = () => {
           color: white;
           border: none;
           border-radius: 12px;
-          font-size: 1.1rem;
+          font-size: 1rem;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.3s ease;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 8px;
+          gap: 10px;
+          margin-bottom: 15px;
+          margin-top: auto;
         }
 
         .submit-btn:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+          transform: translateY(-3px);
+          box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
         }
 
         .submit-btn:disabled {
@@ -498,9 +1148,13 @@ const Contact = () => {
           background: #94a3b8;
         }
 
+        .btn-icon {
+          font-size: 1.1rem;
+        }
+
         .spinner {
-          width: 20px;
-          height: 20px;
+          width: 18px;
+          height: 18px;
           border: 2px solid transparent;
           border-top: 2px solid white;
           border-radius: 50%;
@@ -512,21 +1166,22 @@ const Contact = () => {
           100% { transform: rotate(360deg); }
         }
 
-        .required-note {
+        .form-note {
           text-align: center;
           color: #94a3b8;
-          font-size: 0.9rem;
-          margin-top: 16px;
+          font-size: 0.85rem;
+          margin: 0;
+          line-height: 1.4;
         }
 
         /* Status Messages */
         .status-message {
-          padding: 20px;
+          padding: 16px;
           border-radius: 12px;
           display: flex;
           align-items: flex-start;
-          gap: 16px;
-          margin-bottom: 24px;
+          gap: 12px;
+          margin-bottom: 20px;
           animation: slideIn 0.3s ease;
         }
 
@@ -554,86 +1209,149 @@ const Contact = () => {
         }
 
         .status-icon {
-          width: 24px;
-          height: 24px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: bold;
+          font-size: 1.3rem;
           flex-shrink: 0;
           margin-top: 2px;
-        }
-
-        .status-message.success .status-icon {
-          background: #22c55e;
-          color: white;
-        }
-
-        .status-message.error .status-icon {
-          background: #ef4444;
-          color: white;
         }
 
         .status-content strong {
           display: block;
           margin-bottom: 4px;
           font-weight: 600;
+          font-size: 0.95rem;
         }
 
         .status-content p {
           margin: 0;
-          font-size: 0.95rem;
+          font-size: 0.85rem;
           opacity: 0.9;
+          line-height: 1.4;
         }
 
         /* Responsive Design */
-        @media (max-width: 968px) {
-          .contact-container {
-            grid-template-columns: 1fr;
-            gap: 40px;
+        @media (max-width: 1024px) {
+          .contact-grid {
+            gap: 30px;
+          }
+          
+          .contact-title {
+            font-size: 3rem;
+          }
+          
+          .info-card,
+          .form-card {
+            padding: 30px;
+            min-height: 600px;
           }
 
-          .section-title h2 {
-            font-size: 2.5rem;
+          .graphic-element {
+            transform: scale(0.8);
           }
 
-          .contact-info .info-card,
-          .contact-form .form-card {
-            padding: 32px;
+          .design-element {
+            width: 40px;
+            height: 40px;
           }
         }
 
-        @media (max-width: 640px) {
-          .contact {
-            padding: 60px 0;
+        @media (max-width: 768px) {
+          .section {
+            padding: 60px 20px;
           }
 
-          .section-title h2 {
-            font-size: 2rem;
+          .contact-grid {
+            grid-template-columns: 1fr;
+            gap: 30px;
           }
 
-          .section-title p {
+          .contact-title {
+            font-size: 2.5rem;
+          }
+
+          .contact-subtitle {
             font-size: 1.1rem;
           }
 
-          .contact-info .info-card,
-          .contact-form .form-card {
-            padding: 24px;
+          .info-card,
+          .form-card {
+            padding: 25px;
+            min-height: auto;
           }
 
-          .contact-item {
+          .quick-stats {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 20px 0;
+          }
+
+          .social-links {
+            grid-template-columns: 1fr 1fr;
+          }
+
+          .contact-method {
+            flex-direction: row;
+            text-align: left;
+            gap: 15px;
+          }
+
+          .method-icon {
+            align-self: flex-start;
+          }
+
+          .graphic-element {
+            display: none;
+          }
+
+          .design-element {
+            display: none;
+          }
+
+          .floating-dot {
+            display: none;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .contact-title {
+            font-size: 2rem;
+          }
+
+          .info-card,
+          .form-card {
+            padding: 20px;
+          }
+
+          .card-header {
+            flex-direction: column;
+            text-align: center;
+            gap: 10px;
+          }
+
+          .contact-header {
+            margin-bottom: 50px;
+          }
+
+          .quick-stats {
+            grid-template-columns: 1fr;
+            gap: 15px;
+          }
+
+          .social-links {
+            grid-template-columns: 1fr;
+          }
+
+          .contact-method {
             flex-direction: column;
             text-align: center;
             gap: 12px;
           }
 
-          .contact-icon {
+          .method-icon {
             align-self: center;
           }
         }
       `}</style>
-    </section>
+    </div>
   );
 };
 
