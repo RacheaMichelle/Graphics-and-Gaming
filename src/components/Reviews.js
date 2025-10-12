@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import useReviewsService from '../services/useReviewsService'; // Update import path
+import useReviewsService from '../services/useReviewsService';
 
 const Reviews = () => {
   const [reviews, setReviews] = useState([]);
@@ -16,8 +16,10 @@ const Reviews = () => {
   const [isOwner, setIsOwner] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [password, setPassword] = useState('');
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [replyText, setReplyText] = useState('');
 
-  const reviewsService = useReviewsService(); // Now uses Supabase
+  const reviewsService = useReviewsService();
 
   // Load reviews on component mount
   useEffect(() => {
@@ -92,7 +94,9 @@ const Reviews = () => {
           month: 'long', 
           day: 'numeric' 
         }),
-        verified: true
+        verified: true,
+        ownerReply: null,
+        replyDate: null
       };
 
       const result = await reviewsService.addReview(reviewData);
@@ -137,76 +141,107 @@ const Reviews = () => {
     }
   };
 
-  // Add sample reviews (for demo)
-  const addSampleReviews = async () => {
-    const sampleReviews = [
-      {
-        name: 'Sarah K.',
-        service: 'Graphic Design',
-        rating: 5,
-        review: 'Excellent logo design! Very professional and creative. Will definitely work with RAEMOND again.',
-        location: 'Kampala, Uganda',
-        date: 'December 10, 2024',
-        verified: true,
-        timestamp: Date.now() - 86400000
-      },
-      {
-        name: 'Mike T.',
-        service: 'Photography',
-        rating: 5,
-        review: 'Beautiful wedding photos. Captured every special moment perfectly! Highly recommended.',
-        location: 'Entebbe, Uganda',
-        date: 'December 5, 2024',
-        verified: true,
-        timestamp: Date.now() - 172800000
-      },
-      {
-        name: 'David L.',
-        service: 'Gadgets & Electronics',
-        rating: 4,
-        review: 'Great service on smartphone repair. Quick and affordable. My phone works like new!',
-        location: 'Jinja, Uganda',
-        date: 'November 28, 2024',
-        verified: true,
-        timestamp: Date.now() - 259200000
-      },
-      {
-        name: 'Grace N.',
-        service: 'Motion Picture',
-        rating: 5,
-        review: 'Amazing video production for our business advert. Professional and creative team!',
-        location: 'Kampala, Uganda',
-        date: 'November 20, 2024',
-        verified: true,
-        timestamp: Date.now() - 345600000
-      }
-    ];
+  // Start replying to a review
+  const startReply = (reviewId) => {
+    setReplyingTo(reviewId);
+    setReplyText('');
+  };
+
+  // Cancel reply
+  const cancelReply = () => {
+    setReplyingTo(null);
+    setReplyText('');
+  };
+
+  // Submit owner reply
+  const submitOwnerReply = async (reviewId) => {
+    if (!replyText.trim()) {
+      alert('Please enter a reply message');
+      return;
+    }
 
     try {
-      for (const review of sampleReviews) {
-        await reviewsService.addReview(review);
-      }
-      // Reload reviews to show the new ones
-      await loadReviewsFromStorage();
-      alert('Sample reviews added successfully!');
+      const replyData = {
+        ownerReply: replyText.trim(),
+        replyDate: new Date().toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        })
+      };
+
+      // Update the review with owner reply
+      await reviewsService.updateReview(reviewId, replyData);
+      
+      // Update local state
+      setReviews(prev => prev.map(review => 
+        review.id === reviewId ? { ...review, ...replyData } : review
+      ));
+      
+      // Reset reply state
+      cancelReply();
+      
+      alert('Reply posted successfully!');
     } catch (error) {
-      console.error('Error adding sample reviews:', error);
-      alert('Failed to add sample reviews.');
+      console.error('Error submitting reply:', error);
+      alert('Failed to submit reply. Please try again.');
     }
   };
 
-  const getRatingStars = (rating) => {
-    return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+  // Delete owner reply
+  const deleteOwnerReply = async (reviewId, event) => {
+    if (!isOwner) return;
+    event.stopPropagation();
+    
+    if (window.confirm('Are you sure you want to delete this reply?')) {
+      try {
+        const replyData = {
+          ownerReply: null,
+          replyDate: null
+        };
+
+        await reviewsService.updateReview(reviewId, replyData);
+        
+        // Update local state
+        setReviews(prev => prev.map(review => 
+          review.id === reviewId ? { ...review, ...replyData } : review
+        ));
+        
+        alert('Reply deleted successfully!');
+      } catch (error) {
+        alert('Failed to delete reply: ' + error.message);
+      }
+    }
   };
 
+  // Calculate average rating
   const averageRating = reviews.length > 0 
     ? (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1)
     : '0.0';
 
+  // Generate star rating display
+  const getRatingStars = (rating) => {
+    return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+  };
+
   return (
     <section className="reviews" id="reviews">
+      {/* Animated Background Graphics */}
+      <div className="animated-background">
+        <div className="graphic graphic-1">⭐</div>
+        <div className="graphic graphic-2">💬</div>
+        <div className="graphic graphic-3">👑</div>
+        <div className="graphic graphic-4">✏️</div>
+        <div className="graphic graphic-5">📱</div>
+        <div className="graphic graphic-6">🎨</div>
+        <div className="graphic graphic-7">📸</div>
+        <div className="graphic graphic-8">🎮</div>
+        <div className="graphic graphic-9">🎵</div>
+        <div className="graphic graphic-10">💫</div>
+      </div>
+
       <div className="container">
-        {/* Owner Access Controls - Same as your image gallery */}
+        {/* Owner Access Controls */}
         <div className="owner-access-bar">
           {!isOwner ? (
             <div className="viewer-mode">
@@ -222,15 +257,9 @@ const Reviews = () => {
             <div className="owner-mode">
               <div className="owner-status">
                 <span className="owner-badge">👑 OWNER MODE</span>
-                <span className="owner-info">You can manage reviews</span>
+                <span className="owner-info">You can manage reviews and reply to clients</span>
               </div>
               <div className="owner-actions">
-                <button 
-                  className="sample-reviews-btn"
-                  onClick={addSampleReviews}
-                >
-                  📝 Add Sample Reviews
-                </button>
                 <button 
                   className="logout-btn"
                   onClick={handleOwnerLogout}
@@ -256,7 +285,7 @@ const Reviews = () => {
                 </button>
               </div>
               <div className="login-body">
-                <p>Enter the owner password to manage reviews</p>
+                <p>Enter the owner password to manage reviews and reply to clients</p>
                 <input
                   type="password"
                   value={password}
@@ -298,8 +327,10 @@ const Reviews = () => {
               <span className="stat-label">Average Rating</span>
             </div>
             <div className="stat">
-              <span className="stat-number">100%</span>
-              <span className="stat-label">Satisfaction</span>
+              <span className="stat-number">
+                {reviews.filter(review => review.ownerReply).length}
+              </span>
+              <span className="stat-label">Owner Replies</span>
             </div>
           </div>
         </div>
@@ -311,7 +342,7 @@ const Reviews = () => {
           >
             ✍️ Write a Review
           </button>
-          <p className="shared-notice">All reviews are permanently saved and visible to everyone</p>
+          
         </div>
 
         {isLoading && (
@@ -369,6 +400,69 @@ const Reviews = () => {
                   <div className="review-content">
                     <p>"{review.review}"</p>
                   </div>
+
+                  {/* Owner Reply Section */}
+                  {review.ownerReply && (
+                    <div className="owner-reply-section">
+                      <div className="owner-reply-header">
+                        <div className="owner-avatar">👑</div>
+                        <div className="owner-info">
+                          <strong>Business Owner</strong>
+                          <span className="reply-date">{review.replyDate}</span>
+                        </div>
+                        {isOwner && (
+                          <button 
+                            className="delete-reply-btn"
+                            onClick={(e) => deleteOwnerReply(review.id, e)}
+                            title="Delete reply"
+                          >
+                            ×
+                          </button>
+                        )}
+                      </div>
+                      <div className="owner-reply-content">
+                        <p>{review.ownerReply}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Owner Reply Button (Owner Only) */}
+                  {isOwner && !review.ownerReply && (
+                    <div className="reply-actions">
+                      {replyingTo === review.id ? (
+                        <div className="reply-form">
+                          <textarea
+                            value={replyText}
+                            onChange={(e) => setReplyText(e.target.value)}
+                            placeholder="Type your response to the client..."
+                            rows="3"
+                            className="reply-textarea"
+                          />
+                          <div className="reply-buttons">
+                            <button 
+                              className="cancel-reply-btn"
+                              onClick={cancelReply}
+                            >
+                              Cancel
+                            </button>
+                            <button 
+                              className="submit-reply-btn"
+                              onClick={() => submitOwnerReply(review.id)}
+                            >
+                              Post Reply
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button 
+                          className="reply-btn"
+                          onClick={() => startReply(review.id)}
+                        >
+                          💬 Reply as Owner
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))
             ) : (
@@ -510,6 +604,135 @@ const Reviews = () => {
           padding: 80px 0;
           background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
           min-height: 100vh;
+          position: relative;
+          overflow: hidden;
+        }
+
+        /* Animated Background Graphics */
+        .animated-background {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .graphic {
+          position: absolute;
+          font-size: 2rem;
+          opacity: 0.1;
+          animation: float 20s infinite linear;
+          z-index: 0;
+        }
+
+        .graphic-1 {
+          top: 10%;
+          left: 5%;
+          animation-delay: 0s;
+          animation-duration: 25s;
+        }
+
+        .graphic-2 {
+          top: 20%;
+          right: 10%;
+          animation-delay: 2s;
+          animation-duration: 30s;
+        }
+
+        .graphic-3 {
+          top: 60%;
+          left: 8%;
+          animation-delay: 4s;
+          animation-duration: 35s;
+        }
+
+        .graphic-4 {
+          top: 40%;
+          right: 15%;
+          animation-delay: 6s;
+          animation-duration: 28s;
+        }
+
+        .graphic-5 {
+          top: 80%;
+          left: 20%;
+          animation-delay: 8s;
+          animation-duration: 32s;
+        }
+
+        .graphic-6 {
+          top: 30%;
+          left: 25%;
+          animation-delay: 10s;
+          animation-duration: 26s;
+        }
+
+        .graphic-7 {
+          top: 70%;
+          right: 25%;
+          animation-delay: 12s;
+          animation-duration: 34s;
+        }
+
+        .graphic-8 {
+          top: 15%;
+          left: 40%;
+          animation-delay: 14s;
+          animation-duration: 29s;
+        }
+
+        .graphic-9 {
+          top: 55%;
+          right: 5%;
+          animation-delay: 16s;
+          animation-duration: 31s;
+        }
+
+        .graphic-10 {
+          top: 85%;
+          right: 35%;
+          animation-delay: 18s;
+          animation-duration: 27s;
+        }
+
+        @keyframes float {
+          0% {
+            transform: translateY(0px) rotate(0deg) scale(1);
+          }
+          25% {
+            transform: translateY(-20px) rotate(90deg) scale(1.1);
+          }
+          50% {
+            transform: translateY(0px) rotate(180deg) scale(1);
+          }
+          75% {
+            transform: translateY(20px) rotate(270deg) scale(0.9);
+          }
+          100% {
+            transform: translateY(0px) rotate(360deg) scale(1);
+          }
+        }
+
+        /* Make sure content stays above background */
+        .container {
+          position: relative;
+          z-index: 1;
+        }
+
+        .owner-access-bar {
+          position: relative;
+          z-index: 2;
+        }
+
+        .reviews-header,
+        .add-review-section,
+        .reviews-grid,
+        .loading-state,
+        .no-reviews {
+          position: relative;
+          z-index: 1;
         }
 
         .container {
@@ -518,7 +741,7 @@ const Reviews = () => {
           padding: 0 20px;
         }
 
-        /* Owner Access Bar - Same as your image gallery */
+        /* Owner Access Bar */
         .owner-access-bar {
           background: linear-gradient(135deg, #8005fcff 0%, #6d0ffaff 100%);
           color: white;
@@ -575,7 +798,7 @@ const Reviews = () => {
           opacity: 0.9;
         }
 
-        .owner-login-btn, .sample-reviews-btn, .logout-btn {
+        .owner-login-btn, .logout-btn {
           background: rgba(255, 255, 255, 0.2);
           color: white;
           border: 1px solid rgba(255, 255, 255, 0.3);
@@ -587,7 +810,7 @@ const Reviews = () => {
           backdrop-filter: blur(10px);
         }
 
-        .owner-login-btn:hover, .sample-reviews-btn:hover {
+        .owner-login-btn:hover {
           background: rgba(255, 255, 255, 0.3);
           transform: translateY(-2px);
           box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
@@ -981,11 +1204,164 @@ const Reviews = () => {
           font-weight: 500;
         }
 
-        .review-content p {
+        .review-content {
           color: #475569;
           line-height: 1.6;
           margin: 0;
           font-style: italic;
+        }
+
+        /* Owner Reply Section */
+        .owner-reply-section {
+          margin-top: 20px;
+          padding: 20px;
+          background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+          border-radius: 12px;
+          border-left: 4px solid #7a0ec8ff;
+          position: relative;
+        }
+
+        .owner-reply-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 12px;
+          position: relative;
+        }
+
+        .owner-avatar {
+          width: 35px;
+          height: 35px;
+          background: #7a0ec8ff;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1rem;
+        }
+
+        .owner-info {
+          flex: 1;
+        }
+
+        .owner-info strong {
+          color: #1e293b;
+          display: block;
+          margin-bottom: 2px;
+        }
+
+        .reply-date {
+          color: #64748b;
+          font-size: 0.8rem;
+        }
+
+        .delete-reply-btn {
+          background: rgba(117, 4, 4, 0.7);
+          color: white;
+          border: none;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          cursor: pointer;
+          font-size: 0.9rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+        }
+
+        .delete-reply-btn:hover {
+          background: rgba(146, 9, 9, 1);
+          transform: scale(1.1);
+        }
+
+        .owner-reply-content {
+          color: #374151;
+          line-height: 1.5;
+          margin: 0;
+          font-style: normal;
+        }
+
+        /* Reply Actions */
+        .reply-actions {
+          margin-top: 20px;
+        }
+
+        .reply-btn {
+          background: #7a0ec8ff;
+          color: white;
+          border: none;
+          padding: 10px 16px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 0.9rem;
+          font-weight: 500;
+          transition: all 0.3s ease;
+        }
+
+        .reply-btn:hover {
+          background: #9605f7ff;
+          transform: translateY(-2px);
+        }
+
+        .reply-form {
+          margin-top: 15px;
+        }
+
+        .reply-textarea {
+          width: 100%;
+          padding: 12px;
+          border: 2px solid #e2e8f0;
+          border-radius: 8px;
+          font-size: 0.9rem;
+          resize: vertical;
+          min-height: 80px;
+          margin-bottom: 12px;
+        }
+
+        .reply-textarea:focus {
+          outline: none;
+          border-color: #7a0ec8ff;
+        }
+
+        .reply-buttons {
+          display: flex;
+          gap: 8px;
+          justify-content: flex-end;
+        }
+
+        .cancel-reply-btn {
+          background: #64748b;
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 0.85rem;
+        }
+
+        .cancel-reply-btn:hover {
+          background: #475569;
+        }
+
+        .submit-reply-btn {
+          background: #7a0ec8ff;
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 0.85rem;
+          font-weight: 500;
+        }
+
+        .submit-reply-btn:hover:not(:disabled) {
+          background: #9605f7ff;
+        }
+
+        .submit-reply-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
         }
 
         .no-reviews {
@@ -1220,6 +1596,11 @@ const Reviews = () => {
 
           .owner-actions button {
             width: 100%;
+          }
+
+          /* Reduce graphics on mobile */
+          .graphic {
+            font-size: 1.5rem;
           }
         }
       `}</style>

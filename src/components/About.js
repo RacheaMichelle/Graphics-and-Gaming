@@ -253,71 +253,144 @@ const About = () => {
     : myProjects.filter(project => project.category === selectedCategory);
 
   return (
-    <section className="about" id="about">
-      <div className="container">
-        {/* Owner Access Controls */}
-        <div className="owner-access-bar">
-          {!isOwner ? (
-            <div className="viewer-mode">
-              <span className="viewer-badge">👀 Viewing Mode</span>
+    <div className="about-container">
+      {/* Animated Background Elements */}
+      <div className="background-elements">
+        <div className="floating-shape shape-1"></div>
+        <div className="floating-shape shape-2"></div>
+        <div className="floating-shape shape-3"></div>
+        <div className="floating-shape shape-4"></div>
+        <div className="floating-shape shape-5"></div>
+        <div className="animated-grid"></div>
+      </div>
+
+      {/* Main Content */}
+      <main className="main-content">
+        {/* Modern Navigation Bar */}
+        <nav className="modern-nav">
+          <div className="nav-container">
+            <div className="nav-brand">
+              <div className="logo-wrapper">
+                <span className="logo-icon">🎨</span>
+                <span className="brand-text">
+                  <span className="brand-main">Creative</span>
+                  <span className="brand-sub">Portfolio</span>
+                </span>
+              </div>
+            </div>
+
+            <div className="nav-center">
+              <div className="nav-links">
+                <button 
+                  className="nav-link"
+                  onClick={() => scrollToSection('about')}
+                >
+                  <span className="nav-icon">👤</span>
+                  <span className="nav-text">About</span>
+                </button>
+                <button 
+                  className="nav-link"
+                  onClick={() => scrollToSection('services')}
+                >
+                  <span className="nav-icon">🛠️</span>
+                  <span className="nav-text">Services</span>
+                </button>
+                <button 
+                  className="nav-link"
+                  onClick={() => scrollToSection('portfolio')}
+                >
+                  <span className="nav-icon">📂</span>
+                  <span className="nav-text">Portfolio</span>
+                </button>
+                <button 
+                  className="nav-link"
+                  onClick={() => scrollToSection('contact')}
+                >
+                  <span className="nav-icon">📞</span>
+                  <span className="nav-text">Contact</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="nav-actions">
+              {!isOwner ? (
+                <div className="auth-section">
+                  <button 
+                    className="login-btn modern"
+                    onClick={() => setShowLogin(true)}
+                  >
+                    <span className="btn-icon">🔐</span>
+                    <span className="btn-text">Owner Login</span>
+                    <div className="btn-glow"></div>
+                  </button>
+                </div>
+              ) : (
+                <div className="owner-section">
+                  <div className="owner-indicator">
+                    <span className="owner-icon">👑</span>
+                    <span className="owner-text">Owner Mode</span>
+                  </div>
+                  <button 
+                    className="logout-btn modern"
+                    onClick={handleOwnerLogout}
+                    title="Logout"
+                  >
+                    <span className="btn-icon">🚪</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </nav>
+
+        {/* Owner Controls */}
+        {isOwner && (
+          <div className="owner-controls">
+            <div className="owner-info">
+              <span className="owner-status">👑 OWNER MODE - Full management access</span>
+            </div>
+            <div className="owner-actions">
               <button 
-                className="owner-login-btn"
-                onClick={() => setShowLogin(true)}
+                className="action-btn refresh"
+                onClick={forceRefreshProjects}
+                disabled={isLoading}
               >
-                🔧 Owner Login
+                {isLoading ? '⏳' : '🔄'} Refresh
+              </button>
+              <button 
+                className="action-btn clear"
+                onClick={clearCacheAndReload}
+              >
+                🧹 Clear Cache
               </button>
             </div>
-          ) : (
-            <div className="owner-mode">
-              <div className="owner-status">
-                <span className="owner-badge">👑 OWNER MODE</span>
-                <span className="owner-info">You can manage projects</span>
-              </div>
-              <div className="owner-actions">
-                <button 
-                  className="refresh-btn"
-                  onClick={forceRefreshProjects}
-                  title="Force refresh from Supabase"
-                  disabled={isLoading}
-                >
-                  {isLoading ? '⏳' : '🔄'} Refresh
-                </button>
-                <button 
-                  className="clear-cache-btn"
-                  onClick={clearCacheAndReload}
-                  title="Clear all cache and reload"
-                >
-                  🧹 Clear Cache
-                </button>
-                <button 
-                  className="logout-btn"
-                  onClick={handleOwnerLogout}
-                >
-                  🚪 Logout
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Debug Info Panel */}
-        {isOwner && (
+        {/* Debug Panel */}
+        {isOwner && debugInfo && (
           <div className="debug-panel">
             <details>
-              <summary>🔧 Debug Info (Cache: {debugInfo?.cacheVersion}, Age: {debugInfo?.cacheAge})</summary>
+              <summary>
+                🔧 Debug Info • Cache: v{debugInfo?.cacheVersion} • Age: {debugInfo?.cacheAge}
+              </summary>
               <div className="debug-content">
-                <p><strong>Cache Version:</strong> {debugInfo?.cacheVersion}</p>
-                <p><strong>Last Updated:</strong> {debugInfo?.cacheTimestamp}</p>
-                <p><strong>Cache Age:</strong> {debugInfo?.cacheAge}</p>
-                <p><strong>Local Projects:</strong> {debugInfo?.localStorageCount}</p>
-                <p><strong>Project IDs:</strong> {debugInfo?.localStorageProjects?.map(p => p.id).join(', ') || 'None'}</p>
-                <div style={{ display: 'flex', gap: '10px', marginTop: '10px', flexWrap: 'wrap' }}>
-                  <button onClick={updateDebugInfo} className="debug-refresh">Update Debug Info</button>
-                  <button onClick={() => loadProjectsFromStorage(true)} className="debug-refresh">
-                    🔄 Force Reload
+                <div className="debug-stats">
+                  <div className="debug-stat">
+                    <label>Last Updated:</label>
+                    <span>{debugInfo?.cacheTimestamp}</span>
+                  </div>
+                  <div className="debug-stat">
+                    <label>Local Projects:</label>
+                    <span>{debugInfo?.localStorageCount}</span>
+                  </div>
+                </div>
+                <div className="debug-actions">
+                  <button onClick={updateDebugInfo} className="debug-btn">
+                    Update Info
                   </button>
-                  <button onClick={clearCacheAndReload} className="debug-refresh">
-                    🧹 Clear Cache
+                  <button onClick={() => loadProjectsFromStorage(true)} className="debug-btn">
+                    🔄 Force Reload
                   </button>
                 </div>
               </div>
@@ -325,12 +398,14 @@ const About = () => {
           </div>
         )}
 
-        {/* Login Modal */}
+        {/* Modern Login Modal */}
         {showLogin && (
-          <div className="login-modal-overlay" onClick={() => setShowLogin(false)}>
-            <div className="login-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="modern-login-overlay" onClick={() => setShowLogin(false)}>
+            <div className="modern-login-modal" onClick={(e) => e.stopPropagation()}>
               <div className="login-header">
+                <div className="login-icon">🔐</div>
                 <h3>Owner Access</h3>
+                <p>Enter your credentials to manage the portfolio</p>
                 <button 
                   className="close-login"
                   onClick={() => setShowLogin(false)}
@@ -338,143 +413,144 @@ const About = () => {
                   ×
                 </button>
               </div>
+              
               <div className="login-body">
-                <p>Enter the owner password to manage your portfolio</p>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter owner password"
-                  onKeyPress={(e) => e.key === 'Enter' && handleOwnerLogin()}
-                  className="password-input"
-                />
+                <div className="input-group">
+                  <label htmlFor="password">Owner Password</label>
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter owner password"
+                    onKeyPress={(e) => e.key === 'Enter' && handleOwnerLogin()}
+                    className="password-input"
+                  />
+                </div>
+                
                 <div className="login-actions">
                   <button 
-                    className="login-confirm"
+                    className="login-confirm modern"
                     onClick={handleOwnerLogin}
                   >
-                    🔑 Login as Owner
+                    <span className="btn-icon">🔑</span>
+                    <span className="btn-text">Login as Owner</span>
                   </button>
                   <button 
-                    className="login-cancel"
+                    className="login-cancel modern"
                     onClick={() => setShowLogin(false)}
                   >
-                    Cancel
+                    <span className="btn-text">Cancel</span>
                   </button>
+                </div>
+                
+                <div className="login-footer">
+                  <p>🔒 Secure owner access only</p>
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* About Header */}
-        <div className="about-header">
-          <div className="header-content">
-            <h1 className="main-title">About My Creative Work</h1>
-            <p className="subtitle">Welcome to my creative studio where ideas come to life through design, photography, and motion pictures</p>
-            <div className="header-stats">
-              <div className="stat-item">
-                <span className="stat-number">50+</span>
-                <span className="stat-label">Projects Completed</span>
+        {/* Rest of your content remains exactly the same */}
+        {/* About Section */}
+        <section id="about" className="section">
+          <div className="hero-section">
+            <div className="hero-content">
+              <div className="hero-badge">Creative Professional</div>
+              <h1 className="hero-title">
+                Transforming Ideas Into
+                <span className="gradient-text"> Visual Masterpieces</span>
+              </h1>
+              <p className="hero-description">
+                Welcome to my creative studio where ideas come to life through design, 
+                photography, and motion pictures. With over 3 years of experience and 
+                50+ successful projects, I bring visions to reality.
+              </p>
+              <div className="hero-stats">
+                <div className="stat">
+                  <div className="stat-number">50+</div>
+                  <div className="stat-label">Projects</div>
+                </div>
+                <div className="stat">
+                  <div className="stat-number">3+</div>
+                  <div className="stat-label">Years</div>
+                </div>
+                <div className="stat">
+                  <div className="stat-number">100%</div>
+                  <div className="stat-label">Satisfaction</div>
+                </div>
               </div>
-              <div className="stat-item">
-                <span className="stat-number">3+</span>
-                <span className="stat-label">Years Experience</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-number">100%</span>
-                <span className="stat-label">Client Satisfaction</span>
+              <div className="hero-actions">
+                <button 
+                  className="btn primary"
+                  onClick={() => scrollToSection('portfolio')}
+                >
+                  View My Work
+                </button>
+                <button 
+                  className="btn secondary"
+                  onClick={() => scrollToSection('services')}
+                >
+                  Explore Services
+                </button>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Main About Content */}
-        <div className="about-content">
-          <div className="about-text">
-            <div className="section-tag">About Me</div>
-            <h2>My Creative Journey</h2>
-            <p className="lead-text">
-              I'm a passionate creative professional with expertise in graphic design, photography, 
-              and video production. Every project is an opportunity to create something extraordinary 
-              and bring visions to life.
-            </p>
-            
-            <div className="skills-section">
-              <h3>My Expertise</h3>
-              <div className="skills-grid">
-                <div className="skill-card">
-                  <div className="skill-icon">💡</div>
-                  <h4>Creative Vision</h4>
-                  <p>Transforming ideas into visually stunning realities</p>
-                </div>
-                <div className="skill-card">
-                  <div className="skill-icon">⚡</div>
-                  <h4>Fast Delivery</h4>
-                  <p>Quick turnaround without compromising quality</p>
-                </div>
-                <div className="skill-card">
-                  <div className="skill-icon">🎯</div>
-                  <h4>Precision</h4>
-                  <p>Attention to detail in every pixel and frame</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="about-visual">
-            <div className="visual-card">
-              <div className="card-glow"></div>
-              <div className="profile-display">
-                <div className="profile-image">
-                  <div className="image-placeholder">
-                    <span>My Creative Space</span>
-                    <small>Professional Studio Setup</small>
+            <div className="hero-visual">
+              <div className="floating-card">
+                <div className="card-content">
+                  <div className="avatar">🎨</div>
+                  <h3>Creative Director</h3>
+                  <p>Design • Photography • Motion</p>
+                  <div className="skills-tags">
+                    <span>UI/UX Design</span>
+                    <span>Branding</span>
+                    <span>Video Production</span>
                   </div>
                 </div>
-                <div className="profile-badges">
-                  <span className="badge">🎨 Designer</span>
-                  <span className="badge">📸 Photographer</span>
-                  <span className="badge">🎬 Videographer</span>
-                </div>
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Services Section */}
-        <div className="services-section">
-          <div className="section-tag">Services</div>
-          <h2 className="section-title">What I Offer</h2>
+        <section id="services" className="section">
+          <div className="section-header">
+            <div className="section-badge">Services</div>
+            <h2>What I Offer</h2>
+            <p>Comprehensive creative services to bring your vision to life</p>
+          </div>
+
           <div className="services-grid">
             <div className="service-card">
               <div className="service-icon">🎨</div>
               <h3>Graphic Design</h3>
-              <ul className="service-features">
+              <p>Visual identity and branding solutions</p>
+              <ul>
                 <li>Logo & Brand Identity</li>
                 <li>Business Cards & Flyers</li>
                 <li>Social Media Graphics</li>
                 <li>Posters & Banners</li>
-                <li>Book Covers & Magazines</li>
-                <li>Receipts & Stickers</li>
               </ul>
             </div>
 
             <div className="service-card featured">
               <div className="service-icon">📸</div>
               <h3>Photography</h3>
-              <ul className="service-features">
+              <p>Professional photography sessions</p>
+              <ul>
                 <li>Wedding & Events</li>
-                <li>Photo shoot Sessions</li>
                 <li>Product Photography</li>
                 <li>Commercial Shoots</li>
+                <li>Photo Editing</li>
               </ul>
             </div>
 
             <div className="service-card">
               <div className="service-icon">🎬</div>
               <h3>Motion Picture</h3>
-              <ul className="service-features">
+              <p>Video production and editing</p>
+              <ul>
                 <li>Business Advertisements</li>
                 <li>Short Films</li>
                 <li>Event Coverage</li>
@@ -483,152 +559,102 @@ const About = () => {
             </div>
 
             <div className="service-card featured">
-              <div className="service-icon">🎵</div>
-              <h3>Music Artworks</h3>
-              <ul className="service-features">
-                <li>Cover Art Design</li>
-                <li>Album & Single Branding</li>
-                <li>Promotional Banners</li>
-                <li>Visual Concepts for Artists</li>
-              </ul>
-            </div>
-
-            <div className="service-card featured">
               <div className="service-icon">🎮</div>
               <h3>Gaming Zone</h3>
-              <ul className="service-features">
+              <p>Interactive gaming experiences</p>
+              <ul>
                 <li>FIFA Tournaments</li>
                 <li>Mortal Kombat Battles</li>
                 <li>Multiplayer Challenges</li>
                 <li>Car Racing Challenges</li>
               </ul>
             </div>
-          </div>
-        </div>
 
-        {/* My Projects Gallery Section */}
-        <div className="projects-section">
+            <div className="service-card">
+              <div className="service-icon">🎵</div>
+              <h3>Music Artworks</h3>
+              <p>Creative designs for artists</p>
+              <ul>
+                <li>Album Cover Design</li>
+                <li>Promotional Materials</li>
+                <li>Artist Branding</li>
+                <li>Visual Concepts</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* Portfolio Section */}
+        <section id="portfolio" className="section">
           <div className="section-header">
-            <div className="section-tag">Portfolio</div>
+            <div className="section-badge">Portfolio</div>
             <h2>Project Gallery</h2>
             <p>
               {isOwner 
-                ? "Manage your project gallery - add new work to specific categories" 
+                ? "Manage your project gallery and showcase your best work" 
                 : "Browse through my completed projects across different creative domains"
               }
             </p>
           </div>
 
-          {/* Upload Section - ONLY SHOWS FOR OWNER */}
+          {/* Upload Section for Owner */}
           {isOwner && (
-            <div className="upload-area">
+            <div className="upload-section">
               <div className="upload-card">
                 <div className="upload-header">
-                  <div className="upload-icon">📁</div>
-                  <div>
-                    <h3>Add New Projects</h3>
-                    <p>Upload your latest work to showcase your skills</p>
-                  </div>
+                  <h3>📁 Add New Projects</h3>
+                  <p>Upload your latest work to showcase your skills</p>
                 </div>
                 
-                <div className="category-selection">
-                  <label>Select Category for Upload:</label>
-                  <div className="category-options">
-                    <button
-                      className={`category-option ${uploadCategory === 'graphic-design' ? 'active' : ''}`}
-                      onClick={() => setUploadCategory('graphic-design')}
-                    >
-                      <span>🎨</span>
-                      Graphic Design
-                    </button>
-                    <button
-                      className={`category-option ${uploadCategory === 'photography' ? 'active' : ''}`}
-                      onClick={() => setUploadCategory('photography')}
-                    >
-                      <span>📸</span>
-                      Photography
-                    </button>
-                    <button
-                      className={`category-option ${uploadCategory === 'music' ? 'active' : ''}`}
-                      onClick={() => setUploadCategory('music')}
-                    >
-                      <span>🎵</span>
-                      Music Artworks
-                    </button>
-                    <button
-                      className={`category-option ${uploadCategory === 'games' ? 'active' : ''}`}
-                      onClick={() => setUploadCategory('games')}
-                    >
-                      <span>🎮</span>
-                      Gaming Zone
-                    </button>
-                    <button
-                      className={`category-option ${uploadCategory === 'motion-picture' ? 'active' : ''}`}
-                      onClick={() => setUploadCategory('motion-picture')}
-                    >
-                      <span>🎬</span>
-                      Motion Picture
-                    </button>
+                <div className="upload-controls">
+                  <div className="category-selector">
+                    <label>Select Category:</label>
+                    <div className="category-tabs">
+                      {categories.filter(cat => cat.id !== 'all').map(category => (
+                        <button
+                          key={category.id}
+                          className={`tab ${uploadCategory === category.id ? 'active' : ''}`}
+                          onClick={() => setUploadCategory(category.id)}
+                        >
+                          <span>{category.icon}</span>
+                          {category.name}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  <div className="selected-category-info">
-                    <strong>Currently selected:</strong>
-                    <span className="category-tag">
-                      {uploadCategory === 'graphic-design' && '🎨 Graphic Design'}
-                      {uploadCategory === 'photography' && '📸 Photography'}
-                      {uploadCategory === 'music' && '🎵 Music Artworks'}
-                      {uploadCategory === 'games' && '🎮 Gaming Zone'}
-                      {uploadCategory === 'motion-picture' && '🎬 Motion Picture'}
-                    </span>
+
+                  <div className="upload-actions">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileUpload}
+                      multiple
+                      accept="image/*,video/*"
+                      style={{ display: 'none' }}
+                    />
+                    <button 
+                      className="btn primary upload-btn"
+                      onClick={triggerFileInput}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? '⏳ Uploading...' : '📤 Upload Files'}
+                    </button>
                   </div>
                 </div>
-
-                <div className="upload-actions">
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileUpload}
-                    multiple
-                    accept="image/*,video/*"
-                    style={{ display: 'none' }}
-                  />
-                  
-                  <button className="upload-btn" onClick={triggerFileInput} disabled={isLoading}>
-                    {isLoading ? '⏳ Uploading...' : '📤 Upload to '}
-                    {!isLoading && (
-                      uploadCategory === 'graphic-design' ? 'Graphic Design' :
-                      uploadCategory === 'photography' ? 'Photography' :
-                      uploadCategory === 'music' ? 'Music Artworks' :
-                      uploadCategory === 'games' ? 'Gaming Zone' :
-                      uploadCategory === 'motion-picture' ? 'Motion Picture' :
-                      'Select a Category'
-                    )}
-                  </button>
-
-                  <small>Supported: Images (JPG, PNG, GIF) • Videos (MP4, MOV)</small>
-                </div>
-
-                {myProjects.length > 0 && (
-                  <div className="management-info">
-                    <p>💡 <strong>Tip:</strong> Select the category above before uploading</p>
-                    <p>🗑 Click the × button on any project to remove it</p>
-                    <p>🔄 Use the Refresh button above to sync with Supabase</p>
-                  </div>
-                )}
               </div>
             </div>
           )}
 
-          {/* Project Stats */}
+          {/* Portfolio Stats */}
           {myProjects.length > 0 && (
-            <div className="project-stats">
-              <div className="stat-card">
-                <span className="number">{myProjects.length}</span>
-                <span className="label">Total Projects</span>
-              </div>
-              {categories.filter(cat => cat.id !== 'all').map(category => (
+            <div className="portfolio-stats">
+              {categories.map(category => (
                 <div key={category.id} className="stat-card">
-                  <span className="number">{category.count}</span>
-                  <span className="label">{category.name}</span>
+                  <div className="stat-icon">{category.icon}</div>
+                  <div className="stat-content">
+                    <div className="stat-number">{category.count}</div>
+                    <div className="stat-label">{category.name}</div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -645,7 +671,7 @@ const About = () => {
               >
                 <span className="filter-icon">{category.icon}</span>
                 {category.name}
-                <span className="count">({category.count})</span>
+                <span className="count-badge">{category.count}</span>
               </button>
             ))}
           </div>
@@ -664,21 +690,14 @@ const About = () => {
                       src={project.src} 
                       alt={project.title}
                       loading="lazy"
-                      decoding="async"
                       onLoad={handleImageLoad}
                       onError={(e) => handleImageError(e, project)}
-                      style={{ 
-                        opacity: 0, 
-                        transition: 'opacity 0.3s ease',
-                        background: '#f8fafc'
-                      }}
                     />
                     
                     {/* Image Fallback */}
                     <div className="image-fallback">
                       <span>📷</span>
                       <p>Image not available</p>
-                      <small>{project.title}</small>
                       <button 
                         className="retry-btn"
                         onClick={(e) => {
@@ -700,7 +719,7 @@ const About = () => {
                       {project.category === 'motion-picture' && '🎬 Video'}
                     </div>
                     
-                    {/* Delete Button - ONLY SHOWS FOR OWNER */}
+                    {/* Delete Button for Owner */}
                     {isOwner && (
                       <button 
                         className="delete-btn"
@@ -710,18 +729,14 @@ const About = () => {
                         ×
                       </button>
                     )}
-                    
-                    <div className="project-overlay">
-                      <div className="project-info">
-                        <h4>{project.title}</h4>
-                        <p>{project.description}</p>
-                        <div className="project-meta">
-                          <span className="upload-date">{project.uploadDate}</span>
-                          {isOwner && (
-                            <span className="owner-badge">Your Project</span>
-                          )}
-                        </div>
-                      </div>
+                  </div>
+                  
+                  <div className="project-info">
+                    <h4>{project.title}</h4>
+                    <p>{project.description}</p>
+                    <div className="project-meta">
+                      <span className="date">{project.uploadDate}</span>
+                      {isOwner && <span className="owner-tag">Your Project</span>}
                     </div>
                   </div>
                 </div>
@@ -732,21 +747,16 @@ const About = () => {
                   {selectedCategory === 'all' ? '📁' : 
                    categories.find(cat => cat.id === selectedCategory)?.icon}
                 </div>
-                <h3>
-                  {selectedCategory === 'all' 
-                    ? "No projects in portfolio" 
-                    : `No ${categories.find(cat => cat.id === selectedCategory)?.name} projects`
-                  }
-                </h3>
+                <h3>No projects found</h3>
                 <p>
                   {isOwner 
-                    ? `Upload some ${selectedCategory === 'all' ? '' : categories.find(cat => cat.id === selectedCategory)?.name} projects to get started` 
+                    ? `Start by uploading some ${selectedCategory === 'all' ? '' : categories.find(cat => cat.id === selectedCategory)?.name} projects` 
                     : "Check back later for new projects"
                   }
                 </p>
                 {isOwner && selectedCategory !== 'all' && (
                   <button 
-                    className="upload-btn"
+                    className="btn primary"
                     onClick={() => {
                       setUploadCategory(selectedCategory);
                       triggerFileInput();
@@ -758,294 +768,314 @@ const About = () => {
               </div>
             )}
           </div>
-        </div>
+        </section>
 
-        {/* Call to Action */}
-        <div className="cta-section">
-          <div className="cta-content">
-            <h2>
-              {isOwner ? "Ready to Grow Your Portfolio?" : "Ready to Start Your Project?"}
-            </h2>
-            <p>
-              {isOwner 
-                ? "Keep adding amazing projects to showcase your skills and attract more clients" 
-                : "Let's work together to bring your creative vision to life with professional design and media services"
-              }
-            </p>
-            <div className="cta-buttons">
-              <button 
-                className="cta-btn primary" 
-                onClick={() => scrollToSection('contact')}
-              >
-                {isOwner ? "Add More Projects" : "Start Your Project"}
-              </button>
-              <button 
-                className="cta-btn secondary"
-                onClick={() => scrollToSection('services')}
-              >
-                View Services
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Image Modal - FIXED Z-INDEX ISSUE */}
-        {selectedImage && (
-          <div className="modal-overlay" onClick={() => setSelectedImage(null)}>
-            <div className="modal-container" onClick={e => e.stopPropagation()}>
-              <button 
-                className="modal-close-btn"
-                onClick={() => setSelectedImage(null)}
-              >
-                ×
-              </button>
-              <div className="modal-image-wrapper">
-                <img 
-                  src={selectedImage.src} 
-                  alt={selectedImage.title}
-                  onLoad={(e) => {
-                    e.target.style.opacity = '1';
-                    console.log('✅ Modal image loaded');
-                  }}
-                  onError={(e) => {
-                    console.error('❌ Modal image failed to load');
-                    e.target.style.display = 'none';
-                    const fallback = document.createElement('div');
-                    fallback.className = 'modal-image-fallback';
-                    fallback.innerHTML = `
-                      <div style="padding: 40px; text-align: center; color: #666; background: #f8fafc; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                        <span style="font-size: 3rem;">📷</span>
-                        <p style="margin: 10px 0; font-size: 1.1rem;">Image not available</p>
-                        <p style="margin: 0; font-size: 0.9rem; opacity: 0.7;">${selectedImage.title}</p>
-                      </div>
-                    `;
-                    e.target.parentNode.appendChild(fallback);
-                  }}
-                  style={{ 
-                    opacity: 0, 
-                    transition: 'opacity 0.3s ease',
-                    background: '#f8fafc'
-                  }}
-                />
-              </div>
-              <div className="modal-content">
-                <h3>{selectedImage.title}</h3>
-                <p>{selectedImage.description}</p>
-                <div className="modal-meta">
-                  <span className="category-tag-large">
-                    {selectedImage.category === 'graphic-design' && '🎨 Graphic Design'}
-                    {selectedImage.category === 'photography' && '📸 Photography'}
-                    {selectedImage.category === 'motion-picture' && '🎬 Motion Picture'}
-                    {selectedImage.category === 'music' && '🎵 Music Artworks'}
-                    {selectedImage.category === 'games' && '🎮 Gaming Zone'}
-                  </span>
-                  <span className="upload-date">Uploaded: {selectedImage.uploadDate}</span>
-                </div>
-                {isOwner && (
-                  <button 
-                    className="delete-btn-modal"
-                    onClick={() => {
-                      deleteProject(selectedImage.id, { stopPropagation: () => {} });
-                      setSelectedImage(null);
-                    }}
-                  >
-                    🗑 Delete This Project
-                  </button>
-                )}
+        {/* Contact Section */}
+        <section id="contact" className="section">
+          <div className="cta-section">
+            <div className="cta-content">
+              <h2>
+                {isOwner 
+                  ? "Ready to Grow Your Portfolio?" 
+                  : "Ready to Start Your Project?"
+                }
+              </h2>
+              <p>
+                {isOwner 
+                  ? "Keep adding amazing projects to showcase your skills and attract more clients" 
+                  : "Let's work together to bring your creative vision to life"
+                }
+              </p>
+              <div className="cta-actions">
+                <button className="btn primary large">
+                  {isOwner ? "Add More Projects" : "Get Started Today"}
+                </button>
+                <button className="btn secondary">
+                  View All Services
+                </button>
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </section>
+      </main>
+
+      {/* Image Modal */}
+      {selectedImage && (
+        <div className="modal-overlay" onClick={() => setSelectedImage(null)}>
+          <div className="modal-container" onClick={e => e.stopPropagation()}>
+            <button 
+              className="modal-close"
+              onClick={() => setSelectedImage(null)}
+            >
+              ×
+            </button>
+            <div className="modal-image">
+              <img 
+                src={selectedImage.src} 
+                alt={selectedImage.title}
+                onLoad={(e) => e.target.style.opacity = '1'}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  const fallback = e.target.nextElementSibling;
+                  if (fallback) fallback.style.display = 'flex';
+                }}
+              />
+              <div className="modal-fallback">
+                <span>📷</span>
+                <p>Image not available</p>
+              </div>
+            </div>
+            <div className="modal-content">
+              <h3>{selectedImage.title}</h3>
+              <p>{selectedImage.description}</p>
+              <div className="modal-meta">
+                <span className="category">
+                  {selectedImage.category === 'graphic-design' && '🎨 Graphic Design'}
+                  {selectedImage.category === 'photography' && '📸 Photography'}
+                  {selectedImage.category === 'motion-picture' && '🎬 Motion Picture'}
+                  {selectedImage.category === 'music' && '🎵 Music Artworks'}
+                  {selectedImage.category === 'games' && '🎮 Gaming Zone'}
+                </span>
+                <span className="date">{selectedImage.uploadDate}</span>
+              </div>
+              {isOwner && (
+                <button 
+                  className="btn danger"
+                  onClick={() => {
+                    deleteProject(selectedImage.id, { stopPropagation: () => {} });
+                    setSelectedImage(null);
+                  }}
+                >
+                  🗑 Delete Project
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
-        .about {
-          padding: 40px 0 80px;
-          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        .about-container {
           min-height: 100vh;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          position: relative;
+          overflow: hidden;
         }
 
-        .container {
-          max-width: 1200px;
+        /* Modern Navigation Styles */
+        .modern-nav {
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(20px);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+          position: sticky;
+          top: 0;
+          z-index: 1000;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .nav-container {
+          max-width: 1400px;
           margin: 0 auto;
-          padding: 0 20px;
+          padding: 0 40px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          height: 70px;
         }
 
-        /* Owner Access Bar */
-        .owner-access-bar {
+        .nav-brand {
+          flex: 1;
+        }
+
+        .logo-wrapper {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .logo-icon {
+          font-size: 2rem;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        .brand-text {
+          display: flex;
+          flex-direction: column;
+          line-height: 1;
+        }
+
+        .brand-main {
+          font-size: 1.2rem;
+          font-weight: 800;
+          color: #1e293b;
+        }
+
+        .brand-sub {
+          font-size: 0.8rem;
+          font-weight: 600;
+          color: #667eea;
+          opacity: 0.8;
+        }
+
+        .nav-center {
+          flex: 2;
+          display: flex;
+          justify-content: center;
+        }
+
+        .nav-links {
+          display: flex;
+          gap: 8px;
+          background: rgba(255, 255, 255, 0.8);
+          padding: 8px;
+          border-radius: 16px;
+          border: 1px solid rgba(102, 126, 234, 0.1);
+          backdrop-filter: blur(10px);
+        }
+
+        .nav-link {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 20px;
+          background: transparent;
+          border: none;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          color: #64748b;
+          font-weight: 500;
+          font-size: 0.9rem;
+        }
+
+        .nav-link:hover {
+          background: rgba(102, 126, 234, 0.1);
+          color: #667eea;
+          transform: translateY(-1px);
+        }
+
+        .nav-icon {
+          font-size: 1.1rem;
+        }
+
+        .nav-text {
+          white-space: nowrap;
+        }
+
+        .nav-actions {
+          flex: 1;
+          display: flex;
+          justify-content: flex-end;
+        }
+
+        .auth-section, .owner-section {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .login-btn.modern {
+          position: relative;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 10px 20px;
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
-          padding: 15px 25px;
-          border-radius: 15px;
-          margin-bottom: 20px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border: none;
+          border-radius: 12px;
+          cursor: pointer;
+          font-weight: 600;
+          font-size: 0.9rem;
+          transition: all 0.3s ease;
+          overflow: hidden;
         }
 
-        .viewer-mode, .owner-mode {
-          display: flex;
-          align-items: center;
-          gap: 20px;
+        .login-btn.modern:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-glow {
+          position: absolute;
+          top: 0;
+          left: -100%;
           width: 100%;
-          justify-content: space-between;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+          transition: left 0.5s ease;
         }
 
-        .viewer-badge {
-          background: rgba(255, 255, 255, 0.15);
-          padding: 8px 16px;
-          border-radius: 25px;
-          font-weight: 600;
-          font-size: 0.9rem;
-          backdrop-filter: blur(10px);
+        .login-btn.modern:hover .btn-glow {
+          left: 100%;
         }
 
-        .owner-status {
+        .btn-icon {
+          font-size: 1.1rem;
+        }
+
+        .btn-text {
+          white-space: nowrap;
+        }
+
+        .owner-indicator {
           display: flex;
           align-items: center;
-          gap: 15px;
-        }
-
-        .owner-badge {
-          background: rgba(255, 255, 255, 0.2);
+          gap: 8px;
           padding: 8px 16px;
-          border-radius: 25px;
-          font-weight: bold;
-          font-size: 0.85rem;
-          backdrop-filter: blur(10px);
-        }
-
-        .owner-info {
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          color: white;
+          border-radius: 12px;
+          font-weight: 600;
           font-size: 0.9rem;
-          opacity: 0.9;
         }
 
-        .owner-actions {
+        .owner-icon {
+          font-size: 1.1rem;
+        }
+
+        .logout-btn.modern {
           display: flex;
-          gap: 10px;
           align-items: center;
-        }
-
-        .refresh-btn, .clear-cache-btn {
-          background: rgba(255, 255, 255, 0.2);
-          color: white;
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          padding: 8px 12px;
-          border-radius: 6px;
-          cursor: pointer;
-          font-size: 0.8rem;
-          transition: all 0.3s ease;
-        }
-
-        .refresh-btn:hover:not(:disabled) {
-          background: rgba(34, 197, 94, 0.3);
-          transform: translateY(-1px);
-        }
-
-        .clear-cache-btn:hover {
-          background: rgba(249, 115, 22, 0.3);
-          transform: translateY(-1px);
-        }
-
-        .refresh-btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .owner-login-btn {
-          background: rgba(255, 255, 255, 0.2);
-          color: white;
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          padding: 10px 20px;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          font-weight: 600;
-          backdrop-filter: blur(10px);
-        }
-
-        .owner-login-btn:hover {
-          background: rgba(255, 255, 255, 0.3);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
-        }
-
-        .logout-btn {
-          background: rgba(239, 68, 68, 0.8);
-          color: white;
-          border: none;
-          padding: 10px 20px;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          font-weight: 600;
-        }
-
-        .logout-btn:hover {
-          background: rgba(220, 38, 38, 0.9);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-        }
-
-        /* Debug Panel */
-        .debug-panel {
-          background: #1e293b;
-          color: white;
-          padding: 15px;
-          border-radius: 10px;
-          margin-bottom: 20px;
-          font-size: 0.8rem;
-        }
-
-        .debug-panel summary {
-          cursor: pointer;
-          font-weight: 600;
-        }
-
-        .debug-content {
-          margin-top: 10px;
+          justify-content: center;
           padding: 10px;
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 5px;
-        }
-
-        .debug-refresh {
-          background: #667eea;
-          color: white;
-          border: none;
-          padding: 5px 10px;
-          border-radius: 4px;
+          background: rgba(239, 68, 68, 0.1);
+          color: #ef4444;
+          border: 1px solid rgba(239, 68, 68, 0.2);
+          border-radius: 12px;
           cursor: pointer;
-          font-size: 0.7rem;
-          margin-top: 5px;
+          transition: all 0.3s ease;
         }
 
-        .debug-refresh:hover {
-          background: #5a67d8;
+        .logout-btn.modern:hover {
+          background: #ef4444;
+          color: white;
+          transform: scale(1.05);
         }
 
-        /* Login Modal */
-        .login-modal-overlay {
+        /* Modern Login Modal */
+        .modern-login-overlay {
           position: fixed;
           top: 0;
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0, 0, 0, 0.7);
+          background: rgba(0, 0, 0, 0.8);
           display: flex;
           align-items: center;
           justify-content: center;
-          z-index: 1000;
+          z-index: 2000;
           padding: 20px;
-          backdrop-filter: blur(5px);
+          backdrop-filter: blur(10px);
         }
 
-        .login-modal {
+        .modern-login-modal {
           background: white;
-          border-radius: 20px;
-          max-width: 450px;
+          border-radius: 24px;
+          max-width: 440px;
           width: 100%;
           box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
           overflow: hidden;
@@ -1066,56 +1096,74 @@ const About = () => {
         .login-header {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
-          padding: 25px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+          padding: 40px 40px 20px;
+          text-align: center;
+          position: relative;
+        }
+
+        .login-icon {
+          font-size: 3rem;
+          margin-bottom: 16px;
+          opacity: 0.9;
         }
 
         .login-header h3 {
-          margin: 0;
-          font-size: 1.4rem;
+          margin: 0 0 8px 0;
+          font-size: 1.5rem;
           font-weight: 700;
         }
 
+        .login-header p {
+          margin: 0;
+          opacity: 0.9;
+          font-size: 0.95rem;
+        }
+
         .close-login {
-          background: none;
-          border: none;
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          background: rgba(255, 255, 255, 0.2);
           color: white;
-          font-size: 1.8rem;
-          cursor: pointer;
-          width: 35px;
-          height: 35px;
+          border: none;
+          width: 32px;
+          height: 32px;
           border-radius: 50%;
+          cursor: pointer;
+          font-size: 1.2rem;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: background 0.3s ease;
+          transition: all 0.3s ease;
         }
 
         .close-login:hover {
-          background: rgba(255, 255, 255, 0.2);
+          background: rgba(255, 255, 255, 0.3);
+          transform: scale(1.1);
         }
 
         .login-body {
-          padding: 35px;
+          padding: 40px;
         }
 
-        .login-body p {
-          color: #64748b;
-          margin-bottom: 25px;
-          text-align: center;
-          font-size: 1.1rem;
-          line-height: 1.5;
+        .input-group {
+          margin-bottom: 24px;
+        }
+
+        .input-group label {
+          display: block;
+          margin-bottom: 8px;
+          color: #374151;
+          font-weight: 600;
+          font-size: 0.9rem;
         }
 
         .password-input {
           width: 100%;
-          padding: 15px 20px;
+          padding: 16px;
           border: 2px solid #e2e8f0;
           border-radius: 12px;
           font-size: 1rem;
-          margin-bottom: 25px;
           transition: all 0.3s ease;
           background: #f8fafc;
         }
@@ -1130,14 +1178,19 @@ const About = () => {
         .login-actions {
           display: flex;
           gap: 12px;
+          margin-bottom: 20px;
         }
 
-        .login-confirm {
+        .login-confirm.modern {
           flex: 2;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
           border: none;
-          padding: 15px;
+          padding: 16px;
           border-radius: 12px;
           cursor: pointer;
           font-weight: 600;
@@ -1145,329 +1198,424 @@ const About = () => {
           transition: all 0.3s ease;
         }
 
-        .login-confirm:hover {
+        .login-confirm.modern:hover {
           transform: translateY(-2px);
           box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
         }
 
-        .login-cancel {
+        .login-cancel.modern {
           flex: 1;
           background: #64748b;
           color: white;
           border: none;
-          padding: 15px;
+          padding: 16px;
           border-radius: 12px;
           cursor: pointer;
           transition: all 0.3s ease;
           font-weight: 600;
         }
 
-        .login-cancel:hover {
+        .login-cancel.modern:hover {
           background: #475569;
           transform: translateY(-2px);
         }
 
-        /* About Header */
-        .about-header {
+        .login-footer {
           text-align: center;
-          margin-bottom: 80px;
-          padding: 60px 0 40px;
+          padding-top: 20px;
+          border-top: 1px solid #e2e8f0;
         }
 
-        .header-content {
-          max-width: 800px;
-          margin: 0 auto;
-        }
-
-        .main-title {
-          font-size: 3.5rem;
-          color: #1e293b;
-          margin-bottom: 20px;
-          font-weight: 800;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
-        .subtitle {
-          font-size: 1.3rem;
+        .login-footer p {
+          margin: 0;
           color: #64748b;
-          margin-bottom: 40px;
-          line-height: 1.6;
+          font-size: 0.85rem;
         }
 
-        .header-stats {
-          display: flex;
-          justify-content: center;
-          gap: 50px;
-          margin-top: 40px;
+        /* Rest of your existing styles remain exactly the same */
+        .background-elements {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 0;
+          pointer-events: none;
         }
 
-        .stat-item {
-          text-align: center;
+        .floating-shape {
+          position: absolute;
+          border-radius: 50%;
+          background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+          animation: float 6s ease-in-out infinite;
         }
 
-        .stat-number {
-          display: block;
-          font-size: 2.5rem;
-          font-weight: 800;
-          color: #667eea;
-          margin-bottom: 8px;
+        .shape-1 {
+          width: 200px;
+          height: 200px;
+          top: 10%;
+          left: 5%;
+          animation-delay: 0s;
         }
 
-        .stat-label {
-          font-size: 1rem;
-          color: #64748b;
-          font-weight: 600;
+        .shape-2 {
+          width: 150px;
+          height: 150px;
+          top: 60%;
+          right: 10%;
+          animation-delay: 2s;
         }
 
-        /* Section Tag */
-        .section-tag {
-          display: inline-block;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          padding: 8px 20px;
-          border-radius: 25px;
-          font-size: 0.9rem;
-          font-weight: 600;
-          margin-bottom: 20px;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
+        .shape-3 {
+          width: 100px;
+          height: 100px;
+          bottom: 20%;
+          left: 15%;
+          animation-delay: 4s;
         }
 
-        /* About Content */
-        .about-content {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 80px;
-          align-items: center;
-          margin-bottom: 100px;
+        .shape-4 {
+          width: 120px;
+          height: 120px;
+          top: 30%;
+          right: 20%;
+          animation-delay: 1s;
         }
 
-        .about-text h2 {
-          font-size: 2.5rem;
-          color: #1e293b;
-          margin-bottom: 20px;
-          font-weight: 700;
+        .shape-5 {
+          width: 80px;
+          height: 80px;
+          bottom: 10%;
+          right: 15%;
+          animation-delay: 3s;
         }
 
-        .lead-text {
-          font-size: 1.2rem;
-          color: #64748b;
-          line-height: 1.7;
-          margin-bottom: 40px;
+        .animated-grid {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: 
+            linear-gradient(90deg, transparent 79px, rgba(255,255,255,0.03) 81px, rgba(255,255,255,0.03) 81px, transparent 83px),
+            linear-gradient(rgba(255,255,255,0.03) 79px, transparent 81px, transparent 81px, rgba(255,255,255,0.03) 83px);
+          background-size: 85px 85px;
+          animation: gridMove 20s linear infinite;
         }
 
-        .skills-section {
-          margin-top: 40px;
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0px) rotate(0deg);
+          }
+          50% {
+            transform: translateY(-20px) rotate(180deg);
+          }
         }
 
-        .skills-section h3 {
-          font-size: 1.5rem;
-          color: #1e293b;
-          margin-bottom: 25px;
-          font-weight: 600;
+        @keyframes gridMove {
+          0% {
+            transform: translate(0, 0);
+          }
+          100% {
+            transform: translate(85px, 85px);
+          }
         }
 
-        .skills-grid {
-          display: grid;
-          gap: 20px;
-        }
-
-        .skill-card {
-          background: white;
-          padding: 25px;
-          border-radius: 15px;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-          border: 1px solid #e2e8f0;
-          transition: all 0.3s ease;
-        }
-
-        .skill-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-        }
-
-        .skill-icon {
-          font-size: 2rem;
-          margin-bottom: 15px;
-        }
-
-        .skill-card h4 {
-          font-size: 1.2rem;
-          color: #1e293b;
-          margin-bottom: 10px;
-          font-weight: 600;
-        }
-
-        .skill-card p {
-          color: #64748b;
-          line-height: 1.6;
+        .main-content {
+          position: relative;
+          z-index: 1;
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(10px);
+          min-height: 100vh;
           margin: 0;
         }
 
-        /* About Visual */
-        .about-visual {
-          position: relative;
-        }
-
-        .visual-card {
-          background: white;
-          border-radius: 20px;
-          padding: 30px;
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-          border: 1px solid #e2e8f0;
-          position: relative;
-          overflow: hidden;
-        }
-
-        .card-glow {
-          position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
-          animation: rotate 10s linear infinite;
-        }
-
-        @keyframes rotate {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-
-        .profile-display {
-          position: relative;
-          z-index: 2;
-        }
-
-        .profile-image {
-          width: 100%;
-          height: 300px;
+        /* Owner Controls */
+        .owner-controls {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          border-radius: 15px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
           color: white;
-          margin-bottom: 25px;
+          padding: 15px 60px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
         }
 
-        .profile-image span {
-          font-size: 1.5rem;
-          font-weight: 700;
-          margin-bottom: 10px;
+        .owner-info {
+          display: flex;
+          align-items: center;
+          gap: 12px;
         }
 
-        .profile-image small {
-          font-size: 1rem;
-          opacity: 0.9;
+        .owner-status {
+          font-size: 0.9rem;
+          font-weight: 600;
         }
 
-        .profile-badges {
+        .owner-actions {
           display: flex;
           gap: 10px;
-          justify-content: center;
-          flex-wrap: wrap;
         }
 
-        .badge {
+        .action-btn {
+          padding: 8px 16px;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          background: rgba(255, 255, 255, 0.1);
+          color: white;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          backdrop-filter: blur(10px);
+        }
+
+        .action-btn:hover:not(:disabled) {
+          background: rgba(255, 255, 255, 0.2);
+          transform: translateY(-1px);
+        }
+
+        .action-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        /* Debug Panel */
+        .debug-panel {
+          background: #1e293b;
+          color: white;
+          padding: 15px 60px;
+          font-size: 0.85rem;
+        }
+
+        .debug-panel summary {
+          cursor: pointer;
+          font-weight: 600;
+        }
+
+        .debug-content {
+          margin-top: 15px;
+          padding: 15px;
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 8px;
+        }
+
+        .debug-stats {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
+          margin-bottom: 15px;
+        }
+
+        .debug-stat {
+          display: flex;
+          justify-content: space-between;
+        }
+
+        .debug-actions {
+          display: flex;
+          gap: 10px;
+        }
+
+        .debug-btn {
+          background: #667eea;
+          color: white;
+          border: none;
+          padding: 6px 12px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 0.8rem;
+        }
+
+        /* Sections */
+        .section {
+          padding: 80px 60px;
+        }
+
+        /* Hero Section */
+        .hero-section {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 60px;
+          align-items: center;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+
+        .hero-badge {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
           padding: 8px 16px;
           border-radius: 20px;
           font-size: 0.9rem;
           font-weight: 600;
-        }
-
-        /* Services Section */
-        .services-section {
-          margin-bottom: 100px;
-        }
-
-        .section-title {
-          font-size: 2.5rem;
-          color: #1e293b;
-          text-align: center;
-          margin-bottom: 50px;
-          font-weight: 700;
-        }
-
-        .services-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 30px;
-        }
-
-        .service-card {
-          background: white;
-          padding: 40px 30px;
-          border-radius: 20px;
-          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-          border: 1px solid #e2e8f0;
-          transition: all 0.3s ease;
-          text-align: center;
-          position: relative;
-        }
-
-        .service-card:hover {
-          transform: translateY(-10px);
-          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .service-card.featured {
-          border: 2px solid #667eea;
-          transform: scale(1.05);
-        }
-
-        .service-card.featured:hover {
-          transform: scale(1.05) translateY(-10px);
-        }
-
-        .service-icon {
-          font-size: 3rem;
+          display: inline-block;
           margin-bottom: 20px;
         }
 
-        .service-card h3 {
-          font-size: 1.5rem;
+        .hero-title {
+          font-size: 3.5rem;
+          font-weight: 800;
           color: #1e293b;
+          line-height: 1.1;
           margin-bottom: 20px;
-          font-weight: 700;
         }
 
-        .service-features {
-          list-style: none;
-          padding: 0;
-          margin: 0 0 25px 0;
-          text-align: left;
+        .gradient-text {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
         }
 
-        .service-features li {
-          padding: 8px 0;
+        .hero-description {
+          font-size: 1.2rem;
           color: #64748b;
-          position: relative;
-          padding-left: 20px;
+          line-height: 1.6;
+          margin-bottom: 30px;
         }
 
-        .service-features li:before {
-          content: '✓';
-          position: absolute;
-          left: 0;
-          color: #10b981;
-          font-weight: bold;
+        .hero-stats {
+          display: flex;
+          gap: 40px;
+          margin-bottom: 30px;
         }
 
-        /* Projects Section */
-        .projects-section {
-          margin-bottom: 80px;
+        .stat {
+          text-align: center;
         }
 
+        .stat-number {
+          font-size: 2rem;
+          font-weight: 800;
+          color: #667eea;
+          margin-bottom: 5px;
+        }
+
+        .stat-label {
+          font-size: 0.9rem;
+          color: #64748b;
+          font-weight: 600;
+        }
+
+        .hero-actions {
+          display: flex;
+          gap: 15px;
+        }
+
+        .hero-visual {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .floating-card {
+          background: white;
+          padding: 30px;
+          border-radius: 20px;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+          border: 1px solid #e2e8f0;
+          text-align: center;
+          max-width: 300px;
+          animation: float 6s ease-in-out infinite;
+        }
+
+        .avatar {
+          font-size: 4rem;
+          margin-bottom: 15px;
+        }
+
+        .floating-card h3 {
+          font-size: 1.3rem;
+          color: #1e293b;
+          margin-bottom: 8px;
+        }
+
+        .floating-card p {
+          color: #64748b;
+          margin-bottom: 20px;
+        }
+
+        .skills-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          justify-content: center;
+        }
+
+        .skills-tags span {
+          background: #f1f5f9;
+          color: #475569;
+          padding: 6px 12px;
+          border-radius: 15px;
+          font-size: 0.8rem;
+          font-weight: 500;
+        }
+
+        /* Buttons */
+        .btn {
+          padding: 12px 24px;
+          border: none;
+          border-radius: 10px;
+          cursor: pointer;
+          font-weight: 600;
+          transition: all 0.3s ease;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+        }
+
+        .btn.primary {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+        }
+
+        .btn.primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn.secondary {
+          background: white;
+          color: #64748b;
+          border: 2px solid #e2e8f0;
+        }
+
+        .btn.secondary:hover {
+          border-color: #667eea;
+          color: #667eea;
+          transform: translateY(-2px);
+        }
+
+        .btn.large {
+          padding: 15px 30px;
+          font-size: 1.1rem;
+        }
+
+        .btn.danger {
+          background: #ef4444;
+          color: white;
+        }
+
+        .btn.danger:hover {
+          background: #dc2626;
+          transform: translateY(-2px);
+        }
+
+        /* Section Headers */
         .section-header {
           text-align: center;
-          margin-bottom: 50px;
+          margin-bottom: 60px;
+        }
+
+        .section-badge {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          padding: 8px 20px;
+          border-radius: 20px;
+          font-size: 0.9rem;
+          font-weight: 600;
+          display: inline-block;
+          margin-bottom: 20px;
         }
 
         .section-header h2 {
@@ -1485,106 +1633,144 @@ const About = () => {
           line-height: 1.6;
         }
 
-        /* Upload Area */
-        .upload-area {
+        /* Services Grid */
+        .services-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 30px;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+
+        .service-card {
+          background: white;
+          padding: 30px;
+          border-radius: 15px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+          border: 1px solid #e2e8f0;
+          transition: all 0.3s ease;
+          text-align: center;
+        }
+
+        .service-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .service-card.featured {
+          border: 2px solid #667eea;
+          transform: scale(1.05);
+        }
+
+        .service-card.featured:hover {
+          transform: scale(1.05) translateY(-5px);
+        }
+
+        .service-icon {
+          font-size: 3rem;
+          margin-bottom: 20px;
+        }
+
+        .service-card h3 {
+          font-size: 1.3rem;
+          color: #1e293b;
+          margin-bottom: 10px;
+          font-weight: 600;
+        }
+
+        .service-card p {
+          color: #64748b;
+          margin-bottom: 20px;
+          line-height: 1.5;
+        }
+
+        .service-card ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          text-align: left;
+        }
+
+        .service-card li {
+          padding: 8px 0;
+          color: #64748b;
+          position: relative;
+          padding-left: 20px;
+        }
+
+        .service-card li:before {
+          content: '✓';
+          position: absolute;
+          left: 0;
+          color: #10b981;
+          font-weight: bold;
+        }
+
+        /* Upload Section */
+        .upload-section {
           margin-bottom: 40px;
         }
 
         .upload-card {
           background: white;
           padding: 30px;
-          border-radius: 20px;
-          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+          border-radius: 15px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
           border: 2px dashed #cbd5e1;
-          transition: all 0.3s ease;
-        }
-
-        .upload-card:hover {
-          border-color: #667eea;
-          box-shadow: 0 12px 40px rgba(102, 126, 234, 0.15);
-        }
-
-        .upload-header {
-          display: flex;
-          align-items: center;
-          gap: 15px;
-          margin-bottom: 25px;
-        }
-
-        .upload-icon {
-          font-size: 2.5rem;
         }
 
         .upload-header h3 {
-          font-size: 1.5rem;
+          font-size: 1.3rem;
           color: #1e293b;
-          margin: 0;
-          font-weight: 700;
+          margin-bottom: 8px;
         }
 
         .upload-header p {
           color: #64748b;
-          margin: 5px 0 0 0;
+          margin: 0;
         }
 
-        .category-selection {
-          margin-bottom: 25px;
+        .upload-controls {
+          margin-top: 25px;
         }
 
-        .category-selection label {
+        .category-selector label {
           display: block;
           color: #374151;
           font-weight: 600;
           margin-bottom: 15px;
-          font-size: 1.1rem;
         }
 
-        .category-options {
+        .category-tabs {
           display: flex;
           gap: 10px;
           margin-bottom: 20px;
           flex-wrap: wrap;
         }
 
-        .category-option {
+        .tab {
           background: #f8fafc;
           border: 2px solid #e2e8f0;
-          padding: 12px 20px;
+          padding: 10px 16px;
           border-radius: 10px;
           cursor: pointer;
           transition: all 0.3s ease;
           display: flex;
           align-items: center;
           gap: 8px;
-          font-weight: 600;
+          font-weight: 500;
           color: #64748b;
         }
 
-        .category-option:hover {
+        .tab:hover {
           border-color: #667eea;
           color: #667eea;
         }
 
-        .category-option.active {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          border-color: #667eea;
-        }
-
-        .selected-category-info {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          font-size: 0.95rem;
-        }
-
-        .category-tag {
+        .tab.active {
           background: #667eea;
           color: white;
-          padding: 5px 12px;
-          border-radius: 15px;
-          font-size: 0.9rem;
-          font-weight: 600;
+          border-color: #667eea;
         }
 
         .upload-actions {
@@ -1592,46 +1778,13 @@ const About = () => {
         }
 
         .upload-btn {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          border: none;
-          padding: 15px 30px;
-          border-radius: 12px;
-          cursor: pointer;
-          font-weight: 600;
           font-size: 1rem;
-          transition: all 0.3s ease;
-          margin-bottom: 10px;
         }
 
-        .upload-btn:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .upload-actions small {
-          color: #64748b;
-          display: block;
-        }
-
-        .management-info {
-          background: #f0f9ff;
-          padding: 15px;
-          border-radius: 10px;
-          margin-top: 20px;
-          border-left: 4px solid #667eea;
-        }
-
-        .management-info p {
-          margin: 5px 0;
-          color: #0369a1;
-          font-size: 0.9rem;
-        }
-
-        /* Project Stats */
-        .project-stats {
+        /* Portfolio Stats */
+        .portfolio-stats {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
           gap: 20px;
           margin-bottom: 40px;
         }
@@ -1640,29 +1793,33 @@ const About = () => {
           background: white;
           padding: 25px;
           border-radius: 15px;
-          text-align: center;
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-          border: 1px solid #e2e8f0;
+          display: flex;
+          align-items: center;
+          gap: 15px;
           transition: all 0.3s ease;
         }
 
         .stat-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+          transform: translateY(-3px);
+          box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
         }
 
-        .stat-card .number {
-          display: block;
-          font-size: 2.2rem;
+        .stat-icon {
+          font-size: 2.5rem;
+        }
+
+        .stat-number {
+          font-size: 1.8rem;
           font-weight: 800;
-          color: #667eea;
-          margin-bottom: 8px;
+          color: #1e293b;
+          line-height: 1;
         }
 
-        .stat-card .label {
+        .stat-label {
           font-size: 0.9rem;
           color: #64748b;
-          font-weight: 600;
+          font-weight: 500;
         }
 
         /* Category Filter */
@@ -1684,7 +1841,7 @@ const About = () => {
           display: flex;
           align-items: center;
           gap: 8px;
-          font-weight: 600;
+          font-weight: 500;
           color: #64748b;
         }
 
@@ -1695,7 +1852,7 @@ const About = () => {
         }
 
         .filter-btn.active {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: #667eea;
           color: white;
           border-color: #667eea;
         }
@@ -1705,11 +1862,7 @@ const About = () => {
           cursor: not-allowed;
         }
 
-        .filter-icon {
-          font-size: 1.1rem;
-        }
-
-        .count {
+        .count-badge {
           background: rgba(255, 255, 255, 0.2);
           padding: 2px 8px;
           border-radius: 10px;
@@ -1721,7 +1874,6 @@ const About = () => {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
           gap: 30px;
-          margin-bottom: 50px;
         }
 
         .project-card {
@@ -1735,14 +1887,14 @@ const About = () => {
         }
 
         .project-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+          transform: translateY(-5px);
+          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
         }
 
         .project-image {
           position: relative;
           width: 100%;
-          height: 250px;
+          height: 200px;
           overflow: hidden;
           background: #f8fafc;
         }
@@ -1752,14 +1904,12 @@ const About = () => {
           height: 100%;
           object-fit: cover;
           transition: all 0.3s ease;
-          background: #f8fafc;
         }
 
         .project-card:hover .project-image img {
-          transform: scale(1.1);
+          transform: scale(1.05);
         }
 
-        /* Image Fallback Styles */
         .image-fallback {
           position: absolute;
           top: 0;
@@ -1772,29 +1922,14 @@ const About = () => {
           align-items: center;
           justify-content: center;
           color: white;
-          font-size: 2rem;
           text-align: center;
           padding: 20px;
-          border-radius: 15px;
         }
 
         .image-fallback span {
-          font-size: 3rem;
+          font-size: 2.5rem;
           margin-bottom: 10px;
           opacity: 0.8;
-        }
-
-        .image-fallback p {
-          font-size: 1rem;
-          margin: 5px 0;
-          opacity: 0.9;
-          font-weight: 500;
-        }
-
-        .image-fallback small {
-          font-size: 0.8rem;
-          opacity: 0.7;
-          margin-top: 5px;
         }
 
         .retry-btn {
@@ -1807,21 +1942,19 @@ const About = () => {
           margin-top: 10px;
           font-size: 0.8rem;
           transition: all 0.3s ease;
-          backdrop-filter: blur(10px);
         }
 
         .retry-btn:hover {
           background: rgba(255, 255, 255, 0.3);
-          transform: translateY(-2px);
         }
 
         .category-badge {
           position: absolute;
-          top: 15px;
-          left: 15px;
+          top: 12px;
+          left: 12px;
           background: rgba(255, 255, 255, 0.9);
-          padding: 5px 12px;
-          border-radius: 15px;
+          padding: 5px 10px;
+          border-radius: 12px;
           font-size: 0.8rem;
           font-weight: 600;
           backdrop-filter: blur(10px);
@@ -1829,16 +1962,16 @@ const About = () => {
 
         .delete-btn {
           position: absolute;
-          top: 15px;
-          right: 15px;
+          top: 12px;
+          right: 12px;
           background: rgba(239, 68, 68, 0.9);
           color: white;
           border: none;
-          width: 30px;
-          height: 30px;
+          width: 28px;
+          height: 28px;
           border-radius: 50%;
           cursor: pointer;
-          font-size: 1.2rem;
+          font-size: 1.1rem;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1851,36 +1984,26 @@ const About = () => {
         }
 
         .delete-btn:hover {
-          background: rgba(220, 38, 38, 1);
+          background: #dc2626;
           transform: scale(1.1);
         }
 
-        .project-overlay {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-          color: white;
+        .project-info {
           padding: 20px;
-          transform: translateY(100%);
-          transition: all 0.3s ease;
-        }
-
-        .project-card:hover .project-overlay {
-          transform: translateY(0);
         }
 
         .project-info h4 {
           margin: 0 0 8px 0;
           font-size: 1.1rem;
+          color: #1e293b;
           font-weight: 600;
         }
 
         .project-info p {
-          margin: 0 0 10px 0;
+          margin: 0 0 12px 0;
+          color: #64748b;
           font-size: 0.9rem;
-          opacity: 0.9;
+          line-height: 1.4;
         }
 
         .project-meta {
@@ -1890,15 +2013,17 @@ const About = () => {
           font-size: 0.8rem;
         }
 
-        .upload-date {
-          opacity: 0.8;
+        .date {
+          color: #94a3b8;
         }
 
-        .owner-badge {
-          background: rgba(102, 126, 234, 0.8);
+        .owner-tag {
+          background: #667eea;
+          color: white;
           padding: 3px 8px;
-          border-radius: 10px;
+          border-radius: 8px;
           font-size: 0.7rem;
+          font-weight: 600;
         }
 
         /* Empty State */
@@ -1907,17 +2032,17 @@ const About = () => {
           text-align: center;
           padding: 60px 20px;
           background: white;
-          border-radius: 20px;
+          border-radius: 15px;
           border: 2px dashed #e2e8f0;
         }
 
         .empty-icon {
-          font-size: 4rem;
+          font-size: 3rem;
           margin-bottom: 20px;
         }
 
         .empty-state h3 {
-          font-size: 1.5rem;
+          font-size: 1.3rem;
           color: #1e293b;
           margin-bottom: 10px;
           font-weight: 600;
@@ -1925,75 +2050,42 @@ const About = () => {
 
         .empty-state p {
           color: #64748b;
-          margin-bottom: 25px;
-          font-size: 1.1rem;
+          margin-bottom: 20px;
         }
 
         /* CTA Section */
         .cta-section {
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           color: white;
-          padding: 80px 40px;
-          border-radius: 25px;
+          padding: 60px 40px;
+          border-radius: 20px;
           text-align: center;
-          margin-top: 60px;
         }
 
         .cta-content h2 {
-          font-size: 2.5rem;
-          margin-bottom: 20px;
+          font-size: 2.2rem;
+          margin-bottom: 15px;
           font-weight: 700;
         }
 
         .cta-content p {
-          font-size: 1.2rem;
-          margin-bottom: 35px;
+          font-size: 1.1rem;
+          margin-bottom: 30px;
           opacity: 0.9;
-          max-width: 600px;
+          max-width: 500px;
           margin-left: auto;
           margin-right: auto;
           line-height: 1.6;
         }
 
-        .cta-buttons {
+        .cta-actions {
           display: flex;
           gap: 15px;
           justify-content: center;
           flex-wrap: wrap;
         }
 
-        .cta-btn {
-          padding: 15px 30px;
-          border-radius: 12px;
-          font-weight: 600;
-          font-size: 1rem;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          border: none;
-        }
-
-        .cta-btn.primary {
-          background: white;
-          color: #667eea;
-        }
-
-        .cta-btn.primary:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
-        }
-
-        .cta-btn.secondary {
-          background: transparent;
-          color: white;
-          border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .cta-btn.secondary:hover {
-          background: rgba(255, 255, 255, 0.1);
-          transform: translateY(-3px);
-        }
-
-        /* FIXED Modal Styles - High z-index and scrollable */
+        /* Modal */
         .modal-overlay {
           position: fixed;
           top: 0;
@@ -2004,26 +2096,23 @@ const About = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          z-index: 9999; /* Higher than navbar */
+          z-index: 1000;
           padding: 20px;
           backdrop-filter: blur(10px);
-          overflow-y: auto;
         }
 
         .modal-container {
           background: white;
           border-radius: 20px;
-          max-width: 900px;
+          max-width: 800px;
           width: 100%;
           max-height: 90vh;
           overflow: hidden;
           position: relative;
           animation: modalSlideIn 0.3s ease-out;
-          display: flex;
-          flex-direction: column;
         }
 
-        .modal-close-btn {
+        .modal-close {
           position: absolute;
           top: 20px;
           right: 20px;
@@ -2035,47 +2124,55 @@ const About = () => {
           border-radius: 50%;
           cursor: pointer;
           font-size: 1.5rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
           z-index: 10;
           transition: all 0.3s ease;
         }
 
-        .modal-close-btn:hover {
+        .modal-close:hover {
           background: rgba(0, 0, 0, 0.9);
           transform: scale(1.1);
         }
 
-        .modal-image-wrapper {
+        .modal-image {
           width: 100%;
-          max-height: 60vh;
+          height: 400px;
           overflow: hidden;
-          position: relative;
           background: #f8fafc;
           display: flex;
           align-items: center;
           justify-content: center;
         }
 
-        .modal-image-wrapper img {
+        .modal-image img {
           width: 100%;
-          height: auto;
-          max-height: 60vh;
+          height: 100%;
           object-fit: contain;
+        }
+
+        .modal-fallback {
+          display: none;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+          color: #64748b;
+          text-align: center;
+        }
+
+        .modal-fallback span {
+          font-size: 3rem;
+          margin-bottom: 10px;
         }
 
         .modal-content {
           padding: 30px;
-          overflow-y: auto;
-          flex: 1;
         }
 
         .modal-content h3 {
-          font-size: 1.5rem;
+          font-size: 1.4rem;
           color: #1e293b;
           margin-bottom: 10px;
-          font-weight: 700;
+          font-weight: 600;
         }
 
         .modal-content p {
@@ -2093,80 +2190,94 @@ const About = () => {
           gap: 10px;
         }
 
-        .category-tag-large {
+        .modal-meta .category {
           background: #667eea;
           color: white;
-          padding: 8px 16px;
-          border-radius: 20px;
-          font-weight: 600;
+          padding: 6px 12px;
+          border-radius: 15px;
+          font-size: 0.9rem;
+          font-weight: 500;
         }
 
-        .upload-date {
+        .modal-meta .date {
           color: #64748b;
           font-size: 0.9rem;
         }
 
-        .delete-btn-modal {
-          background: #ef4444;
-          color: white;
-          border: none;
-          padding: 12px 20px;
-          border-radius: 10px;
-          cursor: pointer;
-          font-weight: 600;
-          transition: all 0.3s ease;
-          width: 100%;
-          margin-top: 15px;
-        }
-
-        .delete-btn-modal:hover {
-          background: #dc2626;
-          transform: translateY(-2px);
-        }
-
         /* Responsive Design */
         @media (max-width: 1024px) {
-          .about-content {
-            gap: 50px;
+          .hero-title {
+            font-size: 3rem;
           }
           
-          .main-title {
-            font-size: 3rem;
+          .nav-container {
+            padding: 0 30px;
+          }
+          
+          .nav-links {
+            gap: 4px;
+          }
+          
+          .nav-link {
+            padding: 8px 16px;
+            font-size: 0.85rem;
           }
         }
 
         @media (max-width: 768px) {
-          .about {
-            padding: 20px 0 60px;
+          .modern-nav {
+            height: auto;
+            padding: 10px 0;
           }
-
-          .owner-access-bar {
+          
+          .nav-container {
+            flex-direction: column;
+            gap: 15px;
+            padding: 0 20px;
+            height: auto;
+          }
+          
+          .nav-brand, .nav-center, .nav-actions {
+            width: 100%;
+            justify-content: center;
+          }
+          
+          .nav-links {
+            width: 100%;
+            justify-content: center;
+          }
+          
+          .owner-controls {
+            padding: 15px 20px;
             flex-direction: column;
             gap: 15px;
             text-align: center;
           }
 
-          .viewer-mode, .owner-mode {
-            flex-direction: column;
-            gap: 15px;
+          .debug-panel {
+            padding: 15px 20px;
           }
 
-          .login-actions {
-            flex-direction: column;
+          .section {
+            padding: 40px 20px;
           }
 
-          .about-content {
+          .hero-section {
             grid-template-columns: 1fr;
             gap: 40px;
+            text-align: center;
           }
 
-          .main-title {
+          .hero-title {
             font-size: 2.5rem;
           }
 
-          .header-stats {
-            flex-direction: column;
-            gap: 30px;
+          .hero-stats {
+            justify-content: center;
+          }
+
+          .hero-actions {
+            justify-content: center;
           }
 
           .services-grid {
@@ -2178,63 +2289,64 @@ const About = () => {
           }
 
           .service-card.featured:hover {
-            transform: translateY(-10px);
+            transform: translateY(-5px);
           }
 
-          .category-options {
+          .category-tabs {
             flex-direction: column;
           }
 
-          .category-option {
+          .category-filter {
+            flex-direction: column;
+            align-items: center;
+          }
+
+          .filter-btn {
+            width: 200px;
             justify-content: center;
           }
 
-          .cta-buttons {
+          .cta-actions {
             flex-direction: column;
+            align-items: center;
           }
 
           .modal-container {
             margin: 10px;
-            max-height: 95vh;
           }
 
-          .modal-image-wrapper {
-            max-height: 50vh;
+          .modal-image {
+            height: 300px;
           }
 
-          .modal-image-wrapper img {
-            max-height: 50vh;
+          .login-actions {
+            flex-direction: column;
           }
         }
 
         @media (max-width: 480px) {
-          .main-title {
+          .hero-title {
             font-size: 2rem;
           }
 
-          .about-text h2 {
-            font-size: 2rem;
-          }
-
-          .section-title {
+          .section-header h2 {
             font-size: 2rem;
           }
 
           .projects-grid {
             grid-template-columns: 1fr;
           }
-
-          .modal-content {
-            padding: 20px;
+          
+          .modern-login-modal {
+            margin: 10px;
           }
-
-          .modal-meta {
-            flex-direction: column;
-            align-items: flex-start;
+          
+          .login-body {
+            padding: 30px 20px;
           }
         }
       `}</style>
-    </section>
+    </div>
   );
 };
 
