@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import servicesPic from '../assets/images/WhatsApp Image 2025-10-07 at 18.22.34_d752a1a7.jpg';
 import logoImage from '../assets/images/WhatsApp Image 2025-10-07 at 18.22.31_497db946.jpg';
 
@@ -7,32 +6,7 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const isScrolled = window.scrollY > 50;
-      setScrolled(isScrolled);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const scrollToSection = (sectionId) => {
-    setMenuOpen(false);
-    setActiveSection(sectionId);
-    
-    // Instant navigation - no smooth scroll
-    const element = document.getElementById(sectionId);
-    if (element) {
-      const offsetTop = element.offsetTop - 80; // Account for fixed header
-      window.scrollTo({
-        top: offsetTop,
-        behavior: 'instant' // Changed from 'smooth' to 'instant'
-      });
-    }
-  };
-
+  const headerRef = useRef(null);
   const navItems = [
     { id: 'home', label: 'Home' },
     { id: 'services', label: 'Services' },
@@ -40,9 +14,65 @@ const Header = () => {
     { id: 'contact', label: 'Contact' }
   ];
 
+  // Optimized scroll handler with debouncing
+  useEffect(() => {
+    let ticking = false;
+    
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 50);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    // Use passive scroll listener for better performance
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  // Memoized scroll function
+  const scrollToSection = useCallback((sectionId) => {
+    setMenuOpen(false);
+    setActiveSection(sectionId);
+    
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const headerHeight = headerRef.current?.offsetHeight || 80;
+      const offsetTop = element.offsetTop - headerHeight;
+      
+      // Use instant scroll for better performance
+      if ('scrollBehavior' in document.documentElement.style) {
+        window.scrollTo({
+          top: offsetTop,
+          behavior: 'instant'
+        });
+      } else {
+        // Fallback for older browsers
+        window.scrollTo(0, offsetTop);
+      }
+    }
+  }, []);
+
+  // Handle keyboard navigation
+  const handleKeyDown = useCallback((e, sectionId) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      scrollToSection(sectionId);
+    }
+  }, [scrollToSection]);
+
   return (
-    <header className={`modern-header ${scrolled ? 'scrolled' : ''}`}>
-      <div className="header-background"></div>
+    <header 
+      className={`modern-header ${scrolled ? 'scrolled' : ''}`}
+      ref={headerRef}
+    >
+      <div className="header-background" aria-hidden="true"></div>
       
       <div className="container header-container">
         {/* Logo Section */}
@@ -54,40 +84,53 @@ const Header = () => {
                 alt="RAEMOND Brand Logo" 
                 className="logo-img main-logo"
                 loading="eager"
+                width="auto"
+                height="48"
+                decoding="async"
               />
             </div>
             <div className="logo-wrapper">
               <img 
                 src={servicesPic} 
-                alt="RAEMOND Services" 
+                alt="RAEMOND Services - Graphic design and gaming preview" 
                 className="logo-img services-logo"
                 loading="eager"
+                width="auto"
+                height="48"
+                decoding="async"
               />
             </div>
           </div>
           
           <div className="logo-text">
-            <span className="brand-name">
-              <span className="brand-gradient">RAEMOND</span>
-            </span>
-            <span className="tagline">
-              <span className="tagline-word">GRAPHICS</span>
-              <span className="tagline-separator">•</span>
+            <h1 className="brand-name">
+              <span className="brand-gradient">RAEMOND DVJ</span>
+            </h1>
+            <div className="tagline" role="text">
+              <span className="tagline-word">GRAPHIQS</span>
+              <span className="tagline-separator" aria-hidden="true">•</span>
               <span className="tagline-word">GAMES</span>
-              <span className="tagline-separator">•</span>
+              <span className="tagline-separator" aria-hidden="true">•</span>
               <span className="tagline-word">GADGETS</span>
-            </span>
+            </div>
           </div>
         </div>
 
-        {/* Navigation - Optimized for Speed */}
-        <nav className={`main-nav ${menuOpen ? 'nav-open' : ''}`}>
-          <ul>
+        {/* Navigation */}
+        <nav 
+          className={`main-nav ${menuOpen ? 'nav-open' : ''}`}
+          aria-label="Main Navigation"
+        >
+          <ul role="menubar">
             {navItems.map((item) => (
-              <li key={item.id}>
+              <li key={item.id} role="none">
                 <button 
                   onClick={() => scrollToSection(item.id)}
+                  onKeyDown={(e) => handleKeyDown(e, item.id)}
                   className={`nav-link ${activeSection === item.id ? 'active' : ''}`}
+                  role="menuitem"
+                  aria-current={activeSection === item.id ? 'page' : undefined}
+                  tabIndex={menuOpen ? 0 : undefined}
                 >
                   {item.label}
                 </button>
@@ -100,18 +143,33 @@ const Header = () => {
         <button 
           className={`mobile-menu-btn ${menuOpen ? 'active' : ''}`} 
           onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+          aria-controls="main-nav"
+          type="button"
         >
-          <span></span>
-          <span></span>
-          <span></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
         </button>
       </div>
 
       <style jsx>{`
+        /* CSS Variables for consistent theming */
+        :root {
+          --primary-color: #a303e8;
+          --secondary-color: #4ecdc4;
+          --dark-bg: rgba(26, 26, 26, 0.98);
+          --darker-bg: rgba(10, 10, 10, 0.98);
+          --text-color: #fff;
+          --transition-fast: 0.1s ease;
+          --border-radius: 6px;
+          --header-height: 80px;
+        }
+
         .modern-header {
           background: linear-gradient(135deg, 
-            rgba(26, 26, 26, 0.98) 0%, 
+            var(--dark-bg) 0%, 
             rgba(45, 45, 45, 0.98) 100%);
           backdrop-filter: blur(10px);
           padding: 1rem 0;
@@ -120,12 +178,14 @@ const Header = () => {
           width: 100%;
           z-index: 1000;
           border-bottom: 1px solid rgba(100, 9, 218, 0.4);
-          transition: all 0.2s ease;
+          transition: all var(--transition-fast);
+          will-change: transform;
+          contain: layout style paint;
         }
 
         .modern-header.scrolled {
           padding: 0.7rem 0;
-          background: rgba(10, 10, 10, 0.98);
+          background: var(--darker-bg);
           border-bottom-color: rgba(100, 9, 218, 0.6);
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
@@ -140,6 +200,7 @@ const Header = () => {
             radial-gradient(circle at 10% 50%, rgba(100, 9, 218, 0.15) 0%, transparent 40%),
             radial-gradient(circle at 90% 50%, rgba(133, 10, 222, 0.15) 0%, transparent 40%);
           opacity: 0.8;
+          pointer-events: none;
         }
 
         .header-container {
@@ -174,7 +235,7 @@ const Header = () => {
         .logo-img {
           height: 48px;
           width: auto;
-          border-radius: 6px;
+          border-radius: var(--border-radius);
           object-fit: cover;
           display: block;
         }
@@ -200,13 +261,16 @@ const Header = () => {
           font-weight: 800;
           letter-spacing: 2px;
           text-transform: uppercase;
+          margin: 0;
+          line-height: 1;
         }
 
         .brand-gradient {
-          background: linear-gradient(135deg, #fff 0%, #a303e8 50%, #4ecdc4 100%);
+          background: linear-gradient(135deg, #fff 0%, var(--primary-color) 50%, var(--secondary-color) 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
+          background-size: 200% auto;
         }
 
         .tagline {
@@ -216,10 +280,11 @@ const Header = () => {
           font-size: 0.7rem;
           font-weight: 600;
           letter-spacing: 1px;
+          line-height: 1.2;
         }
 
         .tagline-word {
-          color: #fff;
+          color: var(--text-color);
         }
 
         .tagline-separator {
@@ -227,7 +292,7 @@ const Header = () => {
           font-weight: bold;
         }
 
-        /* ULTRA-FAST NAVIGATION */
+        /* Navigation */
         .main-nav ul {
           display: flex;
           list-style: none;
@@ -237,66 +302,76 @@ const Header = () => {
         }
 
         .nav-link {
-          color: #fff;
+          color: var(--text-color);
           text-decoration: none;
           font-weight: 500;
           padding: 0.6rem 1.2rem;
-          border-radius: 6px;
+          border-radius: var(--border-radius);
           background: rgba(255, 255, 255, 0.05);
           border: 1px solid rgba(255, 255, 255, 0.1);
           cursor: pointer;
           border: none;
           font-family: inherit;
           font-size: inherit;
-          transition: all 0.1s ease; /* Reduced from 0.3s to 0.1s */
+          transition: all var(--transition-fast);
           position: relative;
+          min-width: 44px;
+          min-height: 44px;
         }
 
-        /* Instant hover state - no transition delay */
-        .nav-link:hover {
-          color: #fff;
+        .nav-link:hover,
+        .nav-link:focus {
+          color: var(--text-color);
           background: rgba(163, 3, 232, 0.3);
           border-color: rgba(163, 3, 232, 0.6);
           transform: translateY(-1px);
           box-shadow: 0 2px 8px rgba(163, 3, 232, 0.4);
+          outline: 2px solid var(--primary-color);
+          outline-offset: 2px;
         }
 
         .nav-link.active {
           background: rgba(163, 3, 232, 0.4);
           border-color: rgba(163, 3, 232, 0.8);
           box-shadow: 0 2px 12px rgba(163, 3, 232, 0.5);
-          color: #fff;
+          color: var(--text-color);
         }
 
-        /* Remove all complex animations for performance */
         .nav-link:active {
           transform: translateY(0px);
-          transition: none; /* No transition on active state */
+          transition: none;
         }
 
         /* Mobile Menu Button */
         .mobile-menu-btn {
           display: none;
           flex-direction: column;
+          justify-content: center;
+          align-items: center;
           background: rgba(255, 255, 255, 0.1);
           border: 1px solid rgba(255, 255, 255, 0.2);
           border-radius: 4px;
           cursor: pointer;
           padding: 0.6rem;
           gap: 3px;
-          transition: all 0.1s ease;
+          transition: all var(--transition-fast);
+          min-width: 44px;
+          min-height: 44px;
         }
 
-        .mobile-menu-btn:hover {
+        .mobile-menu-btn:hover,
+        .mobile-menu-btn:focus {
           background: rgba(163, 3, 232, 0.2);
           border-color: rgba(163, 3, 232, 0.4);
+          outline: 2px solid var(--primary-color);
+          outline-offset: 2px;
         }
 
         .mobile-menu-btn span {
           width: 20px;
           height: 2px;
-          background: #fff;
-          transition: all 0.1s ease;
+          background: var(--text-color);
+          transition: all var(--transition-fast);
           border-radius: 1px;
         }
 
@@ -306,7 +381,7 @@ const Header = () => {
 
         .mobile-menu-btn.active span:nth-child(1) {
           transform: rotate(45deg) translate(5px, 5px);
-          background: #a303e8;
+          background: var(--primary-color);
         }
 
         .mobile-menu-btn.active span:nth-child(2) {
@@ -315,7 +390,7 @@ const Header = () => {
 
         .mobile-menu-btn.active span:nth-child(3) {
           transform: rotate(-45deg) translate(5px, -5px);
-          background: #a303e8;
+          background: var(--primary-color);
         }
 
         /* Responsive Design */
@@ -352,17 +427,21 @@ const Header = () => {
           }
 
           .main-nav {
-            position: absolute;
-            top: 100%;
+            position: fixed;
+            top: var(--header-height);
             left: 0;
-            width: 100%;
-            background: rgba(10, 10, 10, 0.98);
+            right: 0;
+            background: var(--darker-bg);
             backdrop-filter: blur(20px);
-            transform: translateY(-10px);
+            transform: translateY(-100%);
             opacity: 0;
             visibility: hidden;
-            transition: all 0.2s ease;
+            transition: all var(--transition-fast);
             border-top: 1px solid rgba(100, 9, 218, 0.4);
+            padding: 1rem;
+            max-height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+            z-index: 999;
           }
 
           .main-nav.nav-open {
@@ -373,14 +452,13 @@ const Header = () => {
 
           .main-nav ul {
             flex-direction: column;
-            padding: 1rem;
             gap: 0.5rem;
           }
 
           .nav-link {
             text-align: center;
             padding: 0.8rem;
-            border-radius: 6px;
+            border-radius: var(--border-radius);
             background: rgba(163, 3, 232, 0.1);
             border: 1px solid rgba(163, 3, 232, 0.3);
             width: 100%;
@@ -437,22 +515,52 @@ const Header = () => {
           }
         }
 
-        /* Performance optimizations */
-        .modern-header {
-          will-change: transform;
-          contain: layout style paint;
-        }
-
-        /* Disable animations for users who prefer reduced motion */
+        /* Accessibility and Performance */
         @media (prefers-reduced-motion: reduce) {
           .modern-header,
           .nav-link,
-          .mobile-menu-btn {
+          .mobile-menu-btn,
+          .main-nav {
             transition: none;
           }
           
-          .nav-link:hover {
+          .nav-link:hover,
+          .nav-link:focus {
             transform: none;
+          }
+          
+          .brand-gradient {
+            animation: none;
+          }
+        }
+
+        /* Focus styles for keyboard navigation */
+        .nav-link:focus-visible {
+          outline: 3px solid var(--primary-color);
+          outline-offset: 3px;
+        }
+
+        .mobile-menu-btn:focus-visible {
+          outline: 3px solid var(--primary-color);
+          outline-offset: 3px;
+        }
+
+        /* Print styles */
+        @media print {
+          .modern-header {
+            position: static;
+            background: white;
+            border-bottom: 1px solid #ccc;
+          }
+          
+          .header-background,
+          .mobile-menu-btn {
+            display: none;
+          }
+          
+          .brand-gradient {
+            -webkit-text-fill-color: black;
+            background: none;
           }
         }
       `}</style>
