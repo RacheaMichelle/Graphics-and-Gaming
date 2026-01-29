@@ -68,7 +68,7 @@ const Header = () => {
           
           <div className="logo-text">
             <span className="brand-name">
-              <span className="brand-gradient">RAEMOND DVJ GRAPHIQS</span>
+              <span className="brand-gradient">RAEMONDDVJGRAPHIQS</span>
             </span>
             <span className="tagline">
               <span className="tagline-word">GRAPHICS</span>
