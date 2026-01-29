@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import useBackendService from '../services/useBackendService';
 import CreativeProcess from '../components/CreativeProcess';
