@@ -345,6 +345,7 @@ const useBackendService = () => {
         console.error('❌ SELECT policy test failed:', selectError);
       } else {
         console.log('✅ SELECT policy test passed');
+        console.log('Select data:', selectData); // ✅ Now using the variable
       }
 
       // Test INSERT policy (create a test record then delete it)
