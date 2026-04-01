@@ -267,8 +267,6 @@ const CreativeProcess = () => {
             </div>
           </div>
         </div>
-
-        
       </div>
 
       <style jsx>{`
@@ -791,74 +789,10 @@ const CreativeProcess = () => {
           z-index: 1;
         }
 
-        /* Process Benefits */
-        .process-benefits {
-          background: white;
-          border-radius: 20px;
-          padding: 60px 40px;
-          box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
-          border: 1px solid #F3F4F6;
-        }
-
-        .benefits-header {
-          text-align: center;
-          margin-bottom: 48px;
-        }
-
-        .benefits-header h3 {
-          font-size: 2rem;
-          font-weight: 600;
-          color: #1F2937;
-          margin-bottom: 12px;
-        }
-
-        .benefits-header p {
-          font-size: 1.125rem;
-          color: #6B7280;
-          margin: 0;
-        }
-
-        .benefits-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 32px;
-        }
-
-        .benefit-card {
-          text-align: center;
-          padding: 32px 24px;
-          background: #F8FAFC;
-          border-radius: 12px;
-          transition: all 0.3s ease;
-        }
-
-        .benefit-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .benefit-icon {
-          font-size: 2.5rem;
-          margin-bottom: 16px;
-        }
-
-        .benefit-card h4 {
-          font-size: 1.25rem;
-          font-weight: 600;
-          color: #1F2937;
-          margin-bottom: 12px;
-        }
-
-        .benefit-card p {
-          color: #6B7280;
-          line-height: 1.5;
-          margin: 0;
-        }
-
         /* Animations */
         @keyframes corePulse {
-          0%, 100% { transform: translate(-50%, -50%) scale(1); }
-          50% { transform: translate(-50%, -50%) scale(1.05); }
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.05); }
         }
 
         /* Responsive Design */
@@ -906,10 +840,6 @@ const CreativeProcess = () => {
           .step-controls {
             flex-direction: column;
             gap: 16px;
-          }
-
-          .benefits-grid {
-            grid-template-columns: 1fr;
           }
         }
 
