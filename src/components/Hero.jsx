@@ -1,13 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Hero = () => {
-  const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   const services = [
     {
       name: 'Photography',
@@ -101,26 +95,20 @@ const Hero = () => {
 
           {/* Action Buttons */}
           <div className="action-buttons">
-            <button 
-              className="btn primary-btn"
-              onClick={() => scrollToSection('contact')}
-            >
+            <Link to="/contact" className="btn primary-btn">
               <span className="btn-content">
                 <span className="btn-text">Start Project</span>
                 <span className="btn-arrow">→</span>
               </span>
               <div className="btn-background"></div>
-            </button>
+            </Link>
 
-            <button 
-              className="btn secondary-btn"
-              onClick={() => scrollToSection('about')}
-            >
+            <Link to="/portfolio" className="btn secondary-btn">
               <span className="btn-content">
                 <span className="btn-icon">👁️</span>
                 <span className="btn-text">View Work</span>
               </span>
-            </button>
+            </Link>
           </div>
 
           {/* Stats */}
@@ -398,6 +386,9 @@ const Hero = () => {
           cursor: pointer;
           transition: all 0.3s ease;
           overflow: hidden;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
         }
 
         .primary-btn {
@@ -694,6 +685,7 @@ const Hero = () => {
           .btn {
             width: 100%;
             max-width: 280px;
+            justify-content: center;
           }
 
           .stats-grid {

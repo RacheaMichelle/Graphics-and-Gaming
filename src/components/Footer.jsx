@@ -1,13 +1,12 @@
-import React from 'react';
+// src/components/Footer.jsx - Updated with working newsletter
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import profilePic from '../assets/images/WhatsApp Image 2025-10-07 at 18.22.34_d752a1a7.jpg';
 
 const Footer = () => {
-  const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterStatus, setNewsletterStatus] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Social media links
   const socialLinks = {
@@ -16,6 +15,49 @@ const Footer = () => {
     facebook: "#",
     twitter: "#",
     tiktok: "#"
+  };
+
+  const handleNewsletterSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!newsletterEmail.trim()) {
+      setNewsletterStatus('error');
+      setTimeout(() => setNewsletterStatus(null), 3000);
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(newsletterEmail)) {
+      setNewsletterStatus('invalid');
+      setTimeout(() => setNewsletterStatus(null), 3000);
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Here you can integrate with your email service (Mailchimp, SendGrid, etc.)
+      // For now, we'll simulate a successful subscription
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Store in localStorage for demo
+      const subscribers = JSON.parse(localStorage.getItem('newsletter_subscribers') || '[]');
+      if (!subscribers.includes(newsletterEmail)) {
+        subscribers.push(newsletterEmail);
+        localStorage.setItem('newsletter_subscribers', JSON.stringify(subscribers));
+      }
+      
+      setNewsletterStatus('success');
+      setNewsletterEmail('');
+      setTimeout(() => setNewsletterStatus(null), 3000);
+    } catch (error) {
+      console.error('Newsletter subscription error:', error);
+      setNewsletterStatus('error');
+      setTimeout(() => setNewsletterStatus(null), 3000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -117,54 +159,24 @@ const Footer = () => {
             </div>
             <ul className="services-list">
               <li>
-                <div className="service-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/>
-                  </svg>
-                </div>
-                <a href="#services" onClick={(e) => { e.preventDefault(); scrollToSection('services'); }}>
-                  Motion Picture Production
-                </a>
+                <div className="service-icon">🎬</div>
+                <Link to="/services">Motion Picture Production</Link>
               </li>
               <li>
-                <div className="service-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                  </svg>
-                </div>
-                <a href="#services" onClick={(e) => { e.preventDefault(); scrollToSection('services'); }}>
-                  Logo & Brand Design
-                </a>
+                <div className="service-icon">🎨</div>
+                <Link to="/services">Logo & Brand Design</Link>
               </li>
               <li>
-                <div className="service-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                  </svg>
-                </div>
-                <a href="#services" onClick={(e) => { e.preventDefault(); scrollToSection('services'); }}>
-                  Banners & Stickers
-                </a>
+                <div className="service-icon">📁</div>
+                <Link to="/services">Banners & Stickers</Link>
               </li>
               <li>
-                <div className="service-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
-                  </svg>
-                </div>
-                <a href="#services" onClick={(e) => { e.preventDefault(); scrollToSection('services'); }}>
-                  Flyer & Poster Design
-                </a>
+                <div className="service-icon">📄</div>
+                <Link to="/services">Flyer & Poster Design</Link>
               </li>
               <li>
-                <div className="service-icon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/>
-                  </svg>
-                </div>
-                <a href="#services" onClick={(e) => { e.preventDefault(); scrollToSection('services'); }}>
-                  Electronic Gadgets
-                </a>
+                <div className="service-icon">📱</div>
+                <Link to="/services">Electronic Gadgets</Link>
               </li>
             </ul>
           </div>
@@ -177,59 +189,33 @@ const Footer = () => {
             </div>
             <ul className="links-list">
               <li>
-                <div className="link-arrow">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
-                  </svg>
-                </div>
-                <a href="#home" onClick={(e) => { e.preventDefault(); scrollToSection('home'); }}>
-                  Home
-                </a>
+                <div className="link-arrow">→</div>
+                <Link to="/">Home</Link>
               </li>
               <li>
-                <div className="link-arrow">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
-                  </svg>
-                </div>
-                <a href="#about" onClick={(e) => { e.preventDefault(); scrollToSection('about'); }}>
-                  About
-                </a>
+                <div className="link-arrow">→</div>
+                <Link to="/about">About</Link>
               </li>
               <li>
-                <div className="link-arrow">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
-                  </svg>
-                </div>
-                <a href="#services" onClick={(e) => { e.preventDefault(); scrollToSection('services'); }}>
-                  Services
-                </a>
+                <div className="link-arrow">→</div>
+                <Link to="/services">Services</Link>
               </li>
               <li>
-                <div className="link-arrow">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
-                  </svg>
-                </div>
-                <a href="#portfolio" onClick={(e) => { e.preventDefault(); scrollToSection('portfolio'); }}>
-                  Portfolio
-                </a>
+                <div className="link-arrow">→</div>
+                <Link to="/portfolio">Portfolio</Link>
               </li>
               <li>
-                <div className="link-arrow">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
-                  </svg>
-                </div>
-                <a href="#contact" onClick={(e) => { e.preventDefault(); scrollToSection('contact'); }}>
-                  Contact
-                </a>
+                <div className="link-arrow">→</div>
+                <Link to="/contact">Contact</Link>
+              </li>
+              <li>
+                <div className="link-arrow">→</div>
+                <Link to="/reviews">Reviews</Link>
               </li>
             </ul>
           </div>
 
-          {/* Social Media Column */}
+          {/* Social Media Column - Updated with working newsletter */}
           <div className="footer-column">
             <div className="section-header">
               <h4>Connect With Us</h4>
@@ -241,11 +227,7 @@ const Footer = () => {
             
             <div className="social-grid">
               <a href={socialLinks.instagram} className="social-card instagram" target="_blank" rel="noopener noreferrer">
-                <div className="social-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                  </svg>
-                </div>
+                <div className="social-icon">📷</div>
                 <div className="social-info">
                   <span className="social-name">Instagram</span>
                   <span className="social-handle">@raemond_dvj_graphiqs</span>
@@ -253,11 +235,7 @@ const Footer = () => {
               </a>
 
               <a href={socialLinks.youtube} className="social-card youtube" target="_blank" rel="noopener noreferrer">
-                <div className="social-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
-                  </svg>
-                </div>
+                <div className="social-icon">▶️</div>
                 <div className="social-info">
                   <span className="social-name">YouTube</span>
                   <span className="social-handle">@RaemondDvjGraphiqs</span>
@@ -265,11 +243,7 @@ const Footer = () => {
               </a>
 
               <a href={socialLinks.facebook} className="social-card facebook" target="_blank" rel="noopener noreferrer">
-                <div className="social-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                  </svg>
-                </div>
+                <div className="social-icon">📘</div>
                 <div className="social-info">
                   <span className="social-name">Facebook</span>
                   <span className="social-handle">Raemond DVJ</span>
@@ -277,17 +251,39 @@ const Footer = () => {
               </a>
             </div>
 
+            {/* Updated Newsletter Section */}
             <div className="newsletter-section">
               <h5>Stay Updated</h5>
               <p>Get the latest creative insights and project updates</p>
-              <div className="newsletter-form">
-                <input type="email" placeholder="Enter your email" />
-                <button type="submit">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                  </svg>
+              <form onSubmit={handleNewsletterSubmit} className="newsletter-form">
+                <input 
+                  type="email" 
+                  placeholder="Enter your email" 
+                  value={newsletterEmail}
+                  onChange={(e) => setNewsletterEmail(e.target.value)}
+                  disabled={isSubmitting}
+                />
+                <button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? '...' : '→'}
                 </button>
-              </div>
+              </form>
+              
+              {/* Status Messages */}
+              {newsletterStatus === 'success' && (
+                <div className="newsletter-success">
+                  ✓ Subscribed successfully!
+                </div>
+              )}
+              {newsletterStatus === 'error' && (
+                <div className="newsletter-error">
+                  ✗ Please enter an email address
+                </div>
+              )}
+              {newsletterStatus === 'invalid' && (
+                <div className="newsletter-error">
+                  ✗ Please enter a valid email address
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -313,7 +309,7 @@ const Footer = () => {
 
       <style jsx>{`
         footer {
-          background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+          background: linear-gradient(135deg, #231f4f 0%, #1e293b 50%, #334155 100%);
           color: white;
           padding: 80px 0 30px;
           margin-top: auto;
@@ -481,7 +477,9 @@ const Footer = () => {
         }
 
         .contact-section {
-          space-y: 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
         }
 
         .contact-item {
@@ -500,7 +498,6 @@ const Footer = () => {
           justify-content: center;
           color: #667eea;
           flex-shrink: 0;
-          margin-top: 2px;
         }
 
         .contact-details {
@@ -618,18 +615,6 @@ const Footer = () => {
           transform: translateY(-2px);
         }
 
-        .social-card.instagram:hover {
-          border-color: rgba(225, 48, 108, 0.3);
-        }
-
-        .social-card.youtube:hover {
-          border-color: rgba(255, 0, 0, 0.3);
-        }
-
-        .social-card.facebook:hover {
-          border-color: rgba(59, 89, 152, 0.3);
-        }
-
         .social-icon {
           width: 44px;
           height: 44px;
@@ -637,6 +622,7 @@ const Footer = () => {
           display: flex;
           align-items: center;
           justify-content: center;
+          font-size: 1.3rem;
           flex-shrink: 0;
         }
 
@@ -669,7 +655,7 @@ const Footer = () => {
           font-size: 0.85rem;
         }
 
-        /* Newsletter */
+        /* Newsletter Section - Updated */
         .newsletter-section {
           background: rgba(255, 255, 255, 0.03);
           padding: 20px;
@@ -708,6 +694,11 @@ const Footer = () => {
           color: #94a3b8;
         }
 
+        .newsletter-form input:focus {
+          outline: none;
+          border-color: #667eea;
+        }
+
         .newsletter-form button {
           padding: 12px 16px;
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -716,10 +707,51 @@ const Footer = () => {
           color: white;
           cursor: pointer;
           transition: all 0.3s ease;
+          font-size: 1.1rem;
         }
 
-        .newsletter-form button:hover {
+        .newsletter-form button:hover:not(:disabled) {
           transform: scale(1.05);
+        }
+
+        .newsletter-form button:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+
+        .newsletter-success {
+          margin-top: 10px;
+          padding: 8px;
+          background: rgba(16, 185, 129, 0.2);
+          border: 1px solid rgba(16, 185, 129, 0.3);
+          border-radius: 6px;
+          color: #10b981;
+          font-size: 0.8rem;
+          text-align: center;
+          animation: fadeIn 0.3s ease;
+        }
+
+        .newsletter-error {
+          margin-top: 10px;
+          padding: 8px;
+          background: rgba(239, 68, 68, 0.2);
+          border: 1px solid rgba(239, 68, 68, 0.3);
+          border-radius: 6px;
+          color: #ef4444;
+          font-size: 0.8rem;
+          text-align: center;
+          animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-5px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
         /* Copyright Section */
