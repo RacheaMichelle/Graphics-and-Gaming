@@ -1,5 +1,5 @@
-// src/components/Header.jsx - Fixed sidebar navigation with debugging
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+// src/components/Header.jsx - Updated for BULAMU CREATIONS
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import servicesPic from '../assets/images/WhatsApp Image 2025-10-07 at 18.22.34_d752a1a7.jpg';
 import logoImage from '../assets/images/WhatsApp Image 2025-10-07 at 18.22.31_497db946.jpg';
@@ -24,7 +24,6 @@ const Header = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuOpen && headerRef.current && !headerRef.current.contains(event.target)) {
-        // Don't close if clicking inside sidebar
         const sidebar = document.querySelector('.mobile-sidebar');
         if (sidebar && sidebar.contains(event.target)) {
           return;
@@ -69,17 +68,11 @@ const Header = () => {
 
   // Handle navigation and close menu
   const handleNavigation = (path) => {
-    console.log('🔍 Navigating to:', path);
-    console.log('📍 Current path:', location.pathname);
-    
-    // Close menu first
     setMenuOpen(false);
     document.body.style.overflow = 'unset';
     
-    // Use setTimeout to ensure menu closes before navigation
     setTimeout(() => {
       navigate(path);
-      console.log('✅ Navigation completed to:', path);
     }, 50);
   };
 
@@ -98,7 +91,7 @@ const Header = () => {
               <div className="logo-wrapper">
                 <img 
                   src={logoImage}
-                  alt="RAEMOND Brand Logo" 
+                  alt="BULAMU Brand Logo" 
                   className="logo-img main-logo"
                   loading="eager"
                   width="auto"
@@ -109,7 +102,7 @@ const Header = () => {
               <div className="logo-wrapper">
                 <img 
                   src={servicesPic} 
-                  alt="RAEMOND Services" 
+                  alt="BULAMU Services" 
                   className="logo-img services-logo"
                   loading="eager"
                   width="auto"
@@ -121,14 +114,14 @@ const Header = () => {
             
             <div className="logo-text">
               <h1 className="brand-name">
-                <span className="brand-gradient">RAEMOND DVJ</span>
+                <span className="brand-gradient">BULAMU</span>
               </h1>
               <div className="tagline" role="text">
-                <span className="tagline-word">GRAPHIQS</span>
+                <span className="tagline-word">CREATIONS</span>
                 <span className="tagline-separator">•</span>
-                <span className="tagline-word">GAMES</span>
+                <span className="tagline-word">VIDEO</span>
                 <span className="tagline-separator">•</span>
-                <span className="tagline-word">GADGETS</span>
+                <span className="tagline-word">DRONE</span>
               </div>
             </div>
           </div>
@@ -174,8 +167,8 @@ const Header = () => {
               <img src={logoImage} alt="Logo" className="sidebar-logo-img" />
               <img src={servicesPic} alt="Services" className="sidebar-logo-img" />
             </div>
-            <h3>RAEMOND DVJ</h3>
-            <p>Graphiqs • Games • Gadgets</p>
+            <h3>BULAMU CREATIONS</h3>
+            <p>Graphic Design • Video • Drone</p>
           </div>
           <button 
             className="sidebar-close"
@@ -220,7 +213,6 @@ const Header = () => {
       <div className={`sidebar-overlay ${menuOpen ? 'active' : ''}`} onClick={() => setMenuOpen(false)}></div>
 
       <style jsx>{`
-        /* CSS Variables */
         :root {
           --primary-color: #a303e8;
           --secondary-color: #4ecdc4;
@@ -275,7 +267,6 @@ const Header = () => {
           z-index: 2;
         }
 
-        /* Logo Section */
         .logo-section {
           display: flex;
           align-items: center;
@@ -352,7 +343,6 @@ const Header = () => {
           font-weight: bold;
         }
 
-        /* Desktop Navigation */
         .desktop-nav ul {
           display: flex;
           list-style: none;
@@ -384,7 +374,6 @@ const Header = () => {
           font-size: 1.1rem;
         }
 
-        /* Mobile Menu Button */
         .mobile-menu-btn {
           display: none;
           flex-direction: column;
@@ -423,7 +412,6 @@ const Header = () => {
           background: var(--primary-color);
         }
 
-        /* Mobile Sidebar */
         .mobile-sidebar {
           position: fixed;
           top: 0;
@@ -596,7 +584,6 @@ const Header = () => {
           color: #8B5CF6;
         }
 
-        /* Overlay */
         .sidebar-overlay {
           position: fixed;
           top: 0;
@@ -615,7 +602,6 @@ const Header = () => {
           visibility: visible;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
           .desktop-nav {
             display: none;
