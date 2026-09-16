@@ -1,4 +1,4 @@
-// src/pages/HomePage.jsx
+// src/pages/HomePage.jsx - Updated for BULAMU CREATIONS
 import React, { useState, useEffect, useRef } from 'react'; 
 import Hero from '../components/Hero';
 import PortfolioSlideshow from '../components/PortfolioSlideshow';
@@ -21,10 +21,9 @@ const HomePage = () => {
 
   const categories = [
     { id: 'graphic-design', name: 'Graphic Design', icon: '🎨' },
-    { id: 'photography', name: 'Photography', icon: '📸' },
-    { id: 'motion-picture', name: 'Motion Picture', icon: '🎬' },
-    { id: 'music', name: 'Music Artworks', icon: '🎵' },
-    { id: 'games', name: 'Gaming Zone', icon: '🎮' }
+    { id: 'video-film', name: 'Video & Film', icon: '🎬' },
+    { id: 'drone-shots', name: 'Drone Shots', icon: '🚁' },
+    { id: 'photography', name: 'Photography', icon: '📸' }
   ];
 
   useEffect(() => {
@@ -314,9 +313,9 @@ const HomePage = () => {
       <section className="featured-section">
         <div className="container">
           <LazyReveal threshold={0.2}>
-            <h2 className="section-title">Welcome to RAEMOND DVJ</h2>
+            <h2 className="section-title">Welcome to BULAMU CREATIONS</h2>
             <p className="section-subtitle">
-              Your premier destination for creative design, gaming experiences, and gadgets
+              Your premier destination for creative design, video production, and drone cinematography
             </p>
           </LazyReveal>
           
@@ -332,19 +331,19 @@ const HomePage = () => {
             
             <LazyReveal className="fade-up" threshold={0.3} delay={200}>
               <div className="featured-card">
-                <div className="featured-icon">🎮</div>
-                <h3>Gaming</h3>
-                <p>Immersive gaming experiences and content</p>
-                {isOwner && <span className="owner-tag">Add Gaming Projects</span>}
+                <div className="featured-icon">🎬</div>
+                <h3>Video & Film</h3>
+                <p>Professional video production and editing services</p>
+                {isOwner && <span className="owner-tag">Add Video Projects</span>}
               </div>
             </LazyReveal>
             
             <LazyReveal className="fade-up" threshold={0.3} delay={300}>
               <div className="featured-card">
-                <div className="featured-icon">📱</div>
-                <h3>Gadgets</h3>
-                <p>Latest gadgets and tech reviews</p>
-                {isOwner && <span className="owner-tag">Add Gadget Reviews</span>}
+                <div className="featured-icon">🚁</div>
+                <h3>Drone Shots</h3>
+                <p>Stunning aerial photography and cinematography</p>
+                {isOwner && <span className="owner-tag">Add Drone Projects</span>}
               </div>
             </LazyReveal>
           </div>
@@ -435,7 +434,6 @@ const HomePage = () => {
       )}
 
       <style jsx>{`
-        /* Owner Bar Styles */
         .owner-bar {
           position: relative;
           z-index: 100;
@@ -533,7 +531,6 @@ const HomePage = () => {
           cursor: not-allowed;
         }
 
-        /* Debug Panel */
         .debug-panel {
           background: #1e293b;
           color: white;
@@ -585,7 +582,6 @@ const HomePage = () => {
           font-size: 0.8rem;
         }
 
-        /* Upload Section */
         .upload-section {
           padding: 40px 0;
           background: #f8fafc;
@@ -691,7 +687,6 @@ const HomePage = () => {
           font-size: 0.8rem;
         }
 
-        /* Loading State */
         .loading-slideshow {
           width: 100%;
           height: 500px;
@@ -717,7 +712,6 @@ const HomePage = () => {
           100% { transform: rotate(360deg); }
         }
 
-        /* Featured Section */
         .featured-section {
           padding: 80px 0;
           background: white;
@@ -792,7 +786,6 @@ const HomePage = () => {
           white-space: nowrap;
         }
 
-        /* Delete Confirmation Modal */
         .delete-modal-overlay {
           position: fixed;
           top: 0;
@@ -912,7 +905,6 @@ const HomePage = () => {
           background: #dc2626;
         }
 
-        /* Login Modal */
         .login-modal-overlay {
           position: fixed;
           top: 0;
