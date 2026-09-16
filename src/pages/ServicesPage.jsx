@@ -15,18 +15,40 @@ const ServicesPage = () => {
   const categories = [
     { id: 'all', name: 'All Services', icon: '📁' },
     { id: 'graphic-design', name: 'Graphic Design', icon: '🎨' },
-    { id: 'photography', name: 'Photography', icon: '📸' },
-    { id: 'motion-picture', name: 'Motion Picture', icon: '🎬' },
-    { id: 'music', name: 'Music Artworks', icon: '🎵' },
-    { id: 'games', name: 'Gaming Zone', icon: '🎮' }
+    { id: 'video-film', name: 'Video & Film', icon: '🎬' },
+    { id: 'drone-shots', name: 'Drone Shots', icon: '🚁' },
+    { id: 'photography', name: 'Photography', icon: '📸' }
   ];
 
   const servicesList = [
-    { id: 'graphic-design', name: 'Graphic Design', icon: '🎨', description: 'Logo design, branding, print materials, and digital assets', color: '#667eea' },
-    { id: 'photography', name: 'Photography', icon: '📸', description: 'Wedding, events, portraits, and product photography', color: '#764ba2' },
-    { id: 'motion-picture', name: 'Motion Picture', icon: '🎬', description: 'Video production, editing, and motion graphics', color: '#f59e0b' },
-    { id: 'music', name: 'Music Artworks', icon: '🎵', description: 'Album covers, promotional materials, and artist branding', color: '#10b981' },
-    { id: 'games', name: 'Gaming Zone', icon: '🎮', description: 'Game art, tournaments, and gaming experiences', color: '#ef4444' }
+    { 
+      id: 'graphic-design', 
+      name: 'Graphic Design', 
+      icon: '🎨', 
+      description: 'Logo design, branding, print materials, and digital assets', 
+      color: '#667eea' 
+    },
+    { 
+      id: 'video-film', 
+      name: 'Video & Film', 
+      icon: '🎬', 
+      description: 'Video production, editing, and cinematic storytelling', 
+      color: '#764ba2' 
+    },
+    { 
+      id: 'drone-shots', 
+      name: 'Drone Shots', 
+      icon: '🚁', 
+      description: 'Aerial photography, drone cinematography, and aerial mapping', 
+      color: '#f59e0b' 
+    },
+    { 
+      id: 'photography', 
+      name: 'Photography', 
+      icon: '📸', 
+      description: 'Wedding, events, portraits, and product photography', 
+      color: '#10b981' 
+    }
   ];
 
   useEffect(() => {
@@ -52,10 +74,9 @@ const ServicesPage = () => {
   const getCategoryIcon = (category) => {
     switch(category) {
       case 'graphic-design': return '🎨';
+      case 'video-film': return '🎬';
+      case 'drone-shots': return '🚁';
       case 'photography': return '📸';
-      case 'motion-picture': return '🎬';
-      case 'music': return '🎵';
-      case 'games': return '🎮';
       default: return '📁';
     }
   };
@@ -63,10 +84,9 @@ const ServicesPage = () => {
   const getCategoryName = (category) => {
     switch(category) {
       case 'graphic-design': return 'Graphic Design';
+      case 'video-film': return 'Video & Film';
+      case 'drone-shots': return 'Drone Shots';
       case 'photography': return 'Photography';
-      case 'motion-picture': return 'Motion Picture';
-      case 'music': return 'Music Artworks';
-      case 'games': return 'Gaming Zone';
       default: return 'Project';
     }
   };
