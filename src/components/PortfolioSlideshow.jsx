@@ -1,4 +1,4 @@
-// src/components/PortfolioSlideshow.jsx - FIXED
+// src/components/PortfolioSlideshow.jsx - Updated for BULAMU CREATIONS
 import React, { useState, useEffect } from 'react';
 
 const PortfolioSlideshow = ({ projects, autoPlay = true, interval = 5000 }) => {
@@ -24,7 +24,6 @@ const PortfolioSlideshow = ({ projects, autoPlay = true, interval = 5000 }) => {
     setCurrentIndex(index);
   };
 
-  // Auto-play functionality - MOVED BEFORE CONDITIONAL RETURN
   useEffect(() => {
     if (!isAutoPlaying || validProjects.length === 0) return;
     
@@ -35,7 +34,6 @@ const PortfolioSlideshow = ({ projects, autoPlay = true, interval = 5000 }) => {
     return () => clearInterval(timer);
   }, [isAutoPlaying, currentIndex, interval, validProjects.length]);
 
-  // Touch handlers for mobile swipe
   const handleTouchStart = (e) => {
     setTouchStart(e.targetTouches[0].clientX);
   };
@@ -62,7 +60,6 @@ const PortfolioSlideshow = ({ projects, autoPlay = true, interval = 5000 }) => {
     setTouchEnd(0);
   };
 
-  // Check if there are valid projects AFTER all hooks are called
   if (validProjects.length === 0) {
     return (
       <div className="slideshow-empty">
@@ -87,7 +84,6 @@ const PortfolioSlideshow = ({ projects, autoPlay = true, interval = 5000 }) => {
 
   return (
     <div className="fullwidth-slideshow">
-      {/* Main Slideshow */}
       <div 
         className="slideshow-container"
         onTouchStart={handleTouchStart}
@@ -107,10 +103,9 @@ const PortfolioSlideshow = ({ projects, autoPlay = true, interval = 5000 }) => {
               <div className="slide-meta">
                 <span className="category-tag">
                   {currentProject.category === 'graphic-design' && '🎨 Graphic Design'}
+                  {currentProject.category === 'video-film' && '🎬 Video & Film'}
+                  {currentProject.category === 'drone-shots' && '🚁 Drone Shots'}
                   {currentProject.category === 'photography' && '📸 Photography'}
-                  {currentProject.category === 'motion-picture' && '🎬 Motion Picture'}
-                  {currentProject.category === 'music' && '🎵 Music Artworks'}
-                  {currentProject.category === 'games' && '🎮 Gaming Zone'}
                 </span>
                 <span className="upload-date">
                   {currentProject.uploadDate || 'Featured Project'}
@@ -120,7 +115,6 @@ const PortfolioSlideshow = ({ projects, autoPlay = true, interval = 5000 }) => {
           </div>
         </div>
 
-        {/* Navigation Buttons */}
         {validProjects.length > 1 && (
           <>
             <button className="slideshow-nav prev" onClick={prevSlide}>
@@ -132,7 +126,6 @@ const PortfolioSlideshow = ({ projects, autoPlay = true, interval = 5000 }) => {
           </>
         )}
 
-        {/* Dots Indicator */}
         {validProjects.length > 1 && (
           <div className="slideshow-dots">
             {validProjects.map((_, index) => (
@@ -146,7 +139,6 @@ const PortfolioSlideshow = ({ projects, autoPlay = true, interval = 5000 }) => {
           </div>
         )}
 
-        {/* Auto-play Toggle */}
         {validProjects.length > 1 && (
           <button
             className="autoplay-toggle"
@@ -157,7 +149,6 @@ const PortfolioSlideshow = ({ projects, autoPlay = true, interval = 5000 }) => {
           </button>
         )}
 
-        {/* Counter */}
         {validProjects.length > 1 && (
           <div className="slide-counter">
             {currentIndex + 1} / {validProjects.length}
@@ -284,7 +275,6 @@ const PortfolioSlideshow = ({ projects, autoPlay = true, interval = 5000 }) => {
           font-weight: 500;
         }
 
-        /* Navigation Buttons */
         .slideshow-nav {
           position: absolute;
           top: 50%;
@@ -318,7 +308,6 @@ const PortfolioSlideshow = ({ projects, autoPlay = true, interval = 5000 }) => {
           right: 30px;
         }
 
-        /* Dots */
         .slideshow-dots {
           position: absolute;
           bottom: 30px;
@@ -348,7 +337,6 @@ const PortfolioSlideshow = ({ projects, autoPlay = true, interval = 5000 }) => {
           background: white;
         }
 
-        /* Auto-play Toggle */
         .autoplay-toggle {
           position: absolute;
           bottom: 30px;
@@ -374,7 +362,6 @@ const PortfolioSlideshow = ({ projects, autoPlay = true, interval = 5000 }) => {
           transform: scale(1.1);
         }
 
-        /* Counter */
         .slide-counter {
           position: absolute;
           bottom: 30px;
@@ -389,7 +376,6 @@ const PortfolioSlideshow = ({ projects, autoPlay = true, interval = 5000 }) => {
           z-index: 10;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
           .slideshow-container {
             height: 60vh;
