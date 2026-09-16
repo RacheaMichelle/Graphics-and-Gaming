@@ -1,4 +1,4 @@
-// src/pages/PortfolioPage.jsx
+// src/pages/PortfolioPage.jsx - Updated for BULAMU CREATIONS
 import React, { useState, useEffect } from 'react';
 import LazyReveal from '../components/LazyReveal';
 import LazyImage from '../components/LazyImage';
@@ -19,10 +19,9 @@ const PortfolioPage = () => {
   const categories = [
     { id: 'all', name: 'All Work', icon: '📁' },
     { id: 'graphic-design', name: 'Graphic Design', icon: '🎨' },
-    { id: 'photography', name: 'Photography', icon: '📸' },
-    { id: 'motion-picture', name: 'Motion Picture', icon: '🎬' },
-    { id: 'music', name: 'Music Artworks', icon: '🎵' },
-    { id: 'games', name: 'Gaming Zone', icon: '🎮' }
+    { id: 'video-film', name: 'Video & Film', icon: '🎬' },
+    { id: 'drone-shots', name: 'Drone Shots', icon: '🚁' },
+    { id: 'photography', name: 'Photography', icon: '📸' }
   ];
 
   useEffect(() => {
@@ -73,7 +72,6 @@ const PortfolioPage = () => {
   const handleDeleteProject = async (projectId) => {
     try {
       await backendService.deleteProject(projectId);
-      // Reload projects after deletion
       await loadProjects(true);
       setShowDeleteConfirm(null);
       alert('Project deleted successfully!');
@@ -90,10 +88,9 @@ const PortfolioPage = () => {
   const getCategoryName = (category) => {
     switch(category) {
       case 'graphic-design': return 'Graphic Design';
+      case 'video-film': return 'Video & Film';
+      case 'drone-shots': return 'Drone Shots';
       case 'photography': return 'Photography';
-      case 'motion-picture': return 'Motion Picture';
-      case 'music': return 'Music Artworks';
-      case 'games': return 'Gaming Zone';
       default: return 'Project';
     }
   };
@@ -101,10 +98,9 @@ const PortfolioPage = () => {
   const getCategoryIcon = (category) => {
     switch(category) {
       case 'graphic-design': return '🎨';
+      case 'video-film': return '🎬';
+      case 'drone-shots': return '🚁';
       case 'photography': return '📸';
-      case 'motion-picture': return '🎬';
-      case 'music': return '🎵';
-      case 'games': return '🎮';
       default: return '📁';
     }
   };
@@ -190,7 +186,6 @@ const PortfolioPage = () => {
               {filteredProjects.map((project, index) => (
                 <LazyReveal key={project.id} threshold={0.3} delay={index * 50}>
                   <div className="project-card">
-                    {/* Delete Button - Only visible to owner */}
                     {isOwner && (
                       <button 
                         className="delete-project-btn"
@@ -352,7 +347,6 @@ const PortfolioPage = () => {
               
               <div className="login-footer">
                 <p>🔒 Secure owner access only</p>
-                
               </div>
             </div>
           </div>
@@ -365,7 +359,6 @@ const PortfolioPage = () => {
           background: linear-gradient(135deg, #478dd2 0%, #f1f5f9 100%);
         }
 
-        /* Owner Bar Styles */
         .owner-bar {
           position: relative;
           z-index: 100;
@@ -681,7 +674,6 @@ const PortfolioPage = () => {
           cursor: pointer;
         }
 
-        /* Modal Styles */
         .modal {
           position: fixed;
           top: 0;
@@ -796,7 +788,6 @@ const PortfolioPage = () => {
           font-weight: 600;
         }
 
-        /* Delete Confirmation Modal */
         .delete-modal-overlay {
           position: fixed;
           top: 0;
@@ -915,7 +906,6 @@ const PortfolioPage = () => {
           background: #dc2626;
         }
 
-        /* Login Modal */
         .login-modal-overlay {
           position: fixed;
           top: 0;
