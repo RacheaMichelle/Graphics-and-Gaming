@@ -426,7 +426,7 @@ const HomePage = () => {
               
               <div className="login-footer">
                 <p>🔒 Secure owner access only</p>
-                <p className="demo-hint">Demo password: owner123</p>
+                
               </div>
             </div>
           </div>
