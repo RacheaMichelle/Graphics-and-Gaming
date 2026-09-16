@@ -1,4 +1,4 @@
-// src/components/Footer.jsx - Updated with working newsletter
+// src/components/Footer.jsx - Updated for BULAMU CREATIONS
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import profilePic from '../assets/images/WhatsApp Image 2025-10-07 at 18.22.34_d752a1a7.jpg';
@@ -10,8 +10,8 @@ const Footer = () => {
 
   // Social media links
   const socialLinks = {
-    instagram: "https://instagram.com/raemond_dvj_graphiqs",
-    youtube: "https://youtube.com/@RaemondDvjGraphiqs",
+    instagram: "https://instagram.com/bulamu_creations",
+    youtube: "https://youtube.com/@BulamuCreations",
     facebook: "#",
     twitter: "#",
     tiktok: "#"
@@ -37,11 +37,8 @@ const Footer = () => {
     setIsSubmitting(true);
 
     try {
-      // Here you can integrate with your email service (Mailchimp, SendGrid, etc.)
-      // For now, we'll simulate a successful subscription
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Store in localStorage for demo
       const subscribers = JSON.parse(localStorage.getItem('newsletter_subscribers') || '[]');
       if (!subscribers.includes(newsletterEmail)) {
         subscribers.push(newsletterEmail);
@@ -80,7 +77,7 @@ const Footer = () => {
                   <div className="profile-image-wrapper">
                     <img 
                       src={profilePic} 
-                      alt="RAEMOND DVJ - Creative Director" 
+                      alt="BULAMU CREATIONS - Creative Director" 
                       className="profile-image"
                       onError={(e) => {
                         console.log('Profile image failed to load');
@@ -89,7 +86,7 @@ const Footer = () => {
                       }}
                     />
                     <div className="profile-fallback">
-                      <span>RD</span>
+                      <span>BC</span>
                     </div>
                     <div className="profile-badge">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -98,15 +95,15 @@ const Footer = () => {
                     </div>
                   </div>
                   <div className="profile-info">
-                    <h3 className="brand-name">RAEMOND DVJ</h3>
-                    <span className="brand-tagline">GRAPHIQS</span>
+                    <h3 className="brand-name">BULAMU</h3>
+                    <span className="brand-tagline">CREATIONS</span>
                     <p className="brand-subtitle">Creative Director & Designer</p>
                   </div>
                 </div>
                 
                 <p className="brand-description">
                   Transforming visions into stunning visual experiences through creative design, 
-                  motion graphics, and innovative digital solutions.
+                  video production, and innovative drone cinematography.
                 </p>
               </div>
 
@@ -159,24 +156,24 @@ const Footer = () => {
             </div>
             <ul className="services-list">
               <li>
-                <div className="service-icon">🎬</div>
-                <Link to="/services">Motion Picture Production</Link>
-              </li>
-              <li>
                 <div className="service-icon">🎨</div>
-                <Link to="/services">Logo & Brand Design</Link>
+                <Link to="/services">Graphic Design</Link>
               </li>
               <li>
-                <div className="service-icon">📁</div>
-                <Link to="/services">Banners & Stickers</Link>
+                <div className="service-icon">🎬</div>
+                <Link to="/services">Video & Film Production</Link>
+              </li>
+              <li>
+                <div className="service-icon">🚁</div>
+                <Link to="/services">Drone Shots</Link>
               </li>
               <li>
                 <div className="service-icon">📄</div>
                 <Link to="/services">Flyer & Poster Design</Link>
               </li>
               <li>
-                <div className="service-icon">📱</div>
-                <Link to="/services">Electronic Gadgets</Link>
+                <div className="service-icon">📸</div>
+                <Link to="/services">Photography</Link>
               </li>
             </ul>
           </div>
@@ -215,7 +212,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Social Media Column - Updated with working newsletter */}
+          {/* Social Media Column */}
           <div className="footer-column">
             <div className="section-header">
               <h4>Connect With Us</h4>
@@ -230,7 +227,7 @@ const Footer = () => {
                 <div className="social-icon">📷</div>
                 <div className="social-info">
                   <span className="social-name">Instagram</span>
-                  <span className="social-handle">@raemond_dvj_graphiqs</span>
+                  <span className="social-handle">@bulamu_creations</span>
                 </div>
               </a>
 
@@ -238,7 +235,7 @@ const Footer = () => {
                 <div className="social-icon">▶️</div>
                 <div className="social-info">
                   <span className="social-name">YouTube</span>
-                  <span className="social-handle">@RaemondDvjGraphiqs</span>
+                  <span className="social-handle">@BulamuCreations</span>
                 </div>
               </a>
 
@@ -246,12 +243,12 @@ const Footer = () => {
                 <div className="social-icon">📘</div>
                 <div className="social-info">
                   <span className="social-name">Facebook</span>
-                  <span className="social-handle">Raemond DVJ</span>
+                  <span className="social-handle">Bulamu Creations</span>
                 </div>
               </a>
             </div>
 
-            {/* Updated Newsletter Section */}
+            {/* Newsletter Section */}
             <div className="newsletter-section">
               <h5>Stay Updated</h5>
               <p>Get the latest creative insights and project updates</p>
@@ -268,7 +265,6 @@ const Footer = () => {
                 </button>
               </form>
               
-              {/* Status Messages */}
               {newsletterStatus === 'success' && (
                 <div className="newsletter-success">
                   ✓ Subscribed successfully!
@@ -293,7 +289,7 @@ const Footer = () => {
           <div className="copyright-divider"></div>
           <div className="copyright-content">
             <div className="copyright-text">
-              <p>&copy; 2024 <strong>RAEMOND DVJ GRAPHIQS</strong>. All rights reserved.</p>
+              <p>&copy; 2024 <strong>BULAMU CREATIONS</strong>. All rights reserved.</p>
               <span className="copyright-tag">Crafting Digital Excellence</span>
             </div>
             <div className="copyright-links">
@@ -325,7 +321,6 @@ const Footer = () => {
           z-index: 2;
         }
 
-        /* Background Elements */
         .background-elements {
           position: absolute;
           top: 0;
@@ -370,7 +365,6 @@ const Footer = () => {
           margin-bottom: 60px;
         }
 
-        /* Brand Column */
         .brand-column {
           position: relative;
         }
@@ -517,7 +511,6 @@ const Footer = () => {
           font-size: 0.9rem;
         }
 
-        /* Section Headers */
         .section-header {
           margin-bottom: 25px;
         }
@@ -536,7 +529,6 @@ const Footer = () => {
           border-radius: 2px;
         }
 
-        /* Lists */
         .services-list,
         .links-list {
           list-style: none;
@@ -582,7 +574,6 @@ const Footer = () => {
           transform: translateX(4px);
         }
 
-        /* Social Media */
         .social-description {
           color: #94a3b8;
           font-size: 0.9rem;
@@ -655,7 +646,6 @@ const Footer = () => {
           font-size: 0.85rem;
         }
 
-        /* Newsletter Section - Updated */
         .newsletter-section {
           background: rgba(255, 255, 255, 0.03);
           padding: 20px;
@@ -754,7 +744,6 @@ const Footer = () => {
           }
         }
 
-        /* Copyright Section */
         .copyright-section {
           border-top: 1px solid rgba(255, 255, 255, 0.1);
           padding-top: 30px;
@@ -818,7 +807,6 @@ const Footer = () => {
           font-size: 0.8rem;
         }
 
-        /* Responsive Design */
         @media (max-width: 1024px) {
           .footer-content {
             grid-template-columns: 1fr 1fr;
