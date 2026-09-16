@@ -9,8 +9,8 @@ const AboutPage = () => {
       <div className="page-hero">
         <div className="container">
           <LazyReveal threshold={0.1}>
-            <h1>About RAEMOND DVJ</h1>
-            <p>Creating amazing experiences through design, gaming, and technology</p>
+            <h1>About BULAMU CREATIONS</h1>
+            <p>Creating amazing experiences through design, video, and drone cinematography</p>
           </LazyReveal>
         </div>
       </div>
@@ -22,22 +22,22 @@ const AboutPage = () => {
               <div className="about-content">
                 <h2>Our Story</h2>
                 <p>
-                  Founded with a passion for creativity and innovation, RAEMOND DVJ has grown 
-                  into a premier destination for graphic design, gaming experiences, and gadget reviews.
+                  Founded with a passion for creativity and innovation, BULAMU CREATIONS has grown 
+                  into a premier destination for graphic design, video production, and drone cinematography.
                 </p>
                 <p>
                   We believe in pushing boundaries and delivering exceptional quality in everything we do.
                   Our team of creative professionals brings together diverse skills and perspectives to 
-                  create unique solutions for our clients.
+                  create unique visual solutions for our clients.
                 </p>
                 <div className="mission-vision">
                   <div className="mission">
                     <h3>Our Mission</h3>
-                    <p>To inspire and empower through creative excellence and innovative solutions.</p>
+                    <p>To inspire and empower through creative excellence and innovative visual solutions.</p>
                   </div>
                   <div className="vision">
                     <h3>Our Vision</h3>
-                    <p>To be the leading creative force in graphic design, gaming, and technology.</p>
+                    <p>To be the leading creative force in graphic design, video production, and drone cinematography.</p>
                   </div>
                 </div>
                 <div className="stats">
@@ -59,9 +59,9 @@ const AboutPage = () => {
             
             <LazyReveal className="fade-right" threshold={0.3} delay={200}>
               <div className="about-image">
-                <LazyImage src={profilePic} alt="RAEMOND DVJ" />
+                <LazyImage src={profilePic} alt="BULAMU CREATIONS" />
                 <div className="image-caption">
-                  <p>RAEMOND DVJ - Creative Director</p>
+                  <p>BULAMU CREATIONS - Creative Director</p>
                 </div>
               </div>
             </LazyReveal>
