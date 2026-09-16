@@ -4,23 +4,23 @@ import { Link } from 'react-router-dom';
 const Hero = () => {
   const services = [
     {
-      name: 'Photography',
-      icon: '📸',
+      name: 'Graphic Design',
+      icon: '🎨',
       gradient: 'from-purple-500 to-pink-500'
     },
     {
-      name: 'Design',
-      icon: '🎨',
+      name: 'Video & Film',
+      icon: '🎬',
       gradient: 'from-blue-500 to-cyan-500'
     },
     {
-      name: 'Gaming',
-      icon: '🎮',
+      name: 'Drone Shots',
+      icon: '🚁',
       gradient: 'from-green-500 to-emerald-500'
     },
     {
-      name: 'Music',
-      icon: '🎵',
+      name: 'Photography',
+      icon: '📸',
       gradient: 'from-orange-500 to-red-500'
     }
   ];
@@ -59,7 +59,7 @@ const Hero = () => {
           {/* Animated Badge */}
           <div className="hero-badge">
             <div className="badge-content">
-              <span className="badge-text">RAEMOND STUDIOS</span>
+              <span className="badge-text">BULAMU CREATIONS</span>
               <div className="badge-dots">
                 <div className="dot"></div>
                 <div className="dot"></div>
@@ -72,10 +72,10 @@ const Hero = () => {
           <div className="heading-container">
             <h1 className="hero-title">
               <span className="title-line">
-                Create <span className="highlight-text">Digital</span>
+                Create <span className="highlight-text">Visual</span>
               </span>
               <span className="title-line">
-                <span className="gradient-text">Experiences</span> That
+                <span className="gradient-text">Stories</span> That
               </span>
               <span className="title-line">
                 Inspire & <span className="accent-text">Connect</span>
@@ -88,9 +88,9 @@ const Hero = () => {
 
           {/* Description */}
           <p className="hero-description">
-            We blend cutting-edge design with innovative technology to create 
-            unforgettable digital experiences. From stunning visuals to immersive 
-            interactions, we bring your vision to life.
+            We blend creative design with innovative technology to create 
+            unforgettable visual experiences. From stunning graphics to aerial 
+            drone cinematography, we bring your vision to life.
           </p>
 
           {/* Action Buttons */}
@@ -173,7 +173,6 @@ const Hero = () => {
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
-        /* Modern Background */
         .hero-background {
           position: absolute;
           top: 0;
@@ -183,7 +182,6 @@ const Hero = () => {
           z-index: 1;
         }
 
-        /* Gradient Mesh */
         .gradient-mesh {
           position: absolute;
           width: 100%;
@@ -225,7 +223,6 @@ const Hero = () => {
           animation: floatMesh 30s ease-in-out infinite;
         }
 
-        /* Particles */
         .particles-container {
           position: absolute;
           width: 100%;
@@ -249,7 +246,6 @@ const Hero = () => {
           background: rgba(245, 158, 11, 0.6);
         }
 
-        /* Grid Pattern */
         .grid-pattern {
           position: absolute;
           top: 0;
@@ -275,7 +271,6 @@ const Hero = () => {
           padding: 0 2rem;
         }
 
-        /* Hero Badge */
         .hero-badge {
           margin-bottom: 2rem;
         }
@@ -314,7 +309,6 @@ const Hero = () => {
         .dot:nth-child(2) { animation-delay: 0.2s; }
         .dot:nth-child(3) { animation-delay: 0.4s; }
 
-        /* Heading */
         .heading-container {
           position: relative;
           margin-bottom: 1.5rem;
@@ -359,7 +353,6 @@ const Hero = () => {
           animation: blink 1s infinite;
         }
 
-        /* Description */
         .hero-description {
           font-size: 1.125rem;
           line-height: 1.6;
@@ -368,7 +361,6 @@ const Hero = () => {
           max-width: 500px;
         }
 
-        /* Action Buttons */
         .action-buttons {
           display: flex;
           gap: 1rem;
@@ -443,7 +435,6 @@ const Hero = () => {
           transform: translateX(4px);
         }
 
-        /* Stats */
         .stats-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
@@ -467,7 +458,6 @@ const Hero = () => {
           font-weight: 500;
         }
 
-        /* Hero Visual */
         .hero-visual {
           position: relative;
           display: flex;
@@ -476,7 +466,6 @@ const Hero = () => {
           height: 400px;
         }
 
-        /* Compact Service Icons */
         .services-showcase {
           position: relative;
           width: 100%;
@@ -559,7 +548,6 @@ const Hero = () => {
           left: 100%;
         }
 
-        /* Central Orb */
         .central-orb {
           position: absolute;
           top: 50%;
@@ -602,7 +590,6 @@ const Hero = () => {
           animation: orbGlow 6s ease-in-out infinite;
         }
 
-        /* Animations */
         @keyframes floatMesh {
           0%, 100% { transform: translate(0, 0) scale(1); }
           33% { transform: translate(30px, -20px) scale(1.1); }
@@ -647,7 +634,6 @@ const Hero = () => {
           50% { opacity: 0.8; transform: scale(1.1); }
         }
 
-        /* Responsive Design */
         @media (max-width: 1024px) {
           .hero-container {
             grid-template-columns: 1fr;
