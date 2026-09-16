@@ -264,10 +264,9 @@ const ReviewsPage = () => {
               <select name="service" value={formData.service} onChange={(e) => setFormData({...formData, service: e.target.value})} required>
                 <option value="">Select Service *</option>
                 <option>Graphic Design</option>
+                <option>Video & Film</option>
+                <option>Drone Shots</option>
                 <option>Photography</option>
-                <option>Motion Picture</option>
-                <option>Music Artworks</option>
-                <option>Gaming Services</option>
               </select>
               <input type="text" name="location" placeholder="Your Location" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} />
               <div className="rating-select">
@@ -307,159 +306,6 @@ const ReviewsPage = () => {
           min-height: 100vh;
           background: linear-gradient(135deg, #115ca8 0%, #f1f5f9 100%);
         }
-          // Add these styles to your ReviewsPage.jsx inside the <style jsx> section
-
-/* Add/Update these styles for better text contrast */
-
-.review-card {
-  background: white;
-  padding: 25px;
-  border-radius: 15px;
-  position: relative;
-  box-shadow: 0 5px 15px rgba(156, 31, 31, 0.08);
-  /* Add this for better readability */
-  border: 1px solid #e2e8f0;
-}
-
-.review-text {
-  color: #e117b8; /* Darker text instead of #334155 */
-  line-height: 1.6;
-  margin-bottom: 20px;
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-.reviewer h4 {
-  margin: 0 0 4px 0;
-  color: #0f172a; /* Darker color */
-  font-weight: 700;
-  font-size: 1.1rem;
-}
-
-.location {
-  font-size: 0.85rem;
-  color: #475569; /* Darker than before */
-  font-weight: 500;
-}
-
-.date {
-  font-size: 0.8rem;
-  color: #64748b;
-  display: block;
-  font-weight: 500;
-}
-
-.service-tag {
-  background: linear-gradient(135deg, #0f37e8 0%, #764ba2 100%);
-  color: white;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  display: inline-block;
-  margin-bottom: 12px;
-  font-weight: 600;
-}
-
-.rating {
-  font-size: 1.3rem;
-  margin-bottom: 12px;
-  color: #f59e0b;
-  letter-spacing: 2px;
-}
-
-.owner-reply {
-  background: #f1f5f9; /* Lighter background */
-  padding: 15px;
-  border-radius: 10px;
-  margin-top: 15px;
-  border-left: 3px solid #123dfe;
-}
-
-.owner-reply strong {
-  color: #1e293b;
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 700;
-}
-
-.owner-reply p {
-  color: #334155;
-  margin: 0 0 8px 0;
-  line-height: 1.5;
-  font-size: 0.95rem;
-}
-
-.owner-reply small {
-  color: #64748b;
-  font-size: 0.75rem;
-}
-
-/* Modal styles - also update text contrast */
-.modal-content h3 {
-  color: #0f172a;
-  font-weight: 700;
-  margin-bottom: 20px;
-}
-
-.modal-content input,
-.modal-content select,
-.modal-content textarea {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 15px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  color: #1e293b;
-  font-size: 0.95rem;
-}
-
-.modal-content input::placeholder,
-.modal-content textarea::placeholder {
-  color: #94a3b8;
-}
-
-.modal-content label {
-  color: #334155;
-  font-weight: 500;
-  margin-bottom: 5px;
-  display: block;
-}
-
-/* Empty state text */
-.empty-state p {
-  color: #cb17e3;
-  font-size: 1.1rem;
-  font-weight: 500;
-}
-
-/* Loading text */
-.loading {
-  text-align: center;
-  padding: 60px;
-  color: #475569;
-  font-size: 1.1rem;
-  font-weight: 500;
-}
-
-/* Status messages */
-.status-message {
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  font-weight: 500;
-}
-
-.status-message.success {
-  background: #dcfce7;
-  color: #166534;
-  border: 1px solid #86efac;
-}
-
-.status-message.error {
-  background: #fee2e2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
-}
 
         .page-hero {
           background: linear-gradient(135deg, #0e3aff 0%, #764ba2 100%);
@@ -553,7 +399,8 @@ const ReviewsPage = () => {
           padding: 25px;
           border-radius: 15px;
           position: relative;
-          box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+          box-shadow: 0 5px 15px rgba(156, 31, 31, 0.08);
+          border: 1px solid #e2e8f0;
         }
 
         .delete-btn {
@@ -600,11 +447,15 @@ const ReviewsPage = () => {
 
         .reviewer h4 {
           margin: 0 0 4px 0;
+          color: #0f172a;
+          font-weight: 700;
+          font-size: 1.1rem;
         }
 
         .location {
           font-size: 0.85rem;
-          color: #64748b;
+          color: #475569;
+          font-weight: 500;
         }
 
         .meta {
@@ -613,8 +464,9 @@ const ReviewsPage = () => {
 
         .date {
           font-size: 0.8rem;
-          color: #94a3b8;
+          color: #64748b;
           display: block;
+          font-weight: 500;
         }
 
         .verified {
@@ -623,31 +475,56 @@ const ReviewsPage = () => {
         }
 
         .service-tag {
-          background: #12f346;
-          padding: 4px 12px;
-          border-radius: 12px;
-          font-size: 0.8rem;
+          background: linear-gradient(135deg, #0f37e8 0%, #764ba2 100%);
+          color: white;
+          padding: 6px 14px;
+          border-radius: 20px;
+          font-size: 0.85rem;
           display: inline-block;
           margin-bottom: 12px;
+          font-weight: 600;
         }
 
         .rating {
-          font-size: 1.2rem;
+          font-size: 1.3rem;
           margin-bottom: 12px;
+          color: #f59e0b;
+          letter-spacing: 2px;
         }
 
         .review-text {
-          color: #334155;
-          line-height: 1.5;
+          color: #e117b8;
+          line-height: 1.6;
           margin-bottom: 20px;
+          font-size: 1rem;
+          font-weight: 500;
         }
 
         .owner-reply {
-          background: #f8fafc;
+          background: #f1f5f9;
           padding: 15px;
           border-radius: 10px;
           margin-top: 15px;
-          border-left: 3px solid #667eea;
+          border-left: 3px solid #123dfe;
+        }
+
+        .owner-reply strong {
+          color: #1e293b;
+          display: block;
+          margin-bottom: 8px;
+          font-weight: 700;
+        }
+
+        .owner-reply p {
+          color: #334155;
+          margin: 0 0 8px 0;
+          line-height: 1.5;
+          font-size: 0.95rem;
+        }
+
+        .owner-reply small {
+          color: #64748b;
+          font-size: 0.75rem;
         }
 
         .reply-btn {
@@ -721,14 +598,27 @@ const ReviewsPage = () => {
           max-width: 350px;
         }
 
+        .modal-content h3 {
+          color: #0f172a;
+          font-weight: 700;
+          margin-bottom: 20px;
+        }
+
         .modal-content input,
         .modal-content select,
         .modal-content textarea {
           width: 100%;
           padding: 12px;
           margin-bottom: 15px;
-          border: 1px solid #e2e8f0;
+          border: 1px solid #cbd5e1;
           border-radius: 8px;
+          color: #1e293b;
+          font-size: 0.95rem;
+        }
+
+        .modal-content input::placeholder,
+        .modal-content textarea::placeholder {
+          color: #94a3b8;
         }
 
         .rating-select {
@@ -776,7 +666,13 @@ const ReviewsPage = () => {
         .loading, .empty-state {
           text-align: center;
           padding: 60px;
-          color: #64748b;
+          color: #475569;
+          font-size: 1.1rem;
+          font-weight: 500;
+        }
+
+        .empty-state p {
+          color: #cb17e3;
         }
 
         @media (max-width: 768px) {
