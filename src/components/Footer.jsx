@@ -1,7 +1,7 @@
 // src/components/Footer.jsx - Updated for BULAMU CREATIONS
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import profilePic from '../assets/images/WhatsApp Image 2025-10-07 at 18.22.34_d752a1a7.jpg';
+import profilePic from '../assets/images/WhatsApp Image 2026-09-18 at 10.29.43.jpeg';
 
 const Footer = () => {
   const [newsletterEmail, setNewsletterEmail] = useState('');
