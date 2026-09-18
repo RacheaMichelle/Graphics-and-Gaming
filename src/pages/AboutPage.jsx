@@ -1,7 +1,7 @@
 import React from 'react';
 import LazyReveal from '../components/LazyReveal';
 import LazyImage from '../components/LazyImage';
-import profilePic from '../assets/images/WhatsApp Image 2025-10-07 at 18.22.34_d752a1a7.jpg';
+import profilePic from '../assets/images/WhatsApp Image 2026-09-18 at 10.29.43.jpeg';
 
 const AboutPage = () => {
   return (
