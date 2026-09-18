@@ -1,7 +1,7 @@
 // src/components/Header.jsx - Updated for BULAMU CREATIONS
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import servicesPic from '../assets/images/src/assets/images/WhatsApp Image 2026-09-18 at 10.29.43.jpeg';
+import servicesPic from '../assets/images/WhatsApp Image 2026-09-18 at 10.29.43.jpeg';
 import logoImage from '../assets/images/WhatsApp Image 2025-10-07 at 18.22.31_497db946.jpg';
 
 const Header = () => {
